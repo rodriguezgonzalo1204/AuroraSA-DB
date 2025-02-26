@@ -127,7 +127,7 @@ BEGIN
 CREATE TABLE Inventario.Producto
 (
     idProducto INT IDENTITY(1,1),
-    nombreProducto VARCHAR(20),
+    nombreProducto NVARCHAR(25),
     marca VARCHAR(20),
     precioUnitario DECIMAL(10,2),
 	lineaProducto INT,
