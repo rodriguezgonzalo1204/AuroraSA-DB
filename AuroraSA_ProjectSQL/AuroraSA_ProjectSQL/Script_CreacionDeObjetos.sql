@@ -53,8 +53,8 @@ END
 GO
 
 /*
-   Empleado: Contiene informaciÛn del empleado y la sucursal a la que pertenece.
-   Est· en el esquema Empresa.
+   Empleado: Contiene informaci√≥n del empleado y la sucursal a la que pertenece.
+   Est√° en el esquema Empresa.
 */
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
 TABLE_SCHEMA ='Empresa' AND TABLE_NAME ='Empleado')
@@ -80,8 +80,8 @@ END
 GO
 
 /*
-   Cliente: Contiene datos del cliente, tipoCliente, gÈnero, etc.
-   Est· en el esquema Ventas.
+   Cliente: Contiene datos del cliente, tipoCliente, g√©nero, etc.
+   Est√° en el esquema Ventas.
 */
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
 TABLE_SCHEMA ='Ventas' AND TABLE_NAME ='Cliente')
@@ -101,8 +101,8 @@ END
 GO
 
 /*
-	LineaProducto: Registra todas las lineas de producto existentes junto con su descripciÛn.
-	Est· en el esquema Inventario
+	LineaProducto: Registra todas las lineas de producto existentes junto con su descripci√≥n.
+	Est√° en el esquema Inventario
 */
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
 TABLE_SCHEMA ='Inventario' AND TABLE_NAME ='LineaProducto')
@@ -118,8 +118,8 @@ END
 GO
 
 /*
-   Producto: Contiene informaciÛn de los productos (nombre, lÌnea, precio, etc.).
-   Est· en el esquema Inventario.
+   Producto: Contiene informaci√≥n de los productos (nombre, l√≠nea, precio, etc.).
+   Est√° en el esquema Inventario.
 */
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
 TABLE_SCHEMA ='Inventario' AND TABLE_NAME ='Producto')
@@ -140,7 +140,7 @@ GO
 
 /*
    Factura: Registra la venta general. Se asocia a un Cliente, Empleado, Sucursal, y un Medio de Pago (opcional).
-   Est· en el esquema Ventas.
+   Est√° en el esquema Ventas.
 */
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
 TABLE_SCHEMA ='Ventas' AND TABLE_NAME ='Factura')
@@ -169,7 +169,7 @@ GO
 
 /*
    DetalleVenta: Registra el detalle de productos vendidos en cada Factura.
-   Est· en el esquema Ventas.
+   Est√° en el esquema Ventas.
 */
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
 TABLE_SCHEMA ='Ventas' AND TABLE_NAME ='DetalleVenta')
@@ -190,4 +190,5 @@ CREATE TABLE Ventas.DetalleVenta
 END
 GO
 
+print 'Prueba Commit Vlady'
     
