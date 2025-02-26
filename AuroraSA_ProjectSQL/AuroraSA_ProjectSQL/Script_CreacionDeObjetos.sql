@@ -189,6 +189,3 @@ CREATE TABLE Ventas.DetalleVenta
 )
 END
 GO
-
-print 'Prueba Commit Vlady'
-    
