@@ -1,3 +1,11 @@
+/*
+Aurora SA
+Script de creacion de objetos. (Entrega 03)
+Fecha: 28-02-2025
+Asignatura: Bases de datos Aplicads - Comisión: 1353
+Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono Gabriel (42134185)
+*/
+
 ------------CREACION DE DATABASE----------
 Use master
 GO
