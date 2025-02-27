@@ -15,7 +15,7 @@ BEGIN
     COLLATE Modern_Spanish_CS_AS
 END
 ELSE
-	print 'La base de datos ya existe'
+	print 'La base de datos ya existe.'
 GO
 
 Use Com1353G07
@@ -25,19 +25,19 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name ='Empresa')
     EXEC('CREATE SCHEMA Empresa')
 ELSE
-    print 'El esquema Empresa ya existe en la base de datos'
+    print 'El esquema Empresa ya existe en la base de datos.'
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Ventas')
     EXEC('CREATE SCHEMA Ventas')
 ELSE
-    print 'El esquema Ventas ya existe en la base de datos'
+    print 'El esquema Ventas ya existe en la base de datos.'
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name ='Inventario')
     EXEC('CREATE SCHEMA Inventario')
 ELSE 
-    print 'El esquema Inventario ya existe en la base de datos'
+    print 'El esquema Inventario ya existe en la base de datos.'
 GO
 
 -----------CREACION DE TABLAS------------
@@ -122,7 +122,6 @@ CREATE TABLE Inventario.LineaProducto
 	activo bit,
 	CONSTRAINT PK_LineaProducto PRIMARY KEY (idLineaProd)
 )
-
 END
 GO
 
@@ -177,7 +176,7 @@ END
 GO
 
 /*
-   DetalleVenta: Registra el detalle de productos vendidos en cada Factura.
+   DetalleVenta: Registra el detalle de productos vendidos en cada Factura. Se identifica
    Está en el esquema Ventas.
 */
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
@@ -185,13 +184,12 @@ TABLE_SCHEMA ='Ventas' AND TABLE_NAME ='DetalleVenta')
 BEGIN
 CREATE TABLE Ventas.DetalleVenta
 (
-    idDetalle INT IDENTITY(1,1),
-    idFactura INT,
+	idFactura INT,
+    idDetalle INT,
     idProducto INT,
     cantidad INT,
 	subtotal DECIMAL(10,2),
 	precioUnitario DECIMAL(10,2),
-	activo BIT,
     CONSTRAINT PK_DetalleVenta PRIMARY KEY (idDetalle,idFactura),
     CONSTRAINT FK_DetalleVenta_Factura FOREIGN KEY (idFactura) REFERENCES Ventas.Factura(idFactura),
     CONSTRAINT FK_DetalleVenta_Producto FOREIGN KEY (idProducto) REFERENCES Inventario.Producto (idProducto)
