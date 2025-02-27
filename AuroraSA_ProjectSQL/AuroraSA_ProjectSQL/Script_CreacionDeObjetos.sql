@@ -2,14 +2,13 @@
 Aurora SA
 Script de creacion de objetos. (Entrega 03)
 Fecha: 28-02-2025
-Asignatura: Bases de datos Aplicads - Comisión: 1353
+Asignatura: Bases de datos Aplicadas - Comisión: 1353
 Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono Gabriel (42134185)
 */
 
 ------------CREACION DE DATABASE----------
 Use master
 GO
-
 IF NOT EXISTS (SELECT NAME FROM master.dbo.sysdatabases WHERE NAME = 'Com1353G07')
 BEGIN
     CREATE DATABASE Com1353G07
@@ -53,7 +52,7 @@ CREATE TABLE Empresa.Sucursal
     direccion VARCHAR(50),
     ciudad VARCHAR(50),
     telefono CHAR(10),
-	horario VARCHAR(100),
+	horario VARCHAR(55),
 	activo BIT,
     CONSTRAINT PK_Sucursal PRIMARY KEY (idSucursal)
 )
@@ -72,13 +71,14 @@ CREATE TABLE Empresa.Empleado
     idEmpleado INT IDENTITY(1,1),
     nombre VARCHAR(30),
     apellido VARCHAR(30),
+	genero CHAR(1),
 	cargo VARCHAR(25),
     domicilio VARCHAR(50),
     telefono CHAR(10),
     CUIL CHAR(10),
     fechaAlta DATE,
-	mailEmpresa VARCHAR(30),
-	mailPersonal VARCHAR(30),
+	mailEmpresa VARCHAR(55),
+	mailPersonal VARCHAR(55),
     idSucursal INT,
 	activo BIT,
     CONSTRAINT PK_Empleado PRIMARY KEY (idEmpleado),
@@ -119,6 +119,7 @@ CREATE TABLE Inventario.LineaProducto
 (
 	idLineaProd INT IDENTITY(1,1),
 	descripcion VARCHAR(30),
+	activo bit,
 	CONSTRAINT PK_LineaProducto PRIMARY KEY (idLineaProd)
 )
 
@@ -135,7 +136,7 @@ BEGIN
 CREATE TABLE Inventario.Producto
 (
     idProducto INT IDENTITY(1,1),
-    nombreProducto NVARCHAR(25),
+    nombreProducto NVARCHAR(60),
     marca VARCHAR(20),
     precioUnitario DECIMAL(10,2),
 	lineaProducto INT,
