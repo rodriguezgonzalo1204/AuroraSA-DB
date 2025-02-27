@@ -2,7 +2,7 @@
 Aurora SA
 Script de creacion de stored procedures. (Entrega 03)
 Fecha: 28-02-2025
-Asignatura: Bases de datos Aplicadas - ComisiÛn: 1353
+Asignatura: Bases de datos Aplicadas - Comisi√≥n: 1353
 Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono Gabriel (42134185)
 */
 
@@ -27,7 +27,7 @@ BEGIN
 	-- Verificacion de longitud de numero telefonico
     IF (len(@telefono) <> 10)
 	BEGIN
-		RAISERROR('El formato de telÈfono es inv·lido.', 16, 1);
+		RAISERROR('El formato de tel√©fono es inv√°lido.', 16, 1);
 		RETURN;
 	END
    
@@ -72,7 +72,7 @@ BEGIN
 
     IF (len(@telefono) <> 10)
 	BEGIN
-		RAISERROR('El formato de telÈfono es inv·lido.', 16, 1);
+		RAISERROR('El formato de tel√©fono es inv√°lido.', 16, 1);
 		RETURN;
 	END
 
@@ -101,7 +101,7 @@ BEGIN
 		RETURN;
 	END
 
-    -- Borrado lÛgico
+    -- Borrado l√≥gico
     UPDATE Empresa.Sucursal
     SET activo = 0
     WHERE idSucursal = @idSucursal;
@@ -130,33 +130,33 @@ BEGIN
 	IF NOT ( @CUIL LIKE '2[0347]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]' OR
 			 @CUIL LIKE '3[034]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]')
 	BEGIN
-		RAISERROR('Formato de CUIL inv·lido.',16,1)
+		RAISERROR('Formato de CUIL inv√°lido.',16,1)
 		RETURN;
 	END
 	
 	-- Verificacion genero
 	IF @genero NOT IN ('F', 'M')
 	BEGIN
-		RAISERROR('GÈnero inv·lido.',16,1)
+		RAISERROR('G√©nero inv√°lido.',16,1)
 		RETURN;
 	END
 	
 	IF (len(@telefono) <> 10)
 	BEGIN
-		RAISERROR('El formato de telÈfono es inv·lido.', 16, 1);
+		RAISERROR('El formato de tel√©fono es inv√°lido.', 16, 1);
 		RETURN;
 	END
 
 	-- Verificacion formato de mail
 	IF NOT @mailPersonal LIKE '_%@_%._%'
 	BEGIN
-		RAISERROR('El formato de mail personal es inv·lido.', 16, 1);
+		RAISERROR('El formato de mail personal es inv√°lido.', 16, 1);
 		RETURN;
 	END
 
 	IF NOT @mailEmpresa LIKE '_%@_%._%'
 	BEGIN
-		RAISERROR('El formato de mail de la empresa es inv·lido.', 16, 1);
+		RAISERROR('El formato de mail de la empresa es inv√°lido.', 16, 1);
 		RETURN;
 	END
 
@@ -224,31 +224,31 @@ BEGIN
 	IF NOT ( @CUIL LIKE '2[0347]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]' OR
 			 @CUIL LIKE '3[034]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]')
 	BEGIN
-		RAISERROR('Formato de CUIL inv·lido.',16,1)
+		RAISERROR('Formato de CUIL inv√°lido.',16,1)
 		RETURN;
 	END
 
 	IF @genero NOT IN ('F', 'M')
 	BEGIN
-		RAISERROR('Genero inv·lido',16,1)
+		RAISERROR('Genero inv√°lido',16,1)
 		RETURN;
 	END
 
 	IF (len(@telefono) <> 10)
 	BEGIN
-		RAISERROR('El formato de telÈfono es inv·lido.', 16, 1);
+		RAISERROR('El formato de tel√©fono es inv√°lido.', 16, 1);
 		RETURN;
 	END
 
 	IF NOT @mailPersonal LIKE '_%@_%._%'
 	BEGIN
-		RAISERROR('El formato de mail personal es inv·lido.', 16, 1);
+		RAISERROR('El formato de mail personal es inv√°lido.', 16, 1);
 		RETURN;
 	END
 
 	IF NOT @mailEmpresa LIKE '_%@_%._%'
 	BEGIN
-		RAISERROR('El formato de mail de la empresa es inv·lido.', 16, 1);
+		RAISERROR('El formato de mail de la empresa es inv√°lido.', 16, 1);
 		RETURN;
 	END
 
@@ -289,7 +289,7 @@ BEGIN
 		RETURN;
 	END
 
-    -- Borrado lÛgico
+    -- Borrado l√≥gico
     UPDATE Empresa.Empleado
     SET activo = 0
     WHERE idEmpleado = @idEmpleado;
@@ -309,7 +309,7 @@ BEGIN
     
 	IF @genero NOT IN ('F', 'M')
 	BEGIN
-		RAISERROR('GÈnero inv·lido.',16,1)
+		RAISERROR('G√©nero inv√°lido.',16,1)
 		RETURN;
 	END
 
@@ -352,7 +352,7 @@ BEGIN
 
     IF @genero NOT IN ('F', 'M')
 	BEGIN
-		RAISERROR('GÈnero inv·lido.',16,1) 
+		RAISERROR('G√©nero inv√°lido.',16,1) 
 		RETURN;
 	END
 
@@ -381,7 +381,7 @@ BEGIN
 		RETURN;
 	END
 
-    -- Borrado lÛgico
+    -- Borrado l√≥gico
     UPDATE Ventas.Cliente
     SET activo = 0
     WHERE idCliente = @idCliente;
@@ -406,7 +406,7 @@ BEGIN
 		RETURN;
 	END
 
-	-- Verificar nombre v·lido
+	-- Verificar nombre v√°lido
 	IF @nombreProducto IS NULL OR LEN(@nombreProducto) = 0
 	BEGIN
         RAISERROR('El nombre del producto es obligatorio.', 16, 1);
@@ -524,26 +524,26 @@ BEGIN
     -- Validar tipo de factura
     IF @tipoFactura NOT IN ('A','B','C')
 	BEGIN
-        RAISERROR('Tipo de factura inv·lido (use A, B o C).', 16, 1);
+        RAISERROR('Tipo de factura inv√°lido (use A, B o C).', 16, 1);
 		RETURN;
 	END
 
 	-- Validar cliente, empleado y sucursal existentes
     IF NOT EXISTS (SELECT 1 FROM Ventas.Cliente WHERE idCliente = @idCliente AND activo = 1)
 	BEGIN
-		RAISERROR('El cliente no existe o no est· activo.', 16, 1);
+		RAISERROR('El cliente no existe o no est√° activo.', 16, 1);
 		RETURN;
 	END
 
     IF NOT EXISTS (SELECT 1 FROM Empresa.Empleado WHERE idEmpleado = @idEmpleado AND activo = 1)
 	BEGIN
-        RAISERROR('El empleado no existe o no est· activo.', 16, 1);
+        RAISERROR('El empleado no existe o no est√° activo.', 16, 1);
 		RETURN;
 	END       
     
 	IF NOT EXISTS (SELECT 1 FROM Empresa.Sucursal WHERE idSucursal = @idSucursal AND activo = 1)
 	BEGIN
-        RAISERROR('La sucursal no existe o no est· activa.', 16, 1);
+        RAISERROR('La sucursal no existe o no est√° activa.', 16, 1);
 		RETURN;
 	END
 
@@ -557,7 +557,7 @@ BEGIN
 	-- Validar formato de codigo de factura
     IF @codigoFactura NOT LIKE ('[0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]')
 	BEGIN
-		RAISERROR('Formato de codigo de factura inv·lido.',16,1);
+		RAISERROR('Formato de codigo de factura inv√°lido.',16,1);
 		RETURN;
 	END
 
@@ -616,25 +616,25 @@ BEGIN
 
 	IF @tipoFactura NOT IN ('A','B','C')
 	BEGIN
-        RAISERROR('Tipo de factura inv·lido (use A, B o C).', 16, 1);
+        RAISERROR('Tipo de factura inv√°lido (use A, B o C).', 16, 1);
      	RETURN;
 	END
 
     IF NOT EXISTS (SELECT 1 FROM Ventas.Cliente WHERE idCliente = @idCliente AND activo = 1)
 	BEGIN
-        RAISERROR('El cliente no existe o no est· activo.', 16, 1);
+        RAISERROR('El cliente no existe o no est√° activo.', 16, 1);
 		RETURN;
 	END
 
     IF NOT EXISTS (SELECT 1 FROM Empresa.Empleado WHERE idEmpleado = @idEmpleado AND activo = 1)
 	BEGIN
-        RAISERROR('El empleado no existe o no est· activo.', 16, 1);
+        RAISERROR('El empleado no existe o no est√° activo.', 16, 1);
 		RETURN;
 	END
 
     IF NOT EXISTS (SELECT 1 FROM Empresa.Sucursal WHERE idSucursal = @idSucursal AND activo = 1)
 	BEGIN
-        RAISERROR('La sucursal no existe o no est· activa.', 16, 1);
+        RAISERROR('La sucursal no existe o no est√° activa.', 16, 1);
 		RETURN;
 	END
 
@@ -646,7 +646,7 @@ BEGIN
 
     IF @codigoFactura NOT LIKE ('[0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]')
 	BEGIN
-		RAISERROR('Formato de codigo de factura inv·lido',16,1);
+		RAISERROR('Formato de codigo de factura inv√°lido',16,1);
 		RETURN;
 	END
 
@@ -706,14 +706,14 @@ BEGIN
 	-- Validar factura activa y existente
     IF NOT EXISTS (SELECT 1 FROM Ventas.Factura WHERE idFactura = @idFactura AND activo = 1)
 	BEGIN
-        RAISERROR('La factura no existe o no est· activa.', 16, 1);
+        RAISERROR('La factura no existe o no est√° activa.', 16, 1);
 		RETURN;
 	END
 
 	-- Validar producto existente
     IF NOT EXISTS (SELECT 1 FROM Inventario.Producto WHERE idProducto = @idProducto AND activo = 1)
 	BEGIN
-        RAISERROR('El producto no existe o no est· activo.', 16, 1);
+        RAISERROR('El producto no existe o no est√° activo.', 16, 1);
 		RETURN;
 	END
 
@@ -759,7 +759,7 @@ BEGIN
 	-- Validar factura activa y existente
     IF NOT EXISTS (SELECT 1 FROM Ventas.Factura WHERE idFactura = @idFactura AND activo = 1)
 	BEGIN
-        RAISERROR('La factura no existe o no est· activa.', 16, 1);
+        RAISERROR('La factura no existe o no est√° activa.', 16, 1);
 		RETURN;
 	END
 
@@ -780,7 +780,7 @@ BEGIN
 	-- Validar producto existente
     IF NOT EXISTS (SELECT 1 FROM Inventario.Producto WHERE idProducto = @idProducto AND activo = 1)
 	BEGIN
-        RAISERROR('El producto no existe o no est· activo.', 16, 1);
+        RAISERROR('El producto no existe o no est√° activo.', 16, 1);
 		RETURN;
 	END
 
@@ -809,7 +809,7 @@ BEGIN
 
     IF NOT EXISTS (SELECT 1 FROM Ventas.Factura WHERE idFactura = @idFactura AND activo = 1)
 	BEGIN
-        RAISERROR('La factura no existe o no est· activa.', 16, 1);
+        RAISERROR('La factura no existe o no est√° activa.', 16, 1);
 		RETURN;
 	END
 
