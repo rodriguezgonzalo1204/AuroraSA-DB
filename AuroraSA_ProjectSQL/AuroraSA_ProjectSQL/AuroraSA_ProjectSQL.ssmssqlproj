@@ -3,7 +3,7 @@
   <Items>
     <LogicalFolder Name="Connections" Type="2" Sorted="true">
       <Items>
-        <ConnectionNode Name="DESKTOP-Q2VVBBD\SQLEXPRESS:DESKTOP-Q2VVBBD\Vladimir">
+        <ConnectionNode Name="DESKTOP-Q2VVBBD\SQLEXPRESS:GONZA-PC\Gonza">
           <Created>2025-02-26T19:33:57.184495-03:00</Created>
           <Type>SQL</Type>
           <Server>DESKTOP-Q2VVBBD\SQLEXPRESS</Server>
@@ -18,15 +18,36 @@
           <ConnectionProtocol>NotSpecified</ConnectionProtocol>
           <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
         </ConnectionNode>
+        <ConnectionNode Name="GONZA-PC\SQLEXPRESS:GONZA-PC\Gonza">
+          <Created>2025-02-26T22:23:44.4174687-03:00</Created>
+          <Type>SQL</Type>
+          <Server>GONZA-PC\SQLEXPRESS</Server>
+          <UserName />
+          <Authentication>Windows Authentication</Authentication>
+          <InitialDB>master</InitialDB>
+          <LoginTimeout>30</LoginTimeout>
+          <TrustServerCertificate>False</TrustServerCertificate>
+          <HostNameInServerCertificate />
+          <EncryptionOption>False</EncryptionOption>
+          <ExecutionTimeout>0</ExecutionTimeout>
+          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
+          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
+        </ConnectionNode>
       </Items>
     </LogicalFolder>
     <LogicalFolder Name="Queries" Type="0" Sorted="true">
       <Items>
-        <FileNode Name="ScriptCreacionProcedures.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-Q2VVBBD\SQLEXPRESS:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-Q2VVBBD\SQLEXPRESS</AssociatedConnSrvName>
+        <FileNode Name="Script_CreacionDeObjetos.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>ScriptCreacionProcedures.sql</FullPath>
+          <FullPath>C:\Users\Gonza\Desktop\NoComiteado\Script_CreacionDeObjetos.sql</FullPath>
+        </FileNode>
+        <FileNode Name="ScriptCreacionProcedures.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
+          <AssociatedConnUserName />
+          <FullPath>C:\Users\Gonza\Desktop\NoComiteado\ScriptCreacionProcedures.sql</FullPath>
         </FileNode>
       </Items>
     </LogicalFolder>

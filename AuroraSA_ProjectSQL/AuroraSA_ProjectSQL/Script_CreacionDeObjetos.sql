@@ -53,7 +53,7 @@ CREATE TABLE Empresa.Sucursal
     ciudad VARCHAR(50),
     telefono CHAR(10),
 	horario VARCHAR(55),
-	activo BIT,
+	activo BIT DEFAULT 1,
     CONSTRAINT PK_Sucursal PRIMARY KEY (idSucursal)
 )
 END
@@ -75,12 +75,12 @@ CREATE TABLE Empresa.Empleado
 	cargo VARCHAR(25),
     domicilio VARCHAR(50),
     telefono CHAR(10),
-    CUIL CHAR(10),
+    CUIL CHAR(13) UNIQUE,
     fechaAlta DATE,
-	mailEmpresa VARCHAR(55),
 	mailPersonal VARCHAR(55),
+	mailEmpresa VARCHAR(55),
     idSucursal INT,
-	activo BIT,
+	activo BIT DEFAULT 1,
     CONSTRAINT PK_Empleado PRIMARY KEY (idEmpleado),
     CONSTRAINT FK_Empleado_Sucursal FOREIGN KEY (idSucursal) REFERENCES Empresa.Sucursal(idSucursal)
 )
@@ -88,8 +88,8 @@ END
 GO
 
 /*
-   Cliente: Contiene datos del cliente, tipoCliente, género, etc.
-   Está en el esquema Ventas.
+   Cliente: Contiene datos del cliente, tipoCliente, género, etc. Se incluye el campo datosFidelizacion para posible implementacion
+   de sistema de puntos en un futuro. Está en el esquema Ventas.
 */
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
 TABLE_SCHEMA ='Ventas' AND TABLE_NAME ='Cliente')
@@ -101,8 +101,8 @@ CREATE TABLE Ventas.Cliente
     apellido VARCHAR(30),
     tipoCliente VARCHAR(10),
     genero CHAR(1),
-    datosFidelizacion int, 
-    activo BIT,
+    datosFidelizacion INT, 
+    activo BIT DEFAULT 1,
     CONSTRAINT PK_Cliente PRIMARY KEY (idCliente)
 )
 END
@@ -119,7 +119,7 @@ CREATE TABLE Inventario.LineaProducto
 (
 	idLineaProd INT IDENTITY(1,1),
 	descripcion VARCHAR(30),
-	activo bit,
+	activo BIT DEFAULT 1,
 	CONSTRAINT PK_LineaProducto PRIMARY KEY (idLineaProd)
 )
 END
@@ -139,7 +139,7 @@ CREATE TABLE Inventario.Producto
     marca VARCHAR(20),
     precioUnitario DECIMAL(10,2),
 	lineaProducto INT,
-	activo BIT,   
+	activo BIT DEFAULT 1,   
     CONSTRAINT PK_Producto PRIMARY KEY (idProducto),
 	CONSTRAINT FK_Producto_LineaProducto FOREIGN KEY (lineaProducto) REFERENCES Inventario.LineaProducto(idLineaProd)
 )
@@ -156,7 +156,7 @@ BEGIN
 CREATE TABLE Ventas.Factura
 (
     idFactura INT IDENTITY(1,1),
-	codigoFactura CHAR(11),
+	codigoFactura CHAR(11) UNIQUE,
 	medioPago VARCHAR(20),
     tipoFactura CHAR(1),
     fecha DATE,
@@ -166,7 +166,7 @@ CREATE TABLE Ventas.Factura
     idCliente INT,
     idEmpleado INT,
     idSucursal INT,
- 	activo BIT,     
+ 	activo BIT DEFAULT 1,     
     CONSTRAINT PK_Factura PRIMARY KEY (idFactura),
     CONSTRAINT FK_Factura_Cliente FOREIGN KEY (idCliente) REFERENCES Ventas.Cliente (idCliente),
     CONSTRAINT FK_Factura_Empleado FOREIGN KEY (idEmpleado) REFERENCES Empresa.Empleado (idEmpleado),

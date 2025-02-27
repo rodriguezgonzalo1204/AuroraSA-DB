@@ -10,6 +10,7 @@ Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono G
 
 Use Com1353G07
 GO
+
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Empresa.InsertarSucursal_sp
 (
@@ -25,7 +26,10 @@ BEGIN
 
 	-- Verificacion de longitud de numero telefonico
     IF (len(@telefono) <> 10)
+	BEGIN
 		RAISERROR('El formato de teléfono es inválido.', 16, 1);
+		RETURN;
+	END
    
 	INSERT INTO Empresa.Sucursal 
     (
@@ -33,8 +37,7 @@ BEGIN
         direccion,
         ciudad,
         telefono,
-		horario,
-        activo
+		horario
     )
     VALUES
     (
@@ -42,8 +45,7 @@ BEGIN
         @direccion,
         @ciudad,
         @telefono,
-		@horario,
-        1  -- Por defecto activo = 1
+		@horario
     );
 END;
 GO
@@ -63,11 +65,17 @@ BEGIN
 
 	-- Verificacion sucursal existente
     IF NOT EXISTS (SELECT 1 FROM Empresa.Sucursal WHERE idSucursal = @idSucursal)
-        RAISERROR('No existe la sucursal indicada.', 16, 1);
+    BEGIN    
+		RAISERROR('No existe la sucursal indicada.', 16, 1);
+		RETURN;
+	END
 
     IF (len(@telefono) <> 10)
+	BEGIN
 		RAISERROR('El formato de teléfono es inválido.', 16, 1);
-   
+		RETURN;
+	END
+
     UPDATE Empresa.Sucursal
     SET
         nombreSucursal = @nombreSucursal,
@@ -88,7 +96,10 @@ BEGIN
     SET NOCOUNT ON;
 
     IF NOT EXISTS (SELECT 1 FROM Empresa.Sucursal WHERE idSucursal = @idSucursal AND activo = 1)
+	BEGIN
         RAISERROR('No existe la sucursal indicada.', 16, 1);
+		RETURN;
+	END
 
     -- Borrado lógico
     UPDATE Empresa.Sucursal
@@ -105,7 +116,7 @@ CREATE OR ALTER PROCEDURE Empresa.InsertarEmpleado_sp
 	@cargo			VARCHAR(25),
     @domicilio		VARCHAR(50),
     @telefono		CHAR(10),
-    @CUIL			CHAR(10),
+    @CUIL			CHAR(13),
     @fechaAlta		DATE,
 	@mailPersonal	VARCHAR(55),
 	@mailEmpresa	VARCHAR(55),
@@ -116,25 +127,43 @@ BEGIN
     SET NOCOUNT ON;
 
 	-- Verificacion formato de CUIL
-	IF NOT (@CUIL LIKE '[23,24,27,30,33,34]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]')
+	IF NOT ( @CUIL LIKE '2[0347]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]' OR
+			 @CUIL LIKE '3[034]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]')
+	BEGIN
 		RAISERROR('Formato de CUIL inválido.',16,1)
-
+		RETURN;
+	END
+	
 	-- Verificacion genero
 	IF @genero NOT IN ('F', 'M')
+	BEGIN
 		RAISERROR('Género inválido.',16,1)
-    
+		RETURN;
+	END
+	
 	IF (len(@telefono) <> 10)
+	BEGIN
 		RAISERROR('El formato de teléfono es inválido.', 16, 1);
+		RETURN;
+	END
 
 	-- Verificacion formato de mail
 	IF NOT @mailPersonal LIKE '_%@_%._%'
+	BEGIN
 		RAISERROR('El formato de mail personal es inválido.', 16, 1);
+		RETURN;
+	END
 
 	IF NOT @mailEmpresa LIKE '_%@_%._%'
+	BEGIN
 		RAISERROR('El formato de mail de la empresa es inválido.', 16, 1);
+		RETURN;
+	END
 
     IF NOT EXISTS (SELECT 1 FROM Empresa.Sucursal WHERE idSucursal = @idSucursal AND activo = 1)
-        RAISERROR('No existe la sucursal indicada.', 16, 1);
+    BEGIN
+		RAISERROR('No existe la sucursal indicada.', 16, 1);
+	END
 
     INSERT INTO Empresa.Empleado
     (
@@ -148,8 +177,7 @@ BEGIN
 		fechaAlta,
 		mailPersonal,
 		mailEmpresa,
-		idSucursal,
-		activo
+		idSucursal
     )
     VALUES
     (
@@ -163,8 +191,7 @@ BEGIN
 		@fechaAlta,	
 		@mailPersonal,
 		@mailEmpresa,
-		@idSucursal,
-        1
+		@idSucursal
     );
 END;
 GO
@@ -189,26 +216,48 @@ BEGIN
     SET NOCOUNT ON;
 
     IF NOT EXISTS (SELECT 1 FROM Empresa.Empleado WHERE idEmpleado = @idEmpleado AND activo = 1)
+	BEGIN
         RAISERROR('No existe el empleado.', 16, 1);
+		RETURN;
+	END
 
-	IF NOT (@CUIL LIKE '[23,24,27,30,33,34]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]')
+	IF NOT ( @CUIL LIKE '2[0347]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]' OR
+			 @CUIL LIKE '3[034]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]')
+	BEGIN
 		RAISERROR('Formato de CUIL inválido.',16,1)
+		RETURN;
+	END
 
 	IF @genero NOT IN ('F', 'M')
+	BEGIN
 		RAISERROR('Genero inválido',16,1)
-    
+		RETURN;
+	END
+
 	IF (len(@telefono) <> 10)
+	BEGIN
 		RAISERROR('El formato de teléfono es inválido.', 16, 1);
+		RETURN;
+	END
 
 	IF NOT @mailPersonal LIKE '_%@_%._%'
+	BEGIN
 		RAISERROR('El formato de mail personal es inválido.', 16, 1);
+		RETURN;
+	END
 
 	IF NOT @mailEmpresa LIKE '_%@_%._%'
+	BEGIN
 		RAISERROR('El formato de mail de la empresa es inválido.', 16, 1);
+		RETURN;
+	END
 
     IF NOT EXISTS (SELECT 1 FROM Empresa.Sucursal WHERE idSucursal = @idSucursal AND activo = 1)
+	BEGIN
         RAISERROR('No existe la sucursal indicada.', 16, 1);
-    
+		RETURN;
+	END
+
     UPDATE Empresa.Empleado
     SET
         nombre		 = @nombre,
@@ -235,7 +284,10 @@ BEGIN
     SET NOCOUNT ON;
 
     IF NOT EXISTS (SELECT 1 FROM Empresa.Empleado WHERE idEmpleado = @idEmpleado AND activo = 1)
+	BEGIN
         RAISERROR('No existe el empleado.', 16, 1);
+		RETURN;
+	END
 
     -- Borrado lógico
     UPDATE Empresa.Empleado
@@ -256,7 +308,10 @@ BEGIN
     SET NOCOUNT ON;
     
 	IF @genero NOT IN ('F', 'M')
+	BEGIN
 		RAISERROR('Género inválido.',16,1)
+		RETURN;
+	END
 
 	INSERT INTO Ventas.Cliente
     (
@@ -264,8 +319,7 @@ BEGIN
         apellido,
         tipoCliente,
         genero,
-		datosFidelizacion,
-		activo
+		datosFidelizacion
     )
     VALUES
     (
@@ -273,8 +327,7 @@ BEGIN
 		@apellido,
 		@tipoCliente,
 		@genero,		
-		@datosFidelizacion,	
-        1
+		@datosFidelizacion
     );
 END;
 GO
@@ -292,10 +345,16 @@ AS
 BEGIN
     SET NOCOUNT ON;
     IF NOT EXISTS (SELECT 1 FROM Ventas.Cliente WHERE idCliente = @idCliente AND activo = 1)
+	BEGIN
         RAISERROR('No existe el cliente.', 16, 1);
-      
+		RETURN;
+	END
+
     IF @genero NOT IN ('F', 'M')
+	BEGIN
 		RAISERROR('Género inválido.',16,1) 
+		RETURN;
+	END
 
     UPDATE Ventas.Cliente
     SET
@@ -317,8 +376,11 @@ BEGIN
     SET NOCOUNT ON;
 
     IF NOT EXISTS (SELECT 1 FROM Ventas.Cliente WHERE idCliente = @idCliente AND activo = 1)
+	BEGIN
         RAISERROR('No existe el cliente.', 16, 1);
- 
+		RETURN;
+	END
+
     -- Borrado lógico
     UPDATE Ventas.Cliente
     SET activo = 0
@@ -339,32 +401,38 @@ BEGIN
 
 	--Verificar linea de producto
 	IF NOT EXISTS (SELECT 1 FROM Inventario.LineaProducto WHERE idLineaProd = @lineaProducto AND activo = 1)
+	BEGIN
 		RAISERROR('Linea de producto inexistente.', 16, 1);
+		RETURN;
+	END
 
 	-- Verificar nombre válido
 	IF @nombreProducto IS NULL OR LEN(@nombreProducto) = 0
+	BEGIN
         RAISERROR('El nombre del producto es obligatorio.', 16, 1);
+		RETURN;
+	END
    
    -- Verificar precio mayor a cero
     IF @precioUnitario <= 0
+	BEGIN
         RAISERROR('El precio unitario debe ser mayor a 0.', 16, 1);
-     
+     	RETURN;
+	END
 
     INSERT INTO Inventario.Producto
     (
         nombreProducto,
         marca,
         precioUnitario,
-		lineaProducto,
-        activo
+		lineaProducto
     )
     VALUES
     (
         @nombreProducto,
         @marca,
         @precioUnitario,
-		@lineaProducto,
-        1 
+		@lineaProducto 
     );
 END;
 GO
@@ -383,17 +451,29 @@ BEGIN
 
     -- Verificar que el producto exista
     IF NOT EXISTS (SELECT 1 FROM Inventario.Producto WHERE idProducto = @idProducto AND activo = 1)
+	BEGIN
         RAISERROR('No existe el producto indicado.', 16, 1);
+		RETURN;
+	END
 
 	IF NOT EXISTS (SELECT 1 FROM Inventario.LineaProducto WHERE idLineaProd = @lineaProducto AND activo = 1)
+	BEGIN
 		RAISERROR('Linea de producto inexistente.', 16, 1);
+		RETURN;
+	END
 
 	IF @nombreProducto IS NULL OR LEN(@nombreProducto) = 0
+	BEGIN
         RAISERROR('El nombre del producto es obligatorio.', 16, 1);
-   
+		RETURN;
+	END
+
     IF @precioUnitario <= 0
+	BEGIN
         RAISERROR('El precio unitario debe ser mayor a 0.', 16, 1);
-    
+		RETURN;
+	END
+	
     UPDATE Inventario.Producto
     SET
         nombreProducto  = @nombreProducto,
@@ -413,7 +493,10 @@ BEGIN
     SET NOCOUNT ON;
 
     IF NOT EXISTS (SELECT 1 FROM Inventario.Producto WHERE idProducto = @idProducto AND activo = 1)
+	BEGIN
         RAISERROR('No existe el producto indicado.', 16, 1);
+		RETURN;
+	END
       
     UPDATE Inventario.Producto
     SET activo = 0
@@ -440,25 +523,43 @@ BEGIN
 
     -- Validar tipo de factura
     IF @tipoFactura NOT IN ('A','B','C')
+	BEGIN
         RAISERROR('Tipo de factura inválido (use A, B o C).', 16, 1);
-     
+		RETURN;
+	END
+
 	-- Validar cliente, empleado y sucursal existentes
     IF NOT EXISTS (SELECT 1 FROM Ventas.Cliente WHERE idCliente = @idCliente AND activo = 1)
-        RAISERROR('El cliente no existe o no está activo.', 16, 1);
+	BEGIN
+		RAISERROR('El cliente no existe o no está activo.', 16, 1);
+		RETURN;
+	END
 
     IF NOT EXISTS (SELECT 1 FROM Empresa.Empleado WHERE idEmpleado = @idEmpleado AND activo = 1)
+	BEGIN
         RAISERROR('El empleado no existe o no está activo.', 16, 1);
-       
-    IF NOT EXISTS (SELECT 1 FROM Empresa.Sucursal WHERE idSucursal = @idSucursal AND activo = 1)
+		RETURN;
+	END       
+    
+	IF NOT EXISTS (SELECT 1 FROM Empresa.Sucursal WHERE idSucursal = @idSucursal AND activo = 1)
+	BEGIN
         RAISERROR('La sucursal no existe o no está activa.', 16, 1);
+		RETURN;
+	END
 
 	-- Validar metodos de pago validos
     IF @medioPago NOT IN ('Credit card', 'Cash', 'Ewallet')
+	BEGIN
 		RAISERROR('Metodo de pago inexistente.',16,1);
+		RETURN;
+	END
 	
 	-- Validar formato de codigo de factura
     IF @codigoFactura NOT LIKE ('[0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]')
+	BEGIN
 		RAISERROR('Formato de codigo de factura inválido.',16,1);
+		RETURN;
+	END
 
     INSERT INTO Ventas.Factura
     (
@@ -471,8 +572,7 @@ BEGIN
 		total,
         idCliente,
         idEmpleado,
-        idSucursal,
-        activo
+        idSucursal
     )
     VALUES
     (
@@ -485,8 +585,7 @@ BEGIN
 		@total,
         @idCliente,
         @idEmpleado,
-        @idSucursal,
-        1
+        @idSucursal
     );
 END;
 GO
@@ -510,25 +609,46 @@ BEGIN
     SET NOCOUNT ON;
 
     IF NOT EXISTS (SELECT 1 FROM Ventas.Factura WHERE idFactura = @idFactura AND activo = 1)
+	BEGIN
         RAISERROR('No existe la factura indicada.', 16, 1);
-	
+		RETURN;
+	END
+
 	IF @tipoFactura NOT IN ('A','B','C')
+	BEGIN
         RAISERROR('Tipo de factura inválido (use A, B o C).', 16, 1);
-     
+     	RETURN;
+	END
+
     IF NOT EXISTS (SELECT 1 FROM Ventas.Cliente WHERE idCliente = @idCliente AND activo = 1)
+	BEGIN
         RAISERROR('El cliente no existe o no está activo.', 16, 1);
+		RETURN;
+	END
 
     IF NOT EXISTS (SELECT 1 FROM Empresa.Empleado WHERE idEmpleado = @idEmpleado AND activo = 1)
+	BEGIN
         RAISERROR('El empleado no existe o no está activo.', 16, 1);
-       
+		RETURN;
+	END
+
     IF NOT EXISTS (SELECT 1 FROM Empresa.Sucursal WHERE idSucursal = @idSucursal AND activo = 1)
+	BEGIN
         RAISERROR('La sucursal no existe o no está activa.', 16, 1);
+		RETURN;
+	END
 
     IF @medioPago NOT IN ('Credit card', 'Cash', 'Ewallet')
+	BEGIN
 		RAISERROR('Metodo de pago inexistente',16,1);
+		RETURN;
+	END
 
     IF @codigoFactura NOT LIKE ('[0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]')
+	BEGIN
 		RAISERROR('Formato de codigo de factura inválido',16,1);
+		RETURN;
+	END
 
     UPDATE Ventas.Factura
     SET
@@ -555,8 +675,11 @@ BEGIN
     SET NOCOUNT ON;
 
     IF NOT EXISTS (SELECT 1 FROM Ventas.Factura WHERE idFactura = @idFactura)
+	BEGIN
         RAISERROR('No existe la factura indicada.', 16, 1);
-    
+    	RETURN;
+	END
+
     UPDATE Ventas.Factura
     SET activo = 0
     WHERE idFactura = @idFactura;
@@ -575,15 +698,24 @@ BEGIN
 
 	-- Validar cantidad mayor a cero
 	IF @cantidad <= 0
+	BEGIN
         RAISERROR('La cantidad debe ser mayor a 0.', 16, 1);
-	
+		RETURN;
+	END
+
 	-- Validar factura activa y existente
     IF NOT EXISTS (SELECT 1 FROM Ventas.Factura WHERE idFactura = @idFactura AND activo = 1)
+	BEGIN
         RAISERROR('La factura no existe o no está activa.', 16, 1);
+		RETURN;
+	END
 
 	-- Validar producto existente
     IF NOT EXISTS (SELECT 1 FROM Inventario.Producto WHERE idProducto = @idProducto AND activo = 1)
+	BEGIN
         RAISERROR('El producto no existe o no está activo.', 16, 1);
+		RETURN;
+	END
 
 	-- Guardado de precio del producto al momento de la factura
 	DECLARE @precioUnitario DECIMAL(10,2) = (SELECT precioUnitario from Inventario.Producto WHERE idProducto = @idProducto);
@@ -626,19 +758,31 @@ BEGIN
 
 	-- Validar factura activa y existente
     IF NOT EXISTS (SELECT 1 FROM Ventas.Factura WHERE idFactura = @idFactura AND activo = 1)
+	BEGIN
         RAISERROR('La factura no existe o no está activa.', 16, 1);
+		RETURN;
+	END
 
 	-- Validar detalle de factura
     IF NOT EXISTS (SELECT 1 FROM Ventas.DetalleVenta WHERE idDetalle = @idDetalle AND idFactura = @idFactura)
+	BEGIN
         RAISERROR('No existe el detalle de venta de la factura indicada.', 16, 1);
+		RETURN;
+	END
 
 	-- Validar cantidad mayor a cero
 	IF @cantidad <= 0
+	BEGIN
         RAISERROR('La cantidad debe ser mayor a 0.', 16, 1);
+		RETURN;
+	END
 
 	-- Validar producto existente
     IF NOT EXISTS (SELECT 1 FROM Inventario.Producto WHERE idProducto = @idProducto AND activo = 1)
+	BEGIN
         RAISERROR('El producto no existe o no está activo.', 16, 1);
+		RETURN;
+	END
 
 	-- Guardado de precio del producto al momento de la factura
 	DECLARE @precioUnitario DECIMAL(10,2) = (SELECT precioUnitario from Inventario.Producto WHERE idProducto = @idProducto);
@@ -664,10 +808,16 @@ BEGIN
     SET NOCOUNT ON;
 
     IF NOT EXISTS (SELECT 1 FROM Ventas.Factura WHERE idFactura = @idFactura AND activo = 1)
+	BEGIN
         RAISERROR('La factura no existe o no está activa.', 16, 1);
+		RETURN;
+	END
 
     IF NOT EXISTS (SELECT 1 FROM Ventas.DetalleVenta WHERE idDetalle = @idDetalle AND idFactura = @idFactura)
+	BEGIN
         RAISERROR('No existe el detalle de venta de la factura indicada.', 16, 1);
+		RETURN;
+	END
 
 	DELETE FROM Ventas.DetalleVenta WHERE idFactura = @idFactura AND idDetalle = @idDetalle;
 END;
@@ -682,17 +832,18 @@ BEGIN
     SET NOCOUNT ON;
 
 	IF @descripcion IS NULL OR LEN(@descripcion) = 0
+	BEGIN
         RAISERROR('El nombre la linea de producto es obligatorio.', 16, 1);
+		RETURN;
+	END
 
 	INSERT INTO Inventario.LineaProducto
 	(
-		descripcion,
-		activo
+		descripcion
 	)
 	VALUES
 	(
-		@descripcion,
-		1
+		@descripcion
 	)
 END;
 GO
@@ -707,11 +858,17 @@ BEGIN
     SET NOCOUNT ON;
 
 	IF NOT EXISTS (SELECT 1 FROM Inventario.LineaProducto WHERE idLineaProd = @idLineaProd)
+	BEGIN
 		RAISERROR('Linea de producto inexistente.',16,1);
+			RETURN;
+	END
 
 	IF @descripcion IS NULL OR LEN(@descripcion) = 0
+	BEGIN
         RAISERROR('El nombre la linea de producto es obligatorio.', 16, 1);
-	
+		RETURN;
+	END
+
 	UPDATE Inventario.LineaProducto
 	SET
 		descripcion = @descripcion
@@ -728,10 +885,39 @@ BEGIN
     SET NOCOUNT ON;
 
 	IF NOT EXISTS (SELECT 1 FROM Inventario.LineaProducto WHERE idLineaProd = @idLineaProd)
+	BEGIN
 		RAISERROR('Linea de producto inexistente.',16,1);
-	
+		RETURN;
+	END
+
 	UPDATE Inventario.LineaProducto
 	SET activo = 0
 	WHERE idLineaProd = @idLineaProd;
+END;
+GO
+
+----------------------------------------------------------------------------------------------
+-- Vacia todas las tablas y resetea los autoincrementales identity
+CREATE OR ALTER PROCEDURE ResetearTablas_sp
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+	-- Vaciar tablas
+	DELETE FROM Ventas.DetalleVenta;
+    DELETE FROM Ventas.Factura;
+    DELETE FROM Ventas.Cliente;
+    DELETE FROM Empresa.Empleado;
+    DELETE FROM Empresa.Sucursal;
+    DELETE FROM Inventario.Producto;
+    DELETE FROM Inventario.LineaProducto;
+    
+    -- Resetear los contadores de IDENTITY
+    DBCC CHECKIDENT ('Ventas.Factura', RESEED, 0);
+    DBCC CHECKIDENT ('Ventas.Cliente', RESEED, 0);
+    DBCC CHECKIDENT ('Empresa.Empleado', RESEED, 0);
+    DBCC CHECKIDENT ('Empresa.Sucursal', RESEED, 0);
+    DBCC CHECKIDENT ('Inventario.Producto', RESEED, 0);
+    DBCC CHECKIDENT ('Inventario.LineaProducto', RESEED, 0);
 END;
 GO
