@@ -252,10 +252,9 @@ PRINT '=== InsertarProducto_sp: Insertando Productos ===';
 EXEC Inventario.InsertarProducto_sp
      @nombreProducto = 'Leche entera',
      @lineaProducto  =  1,
-     @marca          = 'Sancor',
      @precioUnitario = 1.25;
 
-EXEC Inventario.InsertarProducto_sp 'Aceite', 'Marolio', 3.1, 1;
+EXEC Inventario.InsertarProducto_sp 'Aceite', 3.1, 1;
 SELECT * FROM Inventario.Producto
 -- Ejecutar hasta aca: Resultado esperado -> Inserta los productos Aceite y Leche correctamente
 
@@ -263,7 +262,6 @@ PRINT '=== InsertarProducto_sp: Intentando insertar producto con precio negativo
 EXEC Inventario.InsertarProducto_sp
      @nombreProducto = 'Leche descremada',
      @lineaProducto  =  1,
-     @marca          = 'Sancor',
      @precioUnitario = -1.25;
 -- Ejecutar hasta aca: Resultado esperado -> Error de precio
 
@@ -271,7 +269,6 @@ PRINT '=== InsertarProducto_sp: Intentando insertar producto con linea de produc
 EXEC Inventario.InsertarProducto_sp
      @nombreProducto = 'Leche entera',
      @lineaProducto  =  9,
-     @marca          = 'Sancor',
      @precioUnitario = 1.25;
 -- Ejecutar hasta aca: Resultado esperado -> Error de linea de producto inexistente
 
@@ -286,7 +283,6 @@ EXEC Inventario.ActualizarProducto_sp
      @idProducto     = 1,
      @nombreProducto = 'Leche descremada',
      @lineaProducto  = 1,
-     @marca          = 'Sancor',
      @precioUnitario = 2.45;
 SELECT * FROM Inventario.Producto
 -- Ejecutar hasta aca: Resultado esperado -> Actualiza el producto con id=1
