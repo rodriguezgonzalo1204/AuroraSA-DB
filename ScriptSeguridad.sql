@@ -5,7 +5,7 @@ Seguridad
 
 USE Com1353G07
 GO
---- Creamos logins para iniciar sesiÛn
+--- Creamos logins para iniciar sesi√≥n
 
 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'Aurora')
 	CREATE LOGIN Aurora WITH PASSWORD = 'AplicadasVerano';
@@ -72,28 +72,28 @@ CREATE TABLE Ventas.NotaCredito
 
 -- Se crea un procedimiento para generar notas de credito
 
-CREATE OR ALTER PROCEDURE Ventas.GenerarNotaCredito
+CREATE OR ALTER PROCEDURE Seguridad.GenerarNotaCredito
     @facturaID		INT,
     @clienteID		INT,
-    @monto			DECIMAL(18, 2),
-	@detalles		VARCHAR(60) 
+    @monto		DECIMAL(18, 2),
+    @detalles		VARCHAR(60) 
 AS
 	BEGIN
-    -- Verificar que la factura estÈ pagada
+    -- Verificar que la factura est√© pagada
     IF NOT EXISTS (SELECT 1 FROM Ventas.Factura WHERE idFactura = @FacturaID AND activo = 1)
     BEGIN
-        RAISERROR('La factura no est· activa. No se puede generar la nota de crÈdito.', 16, 1);
+        RAISERROR('La factura no est√° activa. No se puede generar la nota de cr√©dito.', 16, 1);
         RETURN;
     END;
 
-    -- Realizar nota de crÈdito
+    -- Realizar nota de cr√©dito
     INSERT INTO Ventas.NotaCredito (facturaId, idCliente, monto, fechaEmision)
     VALUES (@facturaID, @clienteID, @monto, GETDATE());
 
-    PRINT 'Nota de crÈdito generada exitosamente.';
+    PRINT 'Nota de cr√©dito generada exitosamente.';
 END;
 
---- Permitimos acceso a los Supervisores para la ejecuciÛn del procedure
+--- Permitimos acceso a los Supervisores para la ejecuci√≥n del procedure
 
 GRANT EXECUTE ON Ventas.GenerarNotaCredito TO Supervisor;
 GO
