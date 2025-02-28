@@ -49,6 +49,12 @@
           <AssociatedConnUserName />
           <FullPath>JuegosDePrueba.sql</FullPath>
         </FileNode>
+        <FileNode Name="ReportesXML.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
+          <AssociatedConnUserName />
+          <FullPath>ReportesXML.sql</FullPath>
+        </FileNode>
         <FileNode Name="Script_CreacionDeObjetos.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
@@ -60,6 +66,12 @@
           <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>C:\Users\Gonza\Desktop\NoComiteado\Script_CreacionProcedures.sql</FullPath>
+        </FileNode>
+        <FileNode Name="ScriptSeguridad.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
+          <AssociatedConnUserName />
+          <FullPath>ScriptSeguridad.sql</FullPath>
         </FileNode>
       </Items>
     </LogicalFolder>

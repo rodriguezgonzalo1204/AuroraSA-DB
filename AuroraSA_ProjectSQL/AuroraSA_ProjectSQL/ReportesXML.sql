@@ -1,17 +1,43 @@
---------PARA PRODUCTOS
-SELECT 
-    idProducto AS '@id',
-    nombreProducto AS 'Nombre',
-    lineaProducto AS 'Linea',
-    marca AS 'Marca',
-    precioUnitario AS 'Precio',
-    activo AS 'Activo'
-FROM Catalogos.Producto
-FOR XML PATH('Producto'), ROOT('Productos');
+/*
+Aurora SA
+Generacion de reportes. (Entrega 04)
+Fecha: 28-02-2025
+Asignatura: Bases de datos Aplicadas - Comisión: 1353
+Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono Gabriel (42134185)
+*/
 
------REPORTE MENSUAL------
+Use Com1353G07
+GO
 
-CREATE PROCEDURE Ventas.ReporteMensual_FacturadoPorDia
+/*	
+	Ejecutar con F5 para creación de procedures.
+	Luego seleccionar y ejecutar los EXEC de prueba para ver resultados de cada reporte
+*/
+
+------------------------------------------------------------------------
+-- XML de catálogo de productos --
+CREATE OR ALTER PROCEDURE Utilidades.CatalogoXML_sp
+AS
+BEGIN
+	SELECT 
+		idProducto AS '@id',
+		nombreProducto AS 'Nombre',
+		lineaProducto AS 'Linea',
+		precioUnitario AS 'Precio',
+		activo AS 'Activo'
+	FROM Inventario.Producto
+	FOR XML PATH('Producto'), ROOT('Productos');
+END;
+GO
+
+-- Ejecucion de prueba
+-- EXEC Utilidades.CatalogoXML_sp
+
+------------------------------------------------------------------------
+------------------------ REPORTE MENSUAL ------------------------
+-- Recibe mes y año, muestra total facturado por dias de la semana
+
+CREATE OR ALTER PROCEDURE Reportes.ReporteMensual_FacturadoPorDia_sp
     @Mes INT,
     @Anio INT
 AS
@@ -20,19 +46,22 @@ BEGIN
 
     SELECT 
         DATENAME(WEEKDAY, fecha) AS DiaSemana,
-        SUM(dv.subtotal) AS TotalFacturado
+        SUM(f.total) AS TotalFacturado
     FROM Ventas.Factura f
-    JOIN Ventas.DetalleVenta dv ON f.idFactura = dv.idFactura
     WHERE YEAR(f.fecha) = @Anio AND MONTH(f.fecha) = @Mes
     GROUP BY DATENAME(WEEKDAY, fecha)
-    FOR XML PATH('Dia'), ROOT('ReporteMensual')
+    ORDER BY MIN(f.fecha) 
+    FOR XML PATH('Dia'), ROOT('ReporteMensual');
 END;
+GO
 
-EXEC Ventas.ReporteMensual_FacturadoPorDia @Mes = 1, @Anio = 2025;
+-- Ejecucion de prueba
+-- EXEC Reportes.ReporteMensual_FacturadoPorDia_sp @Mes = 1, @Anio = 2019;
 
------------TRIMESTRAL---------
-
-CREATE PROCEDURE Ventas.Reporte_TotalFacturadoPorTurno
+------------------------------------------------------------------------
+------------------------ REPORTE TRIMESTRAL ------------------------
+-- Recibe trimestre y año, muestra el total facturado por turnos de trabajo por mes
+CREATE OR ALTER PROCEDURE Reportes.Reporte_TotalFacturadoPorTurno_sp
     @Trimestre INT,
     @Anio INT
 AS
@@ -40,32 +69,31 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT 
-        MONTH(f.fecha) AS 'Mes',
-        CASE 
-            WHEN f.hora BETWEEN '06:00:00' AND '13:59:59' THEN 'Mañana'
-            WHEN f.hora BETWEEN '14:00:00' AND '21:59:59' THEN 'Tarde'
-            ELSE 'Noche'
-        END AS 'TurnoTrabajo',
-        SUM(dv.cantidad * dv.precioUnitario) AS 'TotalFacturado'
+        MONTH(f.fecha) AS Mes,
+        e.turno AS TurnoTrabajo,
+        SUM(dv.cantidad * dv.precioUnitario) AS TotalFacturado
     FROM Ventas.Factura f
     JOIN Ventas.DetalleVenta dv ON f.idFactura = dv.idFactura
-    WHERE DATEPART(QUARTER, f.fecha) = @Trimestre AND YEAR(f.fecha) = @Anio
-    GROUP BY MONTH(f.fecha), 
-             CASE 
-                WHEN f.hora BETWEEN '06:00:00' AND '13:59:59' THEN 'Mañana'
-                WHEN f.hora BETWEEN '14:00:00' AND '21:59:59' THEN 'Tarde'
-                ELSE 'Noche'
-             END
+    JOIN Empresa.Empleado e ON f.idEmpleado = e.idEmpleado
+    WHERE 
+        DATEPART(QUARTER, f.fecha) = @Trimestre 
+        AND YEAR(f.fecha) = @Anio
+    GROUP BY 
+        MONTH(f.fecha), 
+        e.turno
     ORDER BY Mes, TurnoTrabajo
     FOR XML PATH('Turno'), ROOT('TotalFacturadoPorTurno');
 END;
+GO
 
+-- Ejecucion de prueba
+-- EXEC Reportes.Reporte_TotalFacturadoPorTurno_sp @Trimestre = 1, @Anio = 2019;
 
-EXEC Ventas.Reporte_TotalFacturadoPorTurno @Trimestre = 1, @Anio = 2025;
+------------------------------------------------------------------------
+--------------- REPORTE POR RANGO DE FECHAS (PRODUCTOS) ---------------
+-- Recibe rango de fechas,  muestra  la cantidad de productos vendidos, ordenado de mayor a menor.
 
-------------------RANGO FECHA--------
-
-CREATE PROCEDURE Ventas.Reporte_ProductosVendidosPorRango
+CREATE OR ALTER PROCEDURE Reportes.Reporte_ProductosVendidosPorRango_sp
     @FechaInicio DATE,
     @FechaFin DATE
 AS
@@ -76,19 +104,23 @@ BEGIN
         p.nombreProducto AS 'Producto',
         SUM(dv.cantidad) AS 'CantidadVendida'
     FROM Ventas.DetalleVenta dv
-    JOIN Catalogos.Producto p ON dv.idProducto = p.idProducto
+    JOIN Inventario.Producto p ON dv.idProducto = p.idProducto
     JOIN Ventas.Factura f ON dv.idFactura = f.idFactura
     WHERE f.fecha BETWEEN @FechaInicio AND @FechaFin
     GROUP BY p.nombreProducto
     ORDER BY CantidadVendida DESC
     FOR XML PATH('Producto'), ROOT('ProductosVendidos');
 END;
+GO
 
-EXEC Ventas.Reporte_ProductosVendidosPorRango @FechaInicio = '2025-01-01', @FechaFin = '2025-01-31';
+-- Ejecucion de prueba
+-- EXEC Reportes.Reporte_ProductosVendidosPorRango_sp @FechaInicio = '2019-01-01', @FechaFin = '2019-05-31';
 
------------------SUCURSAL---------
+------------------------------------------------------------------------
+--------------- REPORTE POR RANGO DE FECHAS (SUCURSALES)---------------
+-- Recibe rango de fechas, muestra la cantidad de productos vendidos por sucursal, ordenado de mayor a menor
 
-CREATE PROCEDURE Ventas.Reporte_ProductosVendidosPorSucursal
+CREATE OR ALTER PROCEDURE Reportes.Reporte_ProductosVendidosPorSucursal_sp
     @FechaInicio DATE,
     @FechaFin DATE
 AS
@@ -96,24 +128,27 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT 
-        s.nombreSucursal AS 'Sucursal',
+        s.ciudad AS 'Sucursal',
         p.nombreProducto AS 'Producto',
         SUM(dv.cantidad) AS 'CantidadVendida'
     FROM Ventas.DetalleVenta dv
-    JOIN Catalogos.Producto p ON dv.idProducto = p.idProducto
+    JOIN Inventario.Producto p ON dv.idProducto = p.idProducto
     JOIN Ventas.Factura f ON dv.idFactura = f.idFactura
-    JOIN Personas.Sucursal s ON f.idSucursal = s.idSucursal
+    JOIN Empresa.Sucursal s ON f.idSucursal = s.idSucursal
     WHERE f.fecha BETWEEN @FechaInicio AND @FechaFin
-    GROUP BY s.nombreSucursal, p.nombreProducto
-    ORDER BY s.nombreSucursal, CantidadVendida DESC
+    GROUP BY s.ciudad, p.nombreProducto
+    ORDER BY s.ciudad, CantidadVendida DESC
     FOR XML PATH('Sucursal'), ROOT('ProductosVendidosPorSucursal');
 END;
+GO
+-- Ejecucion de prueba
+-- EXEC Reportes.Reporte_ProductosVendidosPorSucursal_sp @FechaInicio = '2019-01-01', @FechaFin = '2019-05-31';
 
-EXEC Ventas.Reporte_ProductosVendidosPorSucursal @FechaInicio = '2025-01-01', @FechaFin = '2025-01-31';
+------------------------------------------------------------------------
+---------------------------- TOP 5 VENDIDOS ----------------------------
+-- Recibe mes y año, muestra los 5 productos mas vendidos por semana
 
-------------TOP5 MAS VENDIDOS
-
-CREATE PROCEDURE Ventas.Reporte_Top5ProductosPorSemana
+CREATE OR ALTER PROCEDURE Reportes.Reporte_Top5ProductosPorSemana_sp
     @Mes INT,
     @Anio INT
 AS
@@ -126,7 +161,7 @@ BEGIN
             p.nombreProducto AS 'Producto',
             SUM(dv.cantidad) AS 'CantidadVendida'
         FROM Ventas.DetalleVenta dv
-        JOIN Catalogos.Producto p ON dv.idProducto = p.idProducto
+        JOIN Inventario.Producto p ON dv.idProducto = p.idProducto
         JOIN Ventas.Factura f ON dv.idFactura = f.idFactura
         WHERE MONTH(f.fecha) = @Mes AND YEAR(f.fecha) = @Anio
         GROUP BY DATEPART(WEEK, f.fecha), p.nombreProducto
@@ -143,12 +178,16 @@ BEGIN
     ORDER BY Semana, Ranking
     FOR XML PATH('Producto'), ROOT('Top5ProductosPorSemana');
 END;
+GO
 
-EXEC Ventas.Reporte_Top5ProductosPorSemana @Mes = 1, @Anio = 2025;
+-- Ejecucion de prueba
+-- EXEC Reportes.Reporte_Top5ProductosPorSemana_sp @Mes = 3, @Anio = 2019;
 
---------------TOP5 MENOS VENDIDOS
+------------------------------------------------------------------------
+------------------------- TOP 5 MENOS VENDIDOS -------------------------
+-- Recibe mes y año, muestra los 5 productos menos vendidos
 
-CREATE PROCEDURE Ventas.Reporte_Top5ProductosMenosVendidos
+CREATE OR ALTER PROCEDURE Reportes.Reporte_Top5ProductosMenosVendidos_sp
     @Mes INT,
     @Anio INT
 AS
@@ -159,19 +198,23 @@ BEGIN
         p.nombreProducto AS 'Producto',
         SUM(dv.cantidad) AS 'CantidadVendida'
     FROM Ventas.DetalleVenta dv
-    JOIN Catalogos.Producto p ON dv.idProducto = p.idProducto
+    JOIN Inventario.Producto p ON dv.idProducto = p.idProducto
     JOIN Ventas.Factura f ON dv.idFactura = f.idFactura
     WHERE MONTH(f.fecha) = @Mes AND YEAR(f.fecha) = @Anio
     GROUP BY p.nombreProducto
     ORDER BY CantidadVendida ASC
     FOR XML PATH('Producto'), ROOT('Top5MenosVendidos');
 END;
+GO
 
-EXEC Ventas.Reporte_Top5ProductosMenosVendidos @Mes = 1, @Anio = 2025;
+-- Ejecucion de prueba
+-- EXEC Reportes.Reporte_Top5ProductosMenosVendidos_sp @Mes = 2, @Anio = 2019;
 
-----------------VENTAS X FECHA Y SUCURSAL
+------------------------------------------------------------------------
+------------------------- TOTAL ACUMULADO -------------------------
+-- Recibe fecha y sucursal, muestra total acumulado y detalle
 
-CREATE PROCEDURE Ventas.Reporte_TotalAcumuladoVentas
+CREATE OR ALTER PROCEDURE Reportes.Reporte_TotalAcumuladoVentas_sp
     @Fecha DATE,
     @idSucursal INT
 AS
@@ -179,21 +222,31 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT 
-        s.nombreSucursal AS 'Sucursal',
-        SUM(dv.cantidad * dv.precioUnitario) AS 'TotalVentas'
+        s.ciudad AS 'Sucursal',
+        f.idFactura AS 'Factura',
+        p.nombreProducto AS 'Producto',
+        dv.cantidad AS 'Cantidad',
+        dv.precioUnitario AS 'PrecioUnitario',
+        dv.cantidad * dv.precioUnitario AS 'Subtotal'
     FROM Ventas.Factura f
     JOIN Ventas.DetalleVenta dv ON f.idFactura = dv.idFactura
-    JOIN Personas.Sucursal s ON f.idSucursal = s.idSucursal
+    JOIN Inventario.Producto p ON dv.idProducto = p.idProducto
+    JOIN Empresa.Sucursal s ON f.idSucursal = s.idSucursal
     WHERE f.fecha = @Fecha AND f.idSucursal = @idSucursal
-    GROUP BY s.nombreSucursal
-    FOR XML PATH('TotalVentas'), ROOT('AcumuladoVentas');
+    ORDER BY f.idFactura, p.nombreProducto
+    FOR XML PATH('Venta'), ROOT('AcumuladoVentas');
 END;
+GO
 
-EXEC Ventas.Reporte_TotalAcumuladoVentas @Fecha = '2025-01-01', @idSucursal = 9;
+-- Ejecucion de prueba
+-- EXEC Reportes.Reporte_TotalAcumuladoVentas_sp @Fecha = '2019-02-03', @idSucursal = 1;
 
---------------MAYOR MONTO FACTURADO
+------------------------------------------------------------------------
+------------------------- MENSUAL VENDEDOR  -------------------------
+-- Recibe mes y año, muestra el vendedor de mayor monto facturado por sucursal.
 
-CREATE PROCEDURE Ventas.Reporte_VendedorMayorFacturacion
+
+CREATE OR ALTER PROCEDURE Reportes.Reporte_VendedorMayorFacturacion_sp
     @Mes INT,
     @Anio INT
 AS
@@ -202,15 +255,15 @@ BEGIN
 
     WITH FacturacionVendedor AS (
         SELECT 
-            s.nombreSucursal AS 'Sucursal',
+            s.ciudad AS 'Sucursal',
             e.nombre + ' ' + e.apellido AS 'Vendedor',
             SUM(dv.cantidad * dv.precioUnitario) AS 'TotalFacturado'
         FROM Ventas.Factura f
         JOIN Ventas.DetalleVenta dv ON f.idFactura = dv.idFactura
-        JOIN Personas.Empleado e ON f.idEmpleado = e.idEmpleado
-        JOIN Personas.Sucursal s ON f.idSucursal = s.idSucursal
+        JOIN Empresa.Empleado e ON f.idEmpleado = e.idEmpleado
+        JOIN Empresa.Sucursal s ON f.idSucursal = s.idSucursal
         WHERE MONTH(f.fecha) = @Mes AND YEAR(f.fecha) = @Anio
-        GROUP BY s.nombreSucursal, e.nombre, e.apellido
+        GROUP BY s.ciudad, e.nombre, e.apellido
     )
     SELECT 
         Sucursal,
@@ -223,6 +276,8 @@ BEGIN
     WHERE Ranking = 1
     FOR XML PATH('Vendedor'), ROOT('VendedorMayorFacturacion');
 END;
+GO
 
-EXEC Ventas.Reporte_VendedorMayorFacturacion @Mes = 1, @Anio = 2025;
+-- Ejecucion de prueba
+-- EXEC Reportes.Reporte_VendedorMayorFacturacion_sp @Mes = 1, @Anio = 2019;
 

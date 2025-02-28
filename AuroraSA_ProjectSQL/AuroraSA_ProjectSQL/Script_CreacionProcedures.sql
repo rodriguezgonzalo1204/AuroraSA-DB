@@ -116,7 +116,8 @@ CREATE OR ALTER PROCEDURE Empresa.InsertarEmpleado_sp
     @fechaAlta		DATE,
 	@mailPersonal	VARCHAR(55),
 	@mailEmpresa	VARCHAR(55),
-    @idSucursal		INT
+    @idSucursal		INT,
+	@turno			VARCHAR(20)
 )
 AS
 BEGIN
@@ -173,7 +174,8 @@ BEGIN
 		fechaAlta,
 		mailPersonal,
 		mailEmpresa,
-		idSucursal
+		idSucursal,
+		turno
     )
     VALUES
     (
@@ -187,7 +189,8 @@ BEGIN
 		@fechaAlta,	
 		@mailPersonal,
 		@mailEmpresa,
-		@idSucursal
+		@idSucursal,
+		@turno
     );
 END;
 GO
@@ -205,7 +208,8 @@ CREATE OR ALTER PROCEDURE Empresa.ActualizarEmpleado_sp
     @fechaAlta		DATE,
 	@mailPersonal	VARCHAR(55),
 	@mailEmpresa	VARCHAR(55),
-    @idSucursal		INT
+    @idSucursal		INT,
+	@turno			VARCHAR(20)
 )
 AS
 BEGIN
@@ -266,7 +270,8 @@ BEGIN
 		fechaAlta	 = @fechaAlta,
 		mailPersonal = @mailPersonal,
 		mailEmpresa  = @mailEmpresa, 
-		idSucursal	 = @idSucursal
+		idSucursal	 = @idSucursal,
+		turno		 = @turno
     WHERE idEmpleado = @idEmpleado;
 END;
 GO

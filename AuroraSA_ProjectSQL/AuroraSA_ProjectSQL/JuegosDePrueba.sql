@@ -95,9 +95,10 @@ EXEC Empresa.InsertarEmpleado_sp
      @fechaAlta		= '2025-01-01',
 	 @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
 	 @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
-	 @idSucursal	= 1;
+	 @idSucursal	= 1,
+	 @turno			= 'TM';
 
-EXEC Empresa.InsertarEmpleado_sp 'Franco', 'Colapinto', 'M', 'Cajero','Calle234','1522441542','20-38652541-5','2024-08-09','FC@gmail.com','FC@SuperA.com',2
+EXEC Empresa.InsertarEmpleado_sp 'Franco', 'Colapinto', 'M', 'Cajero','Calle234','1522441542','20-38652541-5','2024-08-09','FC@gmail.com','FC@SuperA.com',2,'TM'
 SELECT * FROM Empresa.Empleado
 -- Ejecutar hasta aca: Resultado esperado -> Se inserta correctamente el empleado Juan Perez y Franco Colapinto
 
@@ -114,7 +115,8 @@ EXEC Empresa.InsertarEmpleado_sp
      @fechaAlta		= '2025-01-01',
 	 @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
 	 @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
-	 @idSucursal	= 1;
+	 @idSucursal	= 1,
+	 @turno			= 'TM';
 -- Ejecutar hasta aca: Resultado esperado -> Error de CUIL
 
 PRINT '=== InsertarEmpleado_sp: Intentando insertar empleado con mail Inválido ===';
@@ -129,7 +131,8 @@ EXEC Empresa.InsertarEmpleado_sp
      @fechaAlta		= '2025-01-01',
 	 @mailPersonal	= 'Rolando_LOPE',  --Formato incorrecto
 	 @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
-	 @idSucursal	= 1;
+	 @idSucursal	= 1,
+	 @turno			= 'TM';
 -- Ejecutar hasta aca: Resultado esperado -> Error de formato de mail
 
 /*
@@ -150,7 +153,8 @@ EXEC Empresa.ActualizarEmpleado_sp
      @fechaAlta		= '2025-01-01',
 	 @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
 	 @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
-	 @idSucursal	= 1
+	 @idSucursal	= 1,
+	 @turno			= 'TM'
 SELECT * FROM Empresa.Empleado
 -- Ejecutar hasta aca: Resultado esperado -> Actualiza el registro del empleado que tiene idEmpleado = 1
 

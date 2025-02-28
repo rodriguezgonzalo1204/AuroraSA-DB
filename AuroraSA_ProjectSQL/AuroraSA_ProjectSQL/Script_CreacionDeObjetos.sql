@@ -46,6 +46,13 @@ ELSE
     print 'El esquema Utilidades ya existe en la base de datos.'
 GO
 
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name ='Reportes')
+    EXEC('CREATE SCHEMA Reportes')
+ELSE
+    print 'El esquema Reportes ya existe en la base de datos.'
+GO
+
+
 -----------CREACION DE TABLAS------------
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
@@ -63,7 +70,7 @@ CREATE TABLE Empresa.Sucursal
 )
 END
 GO
-ALTER TABLE Empresa.Sucursal DROP COLUMN nombreSucursal
+
 /*
    Empleado: Contiene información del empleado y la sucursal a la que pertenece. Los legajos de empleado inican en 257020 y son autoincrementales.
    Está en el esquema Empresa.
@@ -85,13 +92,13 @@ CREATE TABLE Empresa.Empleado
 	mailPersonal VARCHAR(55),
 	mailEmpresa VARCHAR(55),
     idSucursal INT,
+	turno VARCHAR(20),
 	activo BIT DEFAULT 1,
     CONSTRAINT PK_Empleado PRIMARY KEY (idEmpleado),
     CONSTRAINT FK_Empleado_Sucursal FOREIGN KEY (idSucursal) REFERENCES Empresa.Sucursal(idSucursal)
 )
 END
 GO
-
 /*
    Cliente: Contiene datos del cliente, tipoCliente, género, etc. Se incluye el campo datosFidelizacion para posible implementacion
    de sistema de puntos en un futuro. Está en el esquema Ventas.

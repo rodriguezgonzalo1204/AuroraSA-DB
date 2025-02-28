@@ -8,23 +8,52 @@ Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono G
 
 -----------------------------------------
 
+
+/*	
+	Modo de ejecución
+	El script esta pensado para poder ejecutarse de un solo bloque con F5 considerando que:
+	1- Debe detallar la ruta del archivo previo a la importacion, asi como valor de dolar y cantidad de clientes random a generar
+	2- Todas las tablas van a reiniciarse asi como los autoincrementales de las mismas
+	3- Debe realizar previamente las configuraciones que se detallan en la documentacion
+*/
+
 USE Com1353G07
 GO
 
+-- INDICAR LAS RUTAS CORRESPONDIENTES DE LOS ARCHIVOS, VALOR ACTUAL DEL DOLAR Y CANTIDAD DE CLIENTES RANDOM A GENERAR
+
+DECLARE @rutaCatalogoCSV NVARCHAR(250) = 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\catalogo.csv',
+		@rutaElectronicos NVARCHAR(250) = 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Electronic accessories.xlsx',
+		@rutaImportados NVARCHAR(250) = 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Electronic accessories.xlsx',
+		@rutaVentas NVARCHAR(250) = 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Ventas_registradas.csv',
+		@rutaComplementario NVARCHAR(250) = 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Informacion_complementaria.xlsx',
+		@valorDolar DECIMAL(10,2) = 1,
+		@cantClientes INT = 100;
+
+
+-- VACIAR TABLAS Y REESTABLECER IDENTITY
+SET NOCOUNT ON;
+EXEC Utilidades.ResetearTablas_sp
+
+-- CAMBIAR PARAMETROS PARA PERMITIR IMPORTACION
+
 EXEC sp_configure 'show advanced options', 1;
+GO
 RECONFIGURE;
+GO
 EXEC sp_configure 'Ad Hoc Distributed Queries', 1;
+GO
 RECONFIGURE;
-
 EXEC sp_MSset_oledb_prop 'Microsoft.ACE.OLEDB.12.0', 'AllowInProcess', 1;
+GO
 EXEC sp_MSset_oledb_prop 'Microsoft.ACE.OLEDB.12.0', 'DynamicParameters', 1;
--- Ejecutar y seguir documentación para permitir la importación de archivos desde Excel .xlsx
-
+GO
 
 
 
 
 -----------------------------------------------------------------------------------------------
+-- Importacion de catalogo.csv
 CREATE OR ALTER PROCEDURE Inventario.CargarProductosCatalogoCSV_sp
     @rutaArchivo                NVARCHAR(250),
     @rutaArchivoEquivalencias   NVARCHAR(250),
@@ -64,8 +93,6 @@ BEGIN
         TABLOCK
     );
     ';
-    
-    -- Ejecutar la consulta dinámica
     EXEC sp_executesql @sql;
 
     -- SQL dinámico para importar el archivo de equivalencias de línea producto
@@ -92,8 +119,8 @@ BEGIN
         LP.idLineaProd, 
         P.price * @valorDolar
     FROM #TempProductos1 P
-    INNER JOIN #TempEquivalenciaLineas E ON P.category = E.lineaVieja COLLATE Modern_Spanish_CS_AS
-    INNER JOIN Inventario.LineaProducto LP ON E.lineaNueva = LP.descripcion COLLATE Modern_Spanish_CS_AS;
+    JOIN #TempEquivalenciaLineas E ON P.category = E.lineaVieja COLLATE Modern_Spanish_CS_AS
+    JOIN Inventario.LineaProducto LP ON E.lineaNueva = LP.descripcion COLLATE Modern_Spanish_CS_AS;
 
     -- Limpiar tablas temporales
     DROP TABLE #TempEquivalenciaLineas;
@@ -103,14 +130,11 @@ BEGIN
 END;
 GO
 
-EXEC Inventario.CargarProductosCatalogoCSV_sp 'C:\Users\GVuono\OneDrive - AGT Networks\Escritorio\Nueva carpeta\catalogo.csv',1;
-EXEC Inventario.CargarProductosCatalogoCSV_sp 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\catalogo.csv',
-											  'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Informacion_complementaria.xlsx',1;
-
-SELECT * FROM Inventario.Producto
-
+EXEC Inventario.CargarProductosCatalogoCSV_sp @rutaCatalogo, @rutaComplemantario, @valorDolar
+GO
 
 -----------------------------------------------------------------------------------------------
+-- Importacion de productos electronicos
 CREATE OR ALTER PROCEDURE Inventario.CargarProductosElectronicos_sp
     @rutaArchivo NVARCHAR(250),
 	@valorDolar DECIMAL(10,2)
@@ -153,10 +177,11 @@ BEGIN
 END
 GO
 
-EXEC Inventario.CargarProductosElectronicos_sp 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Electronic accessories.xlsx',1
-SELECT * FROM Inventario.Producto
+EXEC Inventario.CargarProductosElectronicos_sp @rutaElectronicos, @valorDolar
+GO
 
 --------------------------------------------------------------------------------
+-- Importacion de productos importados
 CREATE OR ALTER PROCEDURE Inventario.CargarProductosImportados_sp
     @rutaArchivo NVARCHAR(250),
 	@valorDolar DECIMAL(10,2)
@@ -173,9 +198,6 @@ BEGIN
 		CantidadPorUnidad VARCHAR(20),
         precioUnidad DECIMAL(10,2)
     );
-
-	--DECLARE @rutaArchivo varchar(250) = 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Productos_importados.xlsx'
-	
 
     -- Insertar datos desde el archivo XLSX
     DECLARE @sql NVARCHAR(MAX);
@@ -212,11 +234,10 @@ BEGIN
 END
 GO
 
-EXEC Inventario.CargarProductosImportados_sp 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Productos_importados.xlsx',1
-SELECT * FROM Inventario.Producto
-SELECT * FROM Inventario.LineaProducto
-
+EXEC Inventario.CargarProductosImportados_sp @rutaImportados,@valorDolar
+GO
 -----------------------------------------------------------------------------------------------
+-- Importacion de sucursales
 CREATE OR ALTER PROCEDURE Empresa.ImportarSucursales_sp
     @rutaArchivo NVARCHAR(250) 
 AS
@@ -229,7 +250,7 @@ BEGIN
 		horario VARCHAR(55),
 		telefono char(10)
     );
-
+	
     DECLARE @sql NVARCHAR(MAX)
     SET @sql = '
         INSERT INTO #TempSucursales (ciudad, direccion, horario, telefono)
@@ -240,18 +261,19 @@ BEGIN
     ';
     EXEC sp_executesql @sql
 
+	--No es necesario modificar ningun dato
 	INSERT INTO Empresa.Sucursal (direccion, ciudad, telefono, horario)
 	SELECT direccion, ciudad, telefono, horario
 	FROM #TempSucursales	
 
 	DROP TABLE #TempSucursales
-
 	PRINT 'Importación completada correctamente.';
 END;
 GO
 
-EXEC Empresa.ImportarSucursales_sp 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Informacion_complementaria.xlsx';
-SELECT * FROM Empresa.Sucursal
+EXEC Empresa.ImportarSucursales_sp @rutaComplementario;
+GO
+
 -----------------------------------------------------------------------------------------------
 -- Funcion para CUIL random
 CREATE OR ALTER FUNCTION Utilidades.GenerarCUIL(@dni INT)
@@ -278,7 +300,8 @@ BEGIN
 END
 GO
 
-----------------------------
+-----------------------------------------------------------------------------------------------
+-- Importacion de empleados
 CREATE OR ALTER PROCEDURE Empresa.ImportarEmpleados_sp
     @rutaArchivo NVARCHAR(250) 
 AS
@@ -295,19 +318,21 @@ BEGIN
     mailEmpresa VARCHAR(55),
 	cuil CHAR(13),
     cargo VARCHAR(25),
-    ciudadSuc VARCHAR(30)
+    ciudadSuc VARCHAR(30),
+	turno	VARCHAR(20)
     )
 
     DECLARE @cadenaSql NVARCHAR(MAX)
     SET @cadenaSql = '
-        INSERT INTO #TempEmpleados (nombre, apellido, dni, domicilio, mailPersonal, mailEmpresa, cuil, cargo, ciudadSuc)
+        INSERT INTO #TempEmpleados (nombre, apellido, dni, domicilio, mailPersonal, mailEmpresa, cuil, cargo, ciudadSuc, turno)
         SELECT *
         FROM OPENROWSET(''Microsoft.ACE.OLEDB.12.0'',
             ''Excel 12.0 Xml;HDR=YES;Database=' + @rutaArchivo + ''',
-            ''SELECT * FROM [Empleados$B2:J17]'');
+            ''SELECT * FROM [Empleados$B2:K17]'');
     ';
     EXEC sp_executesql @cadenaSql
 
+	-- Variables para generar fecha random entre los limites establecidos
 	DECLARE @FechaInicio AS date,
 			@FechaFin AS date,
 			@DiasIntervalo AS int;
@@ -315,8 +340,8 @@ BEGIN
 	SELECT	@FechaInicio   = '20220101',
 			@FechaFin     = '20250227',
 			@DiasIntervalo = (1+DATEDIFF(DAY, @FechaInicio, @FechaFin))
-	--
-	INSERT INTO Empresa.Empleado ( nombre, apellido, genero, cargo, domicilio, telefono, CUIL, fechaAlta, mailPersonal,mailEmpresa, idSucursal)
+	
+	INSERT INTO Empresa.Empleado ( nombre, apellido, genero, cargo, domicilio, telefono, CUIL, fechaAlta, mailPersonal,mailEmpresa, idSucursal, turno)
 	SELECT 
         TE.nombre,
         TE.apellido,
@@ -330,17 +355,18 @@ BEGIN
 		DATEADD(DAY, RAND(CHECKSUM(NEWID()))*@DiasIntervalo,@FechaInicio),
         TE.mailPersonal,
         TE.mailEmpresa,
-        S.idSucursal
+        S.idSucursal,
+		TE.turno
     FROM #TempEmpleados TE
-    INNER JOIN Empresa.Sucursal S 
+    JOIN Empresa.Sucursal S 
         ON TE.ciudadSuc = S.ciudad COLLATE Modern_Spanish_CS_AS;
 
 	DROP TABLE #TempEmpleados
 END;
 GO
 
-EXEC Empresa.ImportarEmpleados_sp 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Informacion_complementaria.xlsx'
-SELECT * FROM Empresa.Empleado
+EXEC Empresa.ImportarEmpleados_sp @rutaComplementario
+GO
 
 --------------------------------------------------------------------------------
 -- Carga masiva de clientes randoms
@@ -386,17 +412,18 @@ BEGIN
         -- Insertar cliente
 		EXEC Ventas.InsertarCliente_sp @nombre, @apellido, @tipoCliente, @genero, 0
 
-        SET @i = @i +[Inventario].[Producto] 1;
+        SET @i = @i + 1;
     END;
 
     PRINT '100 clientes aleatorios cargados correctamente.';
 END;
 GO
 
-EXEC Ventas.CargarClientesAleatorios_sp 100
-SELECT * FROM Ventas.Cliente
+EXEC Ventas.CargarClientesAleatorios_sp @cantClientes
+GO
 
 --------------------------------------------------------------------------------
+-- Importacion de ventas
 CREATE OR ALTER PROCEDURE Ventas.ImportarVentas_sp
     @rutaArchivo NVARCHAR(250),
 	@valorDolar DECIMAL(10,2)
@@ -421,7 +448,6 @@ BEGIN
 		identificadorPago VARCHAR(35)
     );
 
-  
     DECLARE @sql NVARCHAR(MAX);
 	SET @sql = '
     BULK INSERT #TempVentas
@@ -452,11 +478,13 @@ BEGIN
 		total DECIMAL(10, 2) 
 	);
 	
+	-- Agrupamos por codigo de factura para calcular totales e insertar en la tabla factura con el id deseado
 	INSERT INTO #TotalesPorFactura (codigoFactura, total)
 	SELECT CAST(codigoFactura AS CHAR(11)) as codigoFactura, SUM(precioUnitario * cantidad * @valorDolar) AS total
 	FROM #TempVentas
 	GROUP BY codigoFactura;
 
+	
 	INSERT INTO Ventas.Factura (codigoFactura, medioPago, tipoFactura, fecha, hora, identificadorPago, total, idCliente, idEmpleado, idSucursal)
 	SELECT 
 		CAST(V.codigoFactura AS CHAR(11)) AS codigoFactura,  
@@ -470,7 +498,7 @@ BEGIN
 		V.idEmpleado, 
 		S.idSucursal
 	FROM #TempVentas V 
-		INNER JOIN #TotalesPorFactura TF 
+		JOIN #TotalesPorFactura TF 
 			ON V.codigoFactura = TF.codigoFactura  
 		CROSS APPLY (SELECT TOP 1 idCliente FROM Ventas.Cliente			-- Utilizamos CROSS APPLY para poder elegir un cliente aleatorio
 					 WHERE genero = LEFT(V.genero,1) COLLATE Modern_Spanish_CS_AS  
@@ -488,28 +516,23 @@ BEGIN
 		subtotal DECIMAL(10,2), 
 	);
 
+	-- Utilizamos row_number para indicar cuantos detalles corresponden a una misma factura (Para el caso de Ventas.CSV es 1 item por factura por lo que no se ve reflejado el cambio)
 	INSERT INTO #GruposDetalle(codigoFactura, idDetalle, nombreProd, precioUnitario, cantidad, subtotal)
 	SELECT  CAST(codigoFactura AS CHAR(11)) as codigoFactura,
 			ROW_NUMBER() OVER(PARTITION BY codigoFactura ORDER BY codigoFactura) as idDetalle,
-			nombreProducto, precioUnitario, cantidad, cantidad*precioUnitario as subtotal
+			nombreProducto, precioUnitario, cantidad, cantidad*precioUnitario*@valorDolar as subtotal
 	FROM #TempVentas
-	
-	select * from #GruposDetalle
-
-
 
 	INSERT INTO Ventas.DetalleVenta (idFactura, idDetalle, idProducto, precioUnitario, cantidad, subtotal)
 	SELECT F.idFactura, GT.idDetalle, CA.idProducto, GT.precioUnitario, GT.cantidad, GT.subtotal
 	FROM #GruposDetalle GT 
-		INNER JOIN Ventas.Factura F
+		JOIN Ventas.Factura F
 		ON GT.codigoFactura = F.codigoFactura COLLATE Modern_Spanish_CS_AS
-		CROSS APPLY (
+		CROSS APPLY (													-- Utilizamos CROSS APPLY para seleccionar un solo producto
 			SELECT TOP 1 idProducto
 			FROM Inventario.Producto P
 			WHERE P.nombreProducto = GT.nombreProd COLLATE Modern_Spanish_CS_AS
 			ORDER BY idProducto) CA;
-
-
 
 	DROP TABLE #TempVentas;
 	DROP TABLE #TotalesPorFactura
@@ -518,13 +541,5 @@ BEGIN
 END
 GO
 
-EXEC Ventas.ImportarVentas_sp 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Ventas_registradas.csv',1
-SELECT * FROM Ventas.Factura
-
-select * from Ventas.DetalleVenta
-
-
-select * from Empresa.Empleado
-
-    DELETE FROM Ventas.Factura;
-    DBCC CHECKIDENT ('Ventas.Factura', RESEED, 0);
+EXEC Ventas.ImportarVentas_sp @rutaVentas, @valorDolar
+GO
