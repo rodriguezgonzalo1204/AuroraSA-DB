@@ -40,6 +40,12 @@ ELSE
     print 'El esquema Inventario ya existe en la base de datos.'
 GO
 
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name ='Utilidades')
+    EXEC('CREATE SCHEMA Utilidades')
+ELSE 
+    print 'El esquema Utilidades ya existe en la base de datos.'
+GO
+
 -----------CREACION DE TABLAS------------
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
@@ -48,8 +54,7 @@ BEGIN
 CREATE TABLE Empresa.Sucursal
 (
     idSucursal INT IDENTITY(1,1),
-    nombreSucursal VARCHAR(30),
-    direccion VARCHAR(50),
+    direccion NVARCHAR(100),
     ciudad VARCHAR(50),
     telefono CHAR(10),
 	horario VARCHAR(55),
@@ -58,9 +63,9 @@ CREATE TABLE Empresa.Sucursal
 )
 END
 GO
-
+ALTER TABLE Empresa.Sucursal DROP COLUMN nombreSucursal
 /*
-   Empleado: Contiene información del empleado y la sucursal a la que pertenece.
+   Empleado: Contiene información del empleado y la sucursal a la que pertenece. Los legajos de empleado inican en 257020 y son autoincrementales.
    Está en el esquema Empresa.
 */
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
@@ -68,12 +73,12 @@ TABLE_SCHEMA ='Empresa' AND TABLE_NAME ='Empleado')
 BEGIN
 CREATE TABLE Empresa.Empleado
 (
-    idEmpleado INT IDENTITY(1,1),
+    idEmpleado INT IDENTITY(257020,1),
     nombre VARCHAR(30),
     apellido VARCHAR(30),
 	genero CHAR(1),
 	cargo VARCHAR(25),
-    domicilio VARCHAR(50),
+    domicilio NVARCHAR(100),
     telefono CHAR(10),
     CUIL CHAR(13) UNIQUE,
     fechaAlta DATE,
@@ -101,7 +106,7 @@ CREATE TABLE Ventas.Cliente
     apellido VARCHAR(30),
     tipoCliente VARCHAR(10),
     genero CHAR(1),
-    datosFidelizacion INT, 
+    datosFidelizacion INT DEFAULT 0, 
     activo BIT DEFAULT 1,
     CONSTRAINT PK_Cliente PRIMARY KEY (idCliente)
 )
@@ -135,8 +140,7 @@ BEGIN
 CREATE TABLE Inventario.Producto
 (
     idProducto INT IDENTITY(1,1),
-    nombreProducto NVARCHAR(60),
-    marca VARCHAR(20),
+    nombreProducto NVARCHAR(100),
     precioUnitario DECIMAL(10,2),
 	lineaProducto INT,
 	activo BIT DEFAULT 1,   
@@ -145,7 +149,7 @@ CREATE TABLE Inventario.Producto
 )
 END
 GO
-
+	
 /*
    Factura: Registra la venta general. Se asocia a un Cliente, Empleado, Sucursal, y un Medio de Pago (opcional).
    Está en el esquema Ventas.
@@ -160,8 +164,8 @@ CREATE TABLE Ventas.Factura
 	medioPago VARCHAR(20),
     tipoFactura CHAR(1),
     fecha DATE,
-    hora TIME(0),
-    identificadorPago varchar(25),
+    hora VARCHAR(15),
+    identificadorPago VARCHAR(35),
 	total DECIMAL(10,2),
     idCliente INT,
     idEmpleado INT,

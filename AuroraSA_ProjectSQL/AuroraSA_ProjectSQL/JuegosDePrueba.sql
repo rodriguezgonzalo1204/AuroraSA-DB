@@ -14,7 +14,7 @@ USE Com1353G07
 GO
 
 -- RESETEAR AUTOINCREMENTALES Y VACIAR TABLAS 
-EXEC ResetearTablas_sp
+EXEC Utilidades.ResetearTablas_sp
 GO
 -- Ejecutar hasta aca
 

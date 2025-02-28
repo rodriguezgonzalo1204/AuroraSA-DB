@@ -15,7 +15,7 @@ GO
 CREATE OR ALTER PROCEDURE Empresa.InsertarSucursal_sp
 (
     @nombreSucursal  VARCHAR(30),
-    @direccion       VARCHAR(30),
+    @direccion       NVARCHAR(100),
     @ciudad          VARCHAR(50),
     @telefono        CHAR(10),
 	@horario		 VARCHAR(55)	
@@ -33,7 +33,6 @@ BEGIN
    
 	INSERT INTO Empresa.Sucursal 
     (
-        nombreSucursal,
         direccion,
         ciudad,
         telefono,
@@ -41,7 +40,6 @@ BEGIN
     )
     VALUES
     (
-        @nombreSucursal,
         @direccion,
         @ciudad,
         @telefono,
@@ -53,8 +51,7 @@ GO
 CREATE OR ALTER PROCEDURE Empresa.ActualizarSucursal_sp
 (
     @idSucursal      INT,
-    @nombreSucursal  VARCHAR(30),
-    @direccion       VARCHAR(30),
+    @direccion       NVARCHAR(100),
     @ciudad          VARCHAR(50),
     @telefono        CHAR(10),
 	@horario		 VARCHAR(55)	
@@ -78,7 +75,6 @@ BEGIN
 
     UPDATE Empresa.Sucursal
     SET
-        nombreSucursal = @nombreSucursal,
         direccion      = @direccion,
         ciudad         = @ciudad,
         telefono       = @telefono,
@@ -114,7 +110,7 @@ CREATE OR ALTER PROCEDURE Empresa.InsertarEmpleado_sp
     @apellido		VARCHAR(30),
 	@genero			CHAR(1),
 	@cargo			VARCHAR(25),
-    @domicilio		VARCHAR(50),
+    @domicilio		NVARCHAR(100),
     @telefono		CHAR(10),
     @CUIL			CHAR(13),
     @fechaAlta		DATE,
@@ -203,7 +199,7 @@ CREATE OR ALTER PROCEDURE Empresa.ActualizarEmpleado_sp
     @apellido		VARCHAR(30),
 	@genero			CHAR(1),
 	@cargo			VARCHAR(25),
-    @domicilio		VARCHAR(50),
+    @domicilio		NVARCHAR(100),
     @telefono		CHAR(10),
     @CUIL			CHAR(10),
     @fechaAlta		DATE,
@@ -338,7 +334,7 @@ CREATE OR ALTER PROCEDURE Ventas.ActualizarCliente_sp
     @nombre				VARCHAR(30),
     @apellido			VARCHAR(30),
     @tipoCliente		VARCHAR(10),
-    @genero				CHAR(10),
+    @genero				CHAR(1),
     @datosFidelizacion	INT
 )
 AS
@@ -390,8 +386,7 @@ GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Inventario.InsertarProducto_sp
 (
-    @nombreProducto   NVARCHAR(60),
-    @marca            VARCHAR(20),
+    @nombreProducto   NVARCHAR(100),
     @precioUnitario   DECIMAL(10,2),
 	@lineaProducto    INT
 )
@@ -423,14 +418,12 @@ BEGIN
     INSERT INTO Inventario.Producto
     (
         nombreProducto,
-        marca,
         precioUnitario,
 		lineaProducto
     )
     VALUES
     (
         @nombreProducto,
-        @marca,
         @precioUnitario,
 		@lineaProducto 
     );
@@ -440,9 +433,8 @@ GO
 CREATE OR ALTER PROCEDURE Inventario.ActualizarProducto_sp
 (
     @idProducto       INT,
-    @nombreProducto   NVARCHAR(60),
+    @nombreProducto   NVARCHAR(100),
     @lineaProducto    VARCHAR(20),
-    @marca            VARCHAR(20),
     @precioUnitario   DECIMAL(10,2)
 )
 AS
@@ -478,7 +470,6 @@ BEGIN
     SET
         nombreProducto  = @nombreProducto,
         lineaProducto   = @lineaProducto,
-        marca           = @marca,
         precioUnitario  = @precioUnitario
     WHERE idProducto = @idProducto;
 END;
@@ -509,9 +500,9 @@ CREATE OR ALTER PROCEDURE Ventas.InsertarFactura_sp
     @codigoFactura		CHAR(11),
 	@tipoFactura		CHAR(1),
     @fecha				DATE,
-    @hora				TIME(0),
+    @hora				VARCHAR(15),
     @medioPago			VARCHAR(20),
-	@identificadorPago  VARCHAR(25),
+	@identificadorPago  VARCHAR(35),
 	@total				DECIMAL (10,2),
 	@idCliente		    INT,
     @idEmpleado			INT,
@@ -595,9 +586,9 @@ CREATE OR ALTER PROCEDURE Ventas.ActualizarFactura_sp
     @codigoFactura		CHAR(11),
 	@tipoFactura		CHAR(1),
     @fecha				DATE,
-    @hora				TIME(0),
+    @hora				VARCHAR(15),
     @medioPago			VARCHAR(20),
-	@identificadorPago  VARCHAR(25),
+	@identificadorPago  VARCHAR(35),
 	@total				DECIMAL (10,2),
 	@idCliente		    INT,
     @idEmpleado			INT,
@@ -898,7 +889,7 @@ GO
 
 ----------------------------------------------------------------------------------------------
 -- Vacia todas las tablas y resetea los autoincrementales identity
-CREATE OR ALTER PROCEDURE ResetearTablas_sp
+CREATE OR ALTER PROCEDURE Utilidades.ResetearTablas_sp
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -915,7 +906,7 @@ BEGIN
     -- Resetear los contadores de IDENTITY
     DBCC CHECKIDENT ('Ventas.Factura', RESEED, 0);
     DBCC CHECKIDENT ('Ventas.Cliente', RESEED, 0);
-    DBCC CHECKIDENT ('Empresa.Empleado', RESEED, 0);
+    DBCC CHECKIDENT ('Empresa.Empleado', RESEED, 257019);
     DBCC CHECKIDENT ('Empresa.Sucursal', RESEED, 0);
     DBCC CHECKIDENT ('Inventario.Producto', RESEED, 0);
     DBCC CHECKIDENT ('Inventario.LineaProducto', RESEED, 0);
