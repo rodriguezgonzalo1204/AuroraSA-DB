@@ -1,12 +1,16 @@
 /*
-Entrega 05
-Seguridad
+Aurora SA
+Requisitos de seguridad. (Entrega 05)
+Fecha: 28-02-2025
+Asignatura: Bases de datos Aplicadas - Comisión: 1353
+Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono Gabriel (42134185)
 */
+
 
 USE Com1353G07
 GO
---- Creamos logins para iniciar sesión
 
+--- Creamos logins para iniciar sesión
 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'Aurora')
 	CREATE LOGIN Aurora WITH PASSWORD = 'AplicadasVerano';
 ELSE
@@ -39,39 +43,25 @@ ELSE
     PRINT 'El rol ya existe.';
 GO
 
-IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'Operario')
-    CREATE ROLE Operario;
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'Cajero')
+    CREATE ROLE Cajero;
 ELSE
     PRINT 'El rol ya existe.';
 GO
 
---- Ahora otorgamos roles a nuestros usuarios
+-- Ejecutar hasta acá
+--------------------------------------------
 
+
+--- Ahora otorgamos roles a nuestros usuarios
 ALTER ROLE Supervisor ADD MEMBER VladimirFrancisco;
 GO
-
-ALTER ROLE Operario ADD MEMBER GonzaloRodriguez;
+ALTER ROLE Cajero ADD MEMBER GonzaloRodriguez;
 GO
+-- Ejecutar hasta acá
 
---- Tabla nueva
-
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
-TABLE_SCHEMA ='Ventas' AND TABLE_NAME ='NotaCredito')
-BEGIN
-CREATE TABLE Ventas.NotaCredito
-(
-	idNota INT IDENTITY (1,1) PRIMARY KEY,
-	facturaId INT FOREIGN KEY REFERENCES Ventas.Factura(idFactura),
-	idCliente INT FOREIGN KEY REFERENCES Ventas.Cliente(idCliente),
-	monto DECIMAL(10,2),
-	fechaEmision DATE,
-	detalles VARCHAR(60)
- )
- END
- GO
 
 -- Se crea un procedimiento para generar notas de credito
-
 CREATE OR ALTER PROCEDURE Seguridad.GenerarNotaCredito
     @facturaID		INT,
     @clienteID		INT,
@@ -87,34 +77,91 @@ AS
     END;
 
     -- Realizar nota de crédito
-    INSERT INTO Ventas.NotaCredito (facturaId, idCliente, monto, fechaEmision)
-    VALUES (@facturaID, @clienteID, @monto, GETDATE());
+    INSERT INTO Ventas.NotaCredito (facturaId, idCliente, monto, fechaEmision, detalles)
+    VALUES (@facturaID, @clienteID, @monto, GETDATE(), @detalles);
 
     PRINT 'Nota de crédito generada exitosamente.';
 END;
 
---- Permitimos acceso a los Supervisores para la ejecución del procedure
 
-GRANT EXECUTE ON Ventas.GenerarNotaCredito TO Supervisor;
+--- Permitimos acceso a los Supervisores para la ejecución del procedure
+GRANT EXECUTE ON Seguridad.GenerarNotaCredito TO Supervisor;
 GO
 
 --- Denegamos permisos para ejecutar el procedure a otros roles
-
-DENY EXECUTE ON Ventas.GenerarNotaCredito TO Operario;
+DENY EXECUTE ON Seguridad.GenerarNotaCredito TO Cajero;
 GO
 
---- La siguiente consulta permite visualizar como se encuentran los permisos
---- respecto a usuarios para un procedure
+
+-- Ejecutamos como el usuario 'GonzaloRodriguez'
+EXECUTE AS USER = 'GonzaloRodriguez';
+EXEC Seguridad.GenerarNotaCredito 2,60,6.25,'Palangana' ;
+REVERT;
+-- Resultado esperado -> No tiene permisos
+
+-- Ejecutamos como 'VladimirFrancisco' (Supervisor)
+EXECUTE AS USER = 'VladimirFrancisco';
+EXEC Seguridad.GenerarNotaCredito 2,60,6.25,'Palangana' ;
+REVERT;
+
+SELECT * FROM Ventas.NotaCredito
+-- Resultado esperado -> Nota de Crédito insertada
+
+
+------------------------------------------------------------------
+
+-- ENCRIPTACION
+
+-- Agregar columnas encriptadas
+ALTER TABLE Empresa.Empleado
+ADD CUIL_encriptado VARBINARY(256),
+    domicilio_encriptado VARBINARY(256),
+    telefono_encriptado VARBINARY(256),
+    mailPersonal_encriptado VARBINARY(256);
+
+-- Creamos procedure para encriptar los campos de los empleados
+CREATE OR ALTER PROCEDURE Seguridad.EncriptarEmpleado
+	@fraseClave NVARCHAR(128)
+AS 
+BEGIN 
+--- Encripración masiva para toda la tabla (de forma que siempre que se ingresen datos nuevos 
+--- basta con hacer un EXECUTE para encriptar)
+	UPDATE Empresa.Empleado
+		SET CUIL_encriptado = EncryptByPassPhrase(@fraseClave, CUIL, 1, CONVERT(VARBINARY, idEmpleado)),
+			telefono_encriptado = EncryptByPassPhrase(@fraseClave, telefono, 1, CONVERT(VARBINARY, idEmpleado)),
+			mailPersonal_encriptado = EncryptByPassPhrase(@fraseClave, mailPersonal, 1, CONVERT(VARBINARY, idEmpleado)),
+			domicilio_encriptado = EncryptByPassPhrase(@fraseClave, domicilio, 1, CONVERT(VARBINARY, idEmpleado))
+END
+
+-- Ejecutar hasta acá <--
+
+
+EXEC Seguridad.EncriptarEmpleado 'NoTeOlvidesElWhereEnElDeleteFrom'
+SELECT * from Empresa.Empleado
+-- Visualizamos los datos encriptados en los nuevos campos
+
+/*
+-- Con estas sentencias podemos eliminar los campos originales, quedandonos solo con los encriptados
+ALTER TABLE Empresa.Empleado
+DROP COLUMN CUIL,
+DROP COLUMN domicilio,
+DROP COLUMN telefono,
+DROP COLUMN mailPersonal;
+
+-- Misma forma pero renombrando las columnas
+EXEC sp_rename 'Empresa.Empleado.CUIL_encriptado', 'CUIL', 'COLUMN';
+EXEC sp_rename 'Empresa.Empleado.domicilio_encriptado', 'domicilio', 'COLUMN';
+EXEC sp_rename 'Empresa.Empleado.telefono_encriptado', 'telefono', 'COLUMN';
+EXEC sp_rename 'Empresa.Empleado.mailPersonal_encriptado', 'mailPersonal', 'COLUMN';
+*/
+
+-- Desencriptar los datos
+DECLARE @fraseClave NVARCHAR(128) = 'NoTeOlvidesElWhereEnElDeleteFrom';
 SELECT 
-    pr.principal_id,
-    pr.name AS Usuario_o_Rol,
-    pr.type_desc AS Tipo,
-    pe.permission_name AS Permiso,
-    pe.state_desc AS Estado
-FROM 
-    sys.database_permissions pe
-INNER JOIN 
-    sys.database_principals pr ON pe.grantee_principal_id = pr.principal_id
-WHERE 
-    pe.major_id = OBJECT_ID('Ventas.GenerarNotaCredito')
-    AND pe.permission_name = 'EXECUTE';
+    idEmpleado,
+    CONVERT(VARCHAR, DecryptByPassPhrase(@fraseClave, CUIL_encriptado, 1, CONVERT(VARBINARY, idEmpleado))) AS CUIL,
+    CONVERT(VARCHAR, DecryptByPassPhrase(@fraseClave, domicilio_encriptado, 1, CONVERT(VARBINARY, idEmpleado))) AS domicilio,
+    CONVERT(VARCHAR, DecryptByPassPhrase(@fraseClave, telefono_encriptado, 1, CONVERT(VARBINARY, idEmpleado))) AS telefono,
+    CONVERT(VARCHAR, DecryptByPassPhrase(@fraseClave, mailPersonal_encriptado, 1, CONVERT(VARBINARY, idEmpleado))) AS mailPersonal
+FROM Empresa.Empleado;
+

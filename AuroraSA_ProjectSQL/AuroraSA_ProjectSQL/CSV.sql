@@ -8,7 +8,6 @@ Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono G
 
 -----------------------------------------
 
-
 /*	
 	Modo de ejecución
 	El script esta pensado para poder ejecutarse de un solo bloque con F5 considerando que:
@@ -21,19 +20,20 @@ USE Com1353G07
 GO
 
 -- INDICAR LAS RUTAS CORRESPONDIENTES DE LOS ARCHIVOS, VALOR ACTUAL DEL DOLAR Y CANTIDAD DE CLIENTES RANDOM A GENERAR
-
+/*
 DECLARE @rutaCatalogoCSV NVARCHAR(250) = 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\catalogo.csv',
 		@rutaElectronicos NVARCHAR(250) = 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Electronic accessories.xlsx',
-		@rutaImportados NVARCHAR(250) = 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Electronic accessories.xlsx',
+		@rutaImportados NVARCHAR(250) = 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Productos_importados.xlsx',
 		@rutaVentas NVARCHAR(250) = 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Ventas_registradas.csv',
 		@rutaComplementario NVARCHAR(250) = 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Informacion_complementaria.xlsx',
 		@valorDolar DECIMAL(10,2) = 1,
 		@cantClientes INT = 100;
 
-
+*/
 -- VACIAR TABLAS Y REESTABLECER IDENTITY
 SET NOCOUNT ON;
 EXEC Utilidades.ResetearTablas_sp
+GO
 
 -- CAMBIAR PARAMETROS PARA PERMITIR IMPORTACION
 
@@ -130,7 +130,7 @@ BEGIN
 END;
 GO
 
-EXEC Inventario.CargarProductosCatalogoCSV_sp @rutaCatalogo, @rutaComplemantario, @valorDolar
+EXEC Inventario.CargarProductosCatalogoCSV_sp 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\catalogo.csv', 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Informacion_complementaria.xlsx', 1
 GO
 
 -----------------------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ BEGIN
 END
 GO
 
-EXEC Inventario.CargarProductosElectronicos_sp @rutaElectronicos, @valorDolar
+EXEC Inventario.CargarProductosElectronicos_sp 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Electronic accessories.xlsx', 1
 GO
 
 --------------------------------------------------------------------------------
@@ -234,7 +234,7 @@ BEGIN
 END
 GO
 
-EXEC Inventario.CargarProductosImportados_sp @rutaImportados,@valorDolar
+EXEC Inventario.CargarProductosImportados_sp 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Productos_importados.xlsx',1
 GO
 -----------------------------------------------------------------------------------------------
 -- Importacion de sucursales
@@ -271,7 +271,7 @@ BEGIN
 END;
 GO
 
-EXEC Empresa.ImportarSucursales_sp @rutaComplementario;
+EXEC Empresa.ImportarSucursales_sp 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Informacion_complementaria.xlsx';
 GO
 
 -----------------------------------------------------------------------------------------------
@@ -365,7 +365,7 @@ BEGIN
 END;
 GO
 
-EXEC Empresa.ImportarEmpleados_sp @rutaComplementario
+EXEC Empresa.ImportarEmpleados_sp 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Informacion_complementaria.xlsx'
 GO
 
 --------------------------------------------------------------------------------
@@ -419,7 +419,7 @@ BEGIN
 END;
 GO
 
-EXEC Ventas.CargarClientesAleatorios_sp @cantClientes
+EXEC Ventas.CargarClientesAleatorios_sp 100
 GO
 
 --------------------------------------------------------------------------------
@@ -541,5 +541,5 @@ BEGIN
 END
 GO
 
-EXEC Ventas.ImportarVentas_sp @rutaVentas, @valorDolar
+EXEC Ventas.ImportarVentas_sp 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Ventas_registradas.csv', 1
 GO

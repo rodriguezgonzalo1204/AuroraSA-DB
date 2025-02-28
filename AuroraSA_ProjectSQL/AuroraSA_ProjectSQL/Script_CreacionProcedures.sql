@@ -14,7 +14,6 @@ GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Empresa.InsertarSucursal_sp
 (
-    @nombreSucursal  VARCHAR(30),
     @direccion       NVARCHAR(100),
     @ciudad          VARCHAR(50),
     @telefono        CHAR(10),
@@ -204,7 +203,7 @@ CREATE OR ALTER PROCEDURE Empresa.ActualizarEmpleado_sp
 	@cargo			VARCHAR(25),
     @domicilio		NVARCHAR(100),
     @telefono		CHAR(10),
-    @CUIL			CHAR(10),
+    @CUIL			CHAR(13),
     @fechaAlta		DATE,
 	@mailPersonal	VARCHAR(55),
 	@mailEmpresa	VARCHAR(55),
@@ -907,10 +906,12 @@ BEGIN
     DELETE FROM Empresa.Sucursal;
     DELETE FROM Inventario.Producto;
     DELETE FROM Inventario.LineaProducto;
+	DELETE FROM Ventas.NotaCredito;
     
     -- Resetear los contadores de IDENTITY
     DBCC CHECKIDENT ('Ventas.Factura', RESEED, 0);
     DBCC CHECKIDENT ('Ventas.Cliente', RESEED, 0);
+	DBCC CHECKIDENT ('Ventas.NotaCredito', RESEED, 0);
     DBCC CHECKIDENT ('Empresa.Empleado', RESEED, 257019);
     DBCC CHECKIDENT ('Empresa.Sucursal', RESEED, 0);
     DBCC CHECKIDENT ('Inventario.Producto', RESEED, 0);

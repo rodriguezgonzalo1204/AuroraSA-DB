@@ -52,6 +52,12 @@ ELSE
     print 'El esquema Reportes ya existe en la base de datos.'
 GO
 
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name ='Seguridad')
+    EXEC('CREATE SCHEMA Seguridad')
+ELSE
+    print 'El esquema Seguridad ya existe en la base de datos.'
+GO
+
 
 -----------CREACION DE TABLAS------------
 
@@ -207,3 +213,75 @@ CREATE TABLE Ventas.DetalleVenta
 )
 END
 GO
+
+/*
+	NotaCredito: Registra una nota de credito para devoluciones de facturas.
+	Está en el esquema Ventas.
+*/
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
+TABLE_SCHEMA ='Ventas' AND TABLE_NAME ='NotaCredito')
+BEGIN
+CREATE TABLE Ventas.NotaCredito
+(
+	idNota INT IDENTITY (1,1) ,
+	idFactura INT,
+	idCliente INT,
+	monto DECIMAL(10,2),
+	fechaEmision DATE,
+	detalles VARCHAR(60),
+	CONSTRAINT PK_NotaCredito PRIMARY KEY (idNota),
+	CONSTRAINT FK_NotaCredito_Factura FOREIGN KEY (idFactura) REFERENCES Ventas.Factura(idFactura),
+	CONSTRAINT FK_NotaCredito_Cliente FOREIGN KEY (idCliente) REFERENCES Ventas.Cliente(idCliente)
+ )
+ END
+ GO
+
+
+-----------CREACION DE INDICES------------
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes WHERE name = 'ix_descripcion' 
+    AND object_id = OBJECT_ID('Inventario.LineaProducto')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX ix_descripcion
+    ON Inventario.LineaProducto(descripcion)
+END;
+
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes WHERE name = 'ix_ciudad' 
+    AND object_id = OBJECT_ID('Empresa.Sucursal')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX ix_ciudad
+    ON Empresa.Sucursal(ciudad)
+END;
+
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes WHERE name = 'ix_nombreProd' 
+    AND object_id = OBJECT_ID('Inventario.Producto')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX ix_nombreProd
+    ON Inventario.Producto(nombreProducto)
+END;
+
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes WHERE name = 'ix_codFact' 
+    AND object_id = OBJECT_ID('Ventas.Factura')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX ix_codFact
+    ON Ventas.Factura(codigoFactura)
+END;
+
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes WHERE name = 'ix_tipoClientes' 
+    AND object_id = OBJECT_ID('Ventas.Cliente')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX ix_tipoClientes
+    ON Ventas.Cliente(tipoCliente)
+	INCLUDE (genero)
+END;
+
+

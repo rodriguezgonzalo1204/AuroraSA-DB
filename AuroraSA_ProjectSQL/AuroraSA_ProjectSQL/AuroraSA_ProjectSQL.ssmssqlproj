@@ -3,21 +3,6 @@
   <Items>
     <LogicalFolder Name="Connections" Type="2" Sorted="true">
       <Items>
-        <ConnectionNode Name="DESKTOP-Q2VVBBD\SQLEXPRESS:GONZA-PC\Gonza">
-          <Created>2025-02-26T19:33:57.184495-03:00</Created>
-          <Type>SQL</Type>
-          <Server>DESKTOP-Q2VVBBD\SQLEXPRESS</Server>
-          <UserName />
-          <Authentication>Windows Authentication</Authentication>
-          <InitialDB>master</InitialDB>
-          <LoginTimeout>30</LoginTimeout>
-          <TrustServerCertificate>True</TrustServerCertificate>
-          <HostNameInServerCertificate />
-          <EncryptionOption>True</EncryptionOption>
-          <ExecutionTimeout>0</ExecutionTimeout>
-          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
-          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
-        </ConnectionNode>
         <ConnectionNode Name="GONZA-PC\SQLEXPRESS:GONZA-PC\Gonza">
           <Created>2025-02-26T22:23:44.4174687-03:00</Created>
           <Type>SQL</Type>
@@ -59,13 +44,13 @@
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>C:\Users\Gonza\Desktop\NoComiteado\Script_CreacionDeObjetos.sql</FullPath>
+          <FullPath>Script_CreacionDeObjetos.sql</FullPath>
         </FileNode>
         <FileNode Name="Script_CreacionProcedures.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>C:\Users\Gonza\Desktop\NoComiteado\Script_CreacionProcedures.sql</FullPath>
+          <FullPath>Script_CreacionProcedures.sql</FullPath>
         </FileNode>
         <FileNode Name="ScriptSeguridad.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>

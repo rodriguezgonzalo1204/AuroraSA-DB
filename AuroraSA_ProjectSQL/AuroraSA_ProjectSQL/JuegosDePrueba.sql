@@ -6,13 +6,13 @@ Asignatura: Bases de datos Aplicadas - Comisión: 1353
 Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono Gabriel (42134185)
 */
 
-----------PRUEBAS SP-----------
-RAISERROR('Debe ejecutar el script siguiendo las indicaciones comentadas.',16,1)
+/*
+	Ejecute el código por fragmentos según las indicaciones
+*/
 
--- Utilizar la DB
+
 USE Com1353G07
 GO
-
 -- RESETEAR AUTOINCREMENTALES Y VACIAR TABLAS 
 EXEC Utilidades.ResetearTablas_sp
 GO
@@ -28,20 +28,17 @@ GO
 */
 PRINT '=== InsertarSucursal_sp: Insertando Sucursal San Justo y Ramos Mejia ===';
 EXEC Empresa.InsertarSucursal_sp
-     @nombreSucursal = 'San Justo',
      @direccion      = 'Almafuerte 4450',
      @ciudad         = 'San Justo',
      @telefono       = '1588221136',
 	 @horario		 = 'L a V 8 a. m. – 9 p. m.' 
 
-EXEC Empresa.InsertarSucursal_sp 'Ramos Mejia', 'Alsina 23', 'Buenos Aires', '1542787454', 'L a V 8 a. m. – 9 p. m.';
-
+EXEC Empresa.InsertarSucursal_sp 'Alsina 23', 'Buenos Aires', '1542787454', 'L a V 8 a. m. – 9 p. m.';
 SELECT * FROM Empresa.Sucursal
 --Ejecutar hasta aca: Resultado esperado -> Se inserta correctamente la sucursal San Justo y Buenos Aires
 
 PRINT '=== InsertarSucursal_sp: Error de número de teléfono ===';
 EXEC Empresa.InsertarSucursal_sp
-     @nombreSucursal = 'San Justo',
      @direccion      = 'Almafuerte 4450',
      @ciudad         = 'San Justo',
      @telefono       = '1111',
@@ -56,8 +53,7 @@ EXEC Empresa.InsertarSucursal_sp
 PRINT '=== ActualizarSucursal_sp: Actualizando Sucursal (id=1) ===';
 EXEC Empresa.ActualizarSucursal_sp
      @idSucursal     = 1,
-     @nombreSucursal = 'San Justo Nueva',
-     @direccion      = 'ALmafuerte 4450',
+     @direccion      = 'ALmafuerte Editada',
      @ciudad         = 'San Justo',
      @telefono       = '1588221234',
 	 @horario		 =  'L a V 8 a. m. – 9 p. m';
@@ -83,7 +79,7 @@ EXEC Empresa.EliminarSucursal_sp
 	InsertarEmpleado_sp
 	--------------------
 */
-PRINT '=== InsertarEmpleado_sp: Insertando Empleados en Empleado (id=1) y (id=2) ===';
+PRINT '=== InsertarEmpleado_sp: Insertando dos empleados ===';
 EXEC Empresa.InsertarEmpleado_sp
      @nombre		= 'Juan',
      @apellido		= 'Perez',
@@ -142,9 +138,9 @@ EXEC Empresa.InsertarEmpleado_sp
 */
 PRINT '=== ActualizarEmpleado_sp: Actualizando Empleado (idEmpleado=1) ===';
 EXEC Empresa.ActualizarEmpleado_sp
-	 @idEmpleado	= 1,
+	 @idEmpleado	= 257020,
      @nombre		= 'Juan Carlos',
-     @apellido		= 'Perez',
+     @apellido		= 'Perez Editado',
 	 @genero		= 'M',
 	 @cargo			= 'Cajero',
      @domicilio		= 'Calle A 456',
@@ -156,23 +152,22 @@ EXEC Empresa.ActualizarEmpleado_sp
 	 @idSucursal	= 1,
 	 @turno			= 'TM'
 SELECT * FROM Empresa.Empleado
--- Ejecutar hasta aca: Resultado esperado -> Actualiza el registro del empleado que tiene idEmpleado = 1
+-- Ejecutar hasta aca: Resultado esperado -> Actualiza el registro del empleado que tiene idEmpleado = 257020
 
 /*
 	--------------------
 	EliminarEmpleado_sp
 	--------------------
 */
-PRINT '=== EliminarEmpleado_sp: Eliminando Empleado en Empleado (id=1) ===';
+PRINT '=== EliminarEmpleado_sp: Eliminando Empleado en Empleado (id=257020) ===';
 EXEC Empresa.EliminarEmpleado_sp
-     @idEmpleado = 1;
+     @idEmpleado = 257020;
 SELECT * FROM Empresa.Empleado
--- Ejecutar hasta aca: Resultado esperado -> Borra (borrado logico) el empleado con id 1
+-- Ejecutar hasta aca: Resultado esperado -> Borra (borrado logico) el empleado con id 257020
 
 --------------------------------------------------------------------------------
 -- PRUEBAS DE CLIENTE
 --------------------------------------------------------------------------------
-
 /*
 	--------------------
 	InsertarCliente_sp
@@ -276,7 +271,6 @@ EXEC Inventario.InsertarProducto_sp
      @precioUnitario = 1.25;
 -- Ejecutar hasta aca: Resultado esperado -> Error de linea de producto inexistente
 
-
 /*
 	----------------------
 	ActualizarProducto_sp
@@ -296,16 +290,15 @@ SELECT * FROM Inventario.Producto
 	EliminarProducto_sp
 	-------------------
 */
-PRINT '=== EliminarProducto_sp: Eliminando Producto (idProducto=1) ===';
+PRINT '=== EliminarProducto_sp: Intentando eliminar producto (idProducto=10) ===';
 EXEC Inventario.EliminarProducto_sp
-     @idProducto = 3;
+     @idProducto = 10;
 SELECT * FROM Inventario.Producto
--- Ejecutar hasta aca: Resultado esperado -> Borrado logico de producto con id = 1
+-- Ejecutar hasta aca: Resultado esperado -> Error producto no existente
 
 --------------------------------------------------------------------------------
 -- PRUEBAS DE FACTURA
 --------------------------------------------------------------------------------
-
 /*
 	-------------------
 	InsertarFactura_sp
@@ -321,16 +314,16 @@ EXEC Ventas.InsertarFactura_sp
 	 @identificadorPago = '',
 	 @total				= 200,
      @idCliente			= 1,
-     @idEmpleado		= 2,   
+     @idEmpleado		= 257021,   
      @idSucursal		= 1;
-
-EXEC Ventas.InsertarFactura_sp '754-22-4105','B','2025-02-05', '09:36:00', 'Cash', '', 900, 2, 2, 2;
+	 
+EXEC Ventas.InsertarFactura_sp '754-22-4105','B','2025-02-05', '09:36:00', 'Cash', '', 900, 2, 257021, 2;
 SELECT * FROM Ventas.Factura
 -- Ejecutar hasta aca: Resultado esperado -> Se insertan facturas 1 y 2 correspondientes a cliente 1 y 2, sucursal 1 y 2
 
 PRINT '=== InsertarFactura_sp: Intentando insertar factura para empleado inexistente ===';
 EXEC Ventas.InsertarFactura_sp
-	 @codigoFactura		= '829-34-3910',
+	 @codigoFactura		= '949-34-3910',
      @tipoFactura		= 'A',
      @fecha				= '2025-01-10',
      @hora				= '10:30:00',
@@ -338,7 +331,7 @@ EXEC Ventas.InsertarFactura_sp
 	 @identificadorPago = '',
 	 @total				= 200,
      @idCliente			= 1,
-     @idEmpleado		= 1,   
+     @idEmpleado		= 257020,   
      @idSucursal		= 1;
 -- Ejecutar hasta aca: Resultado esperado -> Error empleado inactivo
 
@@ -352,7 +345,7 @@ EXEC Ventas.InsertarFactura_sp
 	 @identificadorPago = '',
 	 @total				= 1,
      @idCliente			= 1,
-     @idEmpleado		= 2,   
+     @idEmpleado		= 257021,   
      @idSucursal		= 1;
 -- Ejecutar hasta aca: Resultado esperado -> Error formato de codigo de factura
 
@@ -366,7 +359,7 @@ EXEC Ventas.InsertarFactura_sp
 	 @identificadorPago = '',
 	 @total				= 200,
      @idCliente			= 1,
-     @idEmpleado		= 2,   
+     @idEmpleado		= 257021,   
      @idSucursal		= 1;
 -- Ejecutar hasta aca: Resultado esperado -> Error medio de pago inexistente
 
@@ -400,7 +393,7 @@ EXEC Ventas.ActualizarFactura_sp
 	 @identificadorPago = '',
 	 @total				= 400,
      @idCliente			= 1,
-     @idEmpleado		= 2,
+     @idEmpleado		= 257021,
      @idSucursal		= 1;
 SELECT * FROM Ventas.Factura
 -- Ejecutar hasta aca: Resultado esperado -> Actualiza factura id=1
@@ -466,4 +459,8 @@ EXEC Ventas.EliminarDetalleVenta_sp
      @idDetalle = 2;
 SELECT * FROM Ventas.DetalleVenta
 -- Ejecutar hasta aca: Resultado esperado -> Elimina el detalle 2 de la factura 2
+
+-- RESETEAR AUTOINCREMENTALES Y VACIAR TABLAS 
+EXEC Utilidades.ResetearTablas_sp
+GO
 
