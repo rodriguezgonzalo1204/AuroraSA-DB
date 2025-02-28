@@ -111,7 +111,7 @@ CREATE OR ALTER PROCEDURE Empresa.InsertarEmpleado_sp
 	@cargo			VARCHAR(25),
     @domicilio		NVARCHAR(100),
     @telefono		CHAR(10),
-    @CUIL			CHAR(13),
+    @cuil			CHAR(13),
     @fechaAlta		DATE,
 	@mailPersonal	VARCHAR(55),
 	@mailEmpresa	VARCHAR(55),
@@ -122,11 +122,11 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-	-- Verificacion formato de CUIL
-	IF NOT ( @CUIL LIKE '2[0347]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]' OR
-			 @CUIL LIKE '3[034]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]')
+	-- Verificacion formato de cuil
+	IF NOT ( @cuil LIKE '2[0347]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]' OR
+			 @cuil LIKE '3[034]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]')
 	BEGIN
-		RAISERROR('Formato de CUIL inválido.',16,1)
+		RAISERROR('Formato de cuil inválido.',16,1)
 		RETURN;
 	END
 	
@@ -169,7 +169,7 @@ BEGIN
 		cargo,
         domicilio,
         telefono,
-		CUIL,
+		cuil,
 		fechaAlta,
 		mailPersonal,
 		mailEmpresa,
@@ -184,7 +184,7 @@ BEGIN
 		@cargo,
 		@domicilio,
 		@telefono,
-		@CUIL,		
+		@cuil,		
 		@fechaAlta,	
 		@mailPersonal,
 		@mailEmpresa,
@@ -203,7 +203,7 @@ CREATE OR ALTER PROCEDURE Empresa.ActualizarEmpleado_sp
 	@cargo			VARCHAR(25),
     @domicilio		NVARCHAR(100),
     @telefono		CHAR(10),
-    @CUIL			CHAR(13),
+    @cuil			CHAR(13),
     @fechaAlta		DATE,
 	@mailPersonal	VARCHAR(55),
 	@mailEmpresa	VARCHAR(55),
@@ -220,10 +220,10 @@ BEGIN
 		RETURN;
 	END
 
-	IF NOT ( @CUIL LIKE '2[0347]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]' OR
-			 @CUIL LIKE '3[034]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]')
+	IF NOT ( @cuil LIKE '2[0347]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]' OR
+			 @cuil LIKE '3[034]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]')
 	BEGIN
-		RAISERROR('Formato de CUIL inválido.',16,1)
+		RAISERROR('Formato de cuil inválido.',16,1)
 		RETURN;
 	END
 
@@ -265,7 +265,7 @@ BEGIN
 		cargo		 = @cargo,
         domicilio    = @domicilio,
         telefono     = @telefono,
-		CUIL		 = @CUIL,
+		cuil		 = @cuil,
 		fechaAlta	 = @fechaAlta,
 		mailPersonal = @mailPersonal,
 		mailEmpresa  = @mailEmpresa, 

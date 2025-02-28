@@ -87,7 +87,7 @@ EXEC Empresa.InsertarEmpleado_sp
 	 @cargo			= 'Cajero',
      @domicilio		= 'Avellaneda 158',
      @telefono		= '1133558833',
-     @CUIL			= '20-46415848-2',
+     @cuil			= '20-46415848-2',
      @fechaAlta		= '2025-01-01',
 	 @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
 	 @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
@@ -99,7 +99,7 @@ SELECT * FROM Empresa.Empleado
 -- Ejecutar hasta aca: Resultado esperado -> Se inserta correctamente el empleado Juan Perez y Franco Colapinto
 
 
-PRINT '=== InsertarEmpleado_sp: Intentando insertar empleado con CUIL Inválido ===';
+PRINT '=== InsertarEmpleado_sp: Intentando insertar empleado con cuil Inválido ===';
 EXEC Empresa.InsertarEmpleado_sp
      @nombre		= 'Juan',
      @apellido		= 'Perez',
@@ -107,13 +107,13 @@ EXEC Empresa.InsertarEmpleado_sp
 	 @cargo			= 'Cajero',
      @domicilio		= 'Avellaneda 158',
      @telefono		= '1133558833',
-     @CUIL			= '20333332', --Formato incorrecto
+     @cuil			= '20333332', --Formato incorrecto
      @fechaAlta		= '2025-01-01',
 	 @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
 	 @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
 	 @idSucursal	= 1,
 	 @turno			= 'TM';
--- Ejecutar hasta aca: Resultado esperado -> Error de CUIL
+-- Ejecutar hasta aca: Resultado esperado -> Error de cuil
 
 PRINT '=== InsertarEmpleado_sp: Intentando insertar empleado con mail Inválido ===';
 EXEC Empresa.InsertarEmpleado_sp
@@ -123,7 +123,7 @@ EXEC Empresa.InsertarEmpleado_sp
 	 @cargo			= 'Cajero',
      @domicilio		= 'Avellaneda 158',
      @telefono		= '1133558833',
-     @CUIL			= '20-46415848-2',
+     @cuil			= '20-46415848-2',
      @fechaAlta		= '2025-01-01',
 	 @mailPersonal	= 'Rolando_LOPE',  --Formato incorrecto
 	 @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
@@ -145,7 +145,7 @@ EXEC Empresa.ActualizarEmpleado_sp
 	 @cargo			= 'Cajero',
      @domicilio		= 'Calle A 456',
      @telefono		= '0987654321',
-     @CUIL			= '20-46415848-2',
+     @cuil			= '20-46415848-2',
      @fechaAlta		= '2025-01-01',
 	 @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
 	 @mailEmpresa	= 'Rolando.LOPEZ@superA.com',

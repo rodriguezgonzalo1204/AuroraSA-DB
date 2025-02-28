@@ -93,7 +93,7 @@ CREATE TABLE Empresa.Empleado
 	cargo VARCHAR(25),
     domicilio NVARCHAR(100),
     telefono CHAR(10),
-    CUIL CHAR(13) UNIQUE,
+    cuil CHAR(13) UNIQUE,
     fechaAlta DATE,
 	mailPersonal VARCHAR(55),
 	mailEmpresa VARCHAR(55),
