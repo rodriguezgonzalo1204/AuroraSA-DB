@@ -3,7 +3,7 @@ Aurora SA
 Importación de archivos (Entrega 04)
 Fecha: 28-02-2025
 Asignatura: Bases de datos Aplicadas - Comisión: 1353
-Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono Gabriel (42134185)
+Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
 /*
@@ -29,6 +29,7 @@ EXEC Utilidades.ResetearTablas_sp
 GO
 */
 
+
 EXEC Inventario.CargarProductosCatalogoCSV_sp @rutaCatalogoCSV, @rutaComplementario, @valorDolar
 EXEC Inventario.CargarProductosElectronicos_sp @rutaElectronicos, @valorDolar
 EXEC Inventario.CargarProductosImportados_sp @rutaImportados, @valorDolar
@@ -38,6 +39,9 @@ EXEC Ventas.CargarClientesAleatorios_sp @cantClientes
 EXEC Ventas.ImportarVentas_sp @rutaVentas, @valorDolar
 
 
-
+SELECT * FROM Inventario.LineaProducto
+SELECT * FROM Ventas.Factura
+SELECT * FROM Ventas.DetalleVenta order by idFactura asc, idDetalle asc
+SELECT * FROM Inventario.Producto
 
 

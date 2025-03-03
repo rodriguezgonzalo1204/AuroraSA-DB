@@ -3,7 +3,7 @@ Aurora SA
 Creacion de Procedures para importación (Entrega 04)
 Fecha: 28-02-2025
 Asignatura: Bases de datos Aplicadas - Comisión: 1353
-Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono Gabriel (42134185)
+Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
 ---------------------------------------------------------------------------------------------------------------------------
@@ -44,18 +44,28 @@ BEGIN
     -- Crear tabla temporal para cargar los datos del CSV
     CREATE TABLE #TempProductos1 (
         id INT,
-        category NVARCHAR(50),
-        name NVARCHAR(110),  
+        category NVARCHAR(50) COLLATE Modern_Spanish_CS_AS,
+        name NVARCHAR(110) COLLATE Modern_Spanish_CI_AI,  
         price DECIMAL(10,2),
         reference_price DECIMAL(10,2),
-        reference_unit VARCHAR(10),
-        date DATETIME
+        reference_unit VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
+        date DATETIME 
     );
+
+	CREATE NONCLUSTERED INDEX ix_tempNombre ON #TempProductos1(name, date)
+	--CREATE NONCLUSTERED INDEX ix_tempCategory ON #TempProductos1(category);
+	CREATE NONCLUSTERED INDEX ix_tempNombreCategory ON #TempProductos1(name, category);
+
+	CREATE NONCLUSTERED INDEX ix_tempNombreInclude ON #TempProductos1(name) 
+INCLUDE (price, date, category);
+
+
+
 
     -- Crear tabla temporal para buscar coincidencias de línea de producto
     CREATE TABLE #TempEquivalenciaLineas (
-        lineaNueva NVARCHAR(25),
-        lineaVieja NVARCHAR(50)
+        lineaNueva NVARCHAR(25) COLLATE Modern_Spanish_CS_AS,
+        lineaVieja NVARCHAR(50) COLLATE Modern_Spanish_CS_AS UNIQUE,
     );
 
     -- SQL dinámico para importar el archivo CSV
@@ -80,7 +90,7 @@ BEGIN
         SELECT *
         FROM OPENROWSET(''Microsoft.ACE.OLEDB.12.0'',
             ''Excel 12.0 Xml;HDR=YES;Database=' + @rutaArchivoEquivalencias + ''',
-            ''SELECT * FROM [Clasificacion productos$B1:C149]'');
+            ''SELECT * FROM [Clasificacion productos$B1:C]'');
     ';
     EXEC sp_executesql @sql;
 
@@ -88,18 +98,30 @@ BEGIN
     INSERT INTO Inventario.LineaProducto (descripcion)
     SELECT DISTINCT E.lineaNueva
     FROM #TempEquivalenciaLineas E
-    LEFT JOIN Inventario.LineaProducto LP ON E.lineaNueva = LP.descripcion COLLATE Modern_Spanish_CS_AS
+		LEFT JOIN Inventario.LineaProducto LP ON E.lineaNueva = LP.descripcion
     WHERE LP.idLineaProd IS NULL;
 
-    -- Insertar productos usando JOIN
+	-- Se utiliza row_number para filtrar productos con nombre duplicado, se va a dejar solo el mas reciente
+	WITH ProductosFiltrados AS (
+        SELECT 
+			name, 
+            category,
+            price,
+            date,
+            ROW_NUMBER() OVER (PARTITION BY name ORDER BY date DESC) AS rn
+        FROM #TempProductos1 
+    )
+    -- Insertar productos con el precio más reciente
     INSERT INTO Inventario.Producto (nombreProducto, lineaProducto, precioUnitario)
     SELECT 
-        P.name, 
+        PF.name, 
         LP.idLineaProd, 
-        P.price * @valorDolar
-    FROM #TempProductos1 P
-    JOIN #TempEquivalenciaLineas E ON P.category = E.lineaVieja COLLATE Modern_Spanish_CS_AS
-    JOIN Inventario.LineaProducto LP ON E.lineaNueva = LP.descripcion COLLATE Modern_Spanish_CS_AS;
+        PF.price * @valorDolar
+    FROM ProductosFiltrados PF
+		JOIN #TempEquivalenciaLineas E ON PF.category = E.lineaVieja 
+		JOIN Inventario.LineaProducto LP ON E.lineaNueva = LP.descripcion
+    WHERE PF.rn = 1  -- Solo insertar la versión más reciente de cada producto
+		AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto = PF.name COLLATE Modern_Spanish_CS_AS);	-- Verifica que el producto no exista
 
     -- Limpiar tablas temporales
     DROP TABLE #TempEquivalenciaLineas;
@@ -127,9 +149,11 @@ BEGIN
 	END
 
     CREATE TABLE #TempProductos (
-        nombre NVARCHAR(110),
+        nombre NVARCHAR(110) COLLATE Modern_Spanish_CS_AS,
         precio DECIMAL(10,2)
     );
+
+	CREATE NONCLUSTERED INDEX ix_tempNombre ON #TempProductos(nombre)
 
     -- Insertar datos desde el archivo XLSX
     DECLARE @sql NVARCHAR(MAX);
@@ -138,17 +162,27 @@ BEGIN
         SELECT *
         FROM OPENROWSET(''Microsoft.ACE.OLEDB.12.0'',
             ''Excel 12.0 Xml;HDR=YES;Database=' + @rutaArchivo + ''',
-            ''SELECT * FROM [Sheet1$B1:C26]'');
+            ''SELECT * FROM [Sheet1$B1:C]'');
     ';
-	EXEC sp_executesql @sql
-    
+	EXEC sp_executesql @sql;
+
+	WITH ElecFiltrados AS (
+		SELECT *,
+			ROW_NUMBER() OVER(PARTITION BY nombre ORDER BY precio desc) rn
+		FROM #TempProductos
+	)
+
 	-- Se insertan datos segun el precio del dolar y el id correspondiente de la linea electrónico
 	INSERT INTO Inventario.Producto (nombreProducto, lineaProducto, precioUnitario)
     SELECT 
         nombre AS nombre,
         @idLineaProd AS lineaProducto,          
         precio*@valorDolar AS precioUnitario               
-    FROM #TempProductos;
+    FROM ElecFiltrados 
+	WHERE rn = 1
+		AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto COLLATE Modern_Spanish_CI_AI = nombre COLLATE Modern_Spanish_CI_AI);
+
+
     DROP TABLE #TempProductos;
 END
 GO
@@ -165,12 +199,13 @@ BEGIN
     -- Crear tabla temporal para cargar los datos del CSV
     CREATE TABLE #TempProductos (
         idProducto INT,
-        NombreProducto NVARCHAR(100),
-        Proveedor NVARCHAR(100),
-		Categoria NVARCHAR(30),
-		CantidadPorUnidad VARCHAR(20),
+        NombreProducto NVARCHAR(100) COLLATE Modern_Spanish_CI_AI,
+        Proveedor NVARCHAR(100) COLLATE Modern_Spanish_CS_AS,
+		Categoria NVARCHAR(30) COLLATE Modern_Spanish_CS_AS,
+		CantidadPorUnidad VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
         precioUnidad DECIMAL(10,2)
     );
+	CREATE NONCLUSTERED INDEX ix_tempNombre ON #TempProductos(NombreProducto)
 
     -- Insertar datos desde el archivo XLSX
     DECLARE @sql NVARCHAR(MAX);
@@ -193,14 +228,23 @@ BEGIN
     INSERT INTO Inventario.LineaProducto (descripcion)
     SELECT DISTINCT TP.Categoria
     FROM #TempProductos TP
-    LEFT JOIN Inventario.LineaProducto LP ON TP.Categoria = LP.descripcion COLLATE Modern_Spanish_CS_AS
+		JOIN Inventario.LineaProducto LP ON TP.Categoria = LP.descripcion
     WHERE LP.idLineaProd IS NULL;
+
+	WITH ImpFiltrados AS
+	(
+		SELECT *,
+			ROW_NUMBER() OVER(PARTITION BY NombreProducto ORDER BY precioUnidad desc) rn
+		FROM #TempProductos
+	)
 
     -- Insertar productos con join para optimizar
     INSERT INTO Inventario.Producto (nombreProducto, lineaProducto, precioUnitario)
     SELECT TP.NombreProducto, LP.idLineaProd, TP.precioUnidad * @valorDolar
-    FROM #TempProductos TP
-    INNER JOIN Inventario.LineaProducto LP ON TP.Categoria = LP.descripcion COLLATE Modern_Spanish_CS_AS;
+    FROM ImpFiltrados TP
+		JOIN Inventario.LineaProducto LP ON TP.Categoria = LP.descripcion
+	WHERE TP.rn = 1
+		AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto COLLATE Modern_Spanish_CI_AI = TP.NombreProducto COLLATE Modern_Spanish_CI_AI);
 
     DROP TABLE #TempProductos;
 	PRINT 'Importación completada correctamente.';
@@ -216,10 +260,10 @@ BEGIN
     SET NOCOUNT ON;
 
     CREATE TABLE #TempSucursales ( 
-		ciudad VARCHAR(30),
-		direccion NVARCHAR(100),
-		horario VARCHAR(55),
-		telefono char(10)
+		ciudad VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
+		direccion NVARCHAR(100) COLLATE Modern_Spanish_CS_AS,
+		horario VARCHAR(55) COLLATE Modern_Spanish_CS_AS,
+		telefono char(10) COLLATE Modern_Spanish_CS_AS
     );
 	
     DECLARE @sql NVARCHAR(MAX)
@@ -248,7 +292,7 @@ CREATE OR ALTER FUNCTION Utilidades.Generarcuil(@dni INT)
 RETURNS CHAR(13)
 AS
 BEGIN
-    DECLARE @cuil CHAR(13)
+    DECLARE @cuil CHAR(13) 
     DECLARE @codigoVerificacion INT
     DECLARE @prefijo INT
     
@@ -277,26 +321,30 @@ BEGIN
     SET NOCOUNT ON -- apagar
 
     CREATE TABLE #TempEmpleados
-    ( 
-    nombre VARCHAR(30),
-    apellido VARCHAR(30),
+    (
+	idEmpleado INT,
+    nombre VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
+    apellido VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
 	dni	int,
-	domicilio NVARCHAR(100),
-	mailPersonal VARCHAR(55),
-    mailEmpresa VARCHAR(55),
-	cuil CHAR(13),
-    cargo VARCHAR(25),
-    ciudadSuc VARCHAR(30),
-	turno	VARCHAR(20)
-    )
+	domicilio NVARCHAR(100) COLLATE Modern_Spanish_CS_AS,
+	mailPersonal VARCHAR(55) COLLATE Modern_Spanish_CS_AS,
+    mailEmpresa VARCHAR(55) COLLATE Modern_Spanish_CS_AS,
+	cuil CHAR(13) COLLATE Modern_Spanish_CS_AS,
+    cargo VARCHAR(25) COLLATE Modern_Spanish_CS_AS,
+    ciudadSuc VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
+	turno	VARCHAR(20) COLLATE Modern_Spanish_CS_AS
+    );
+
+	CREATE NONCLUSTERED INDEX ix_tempCiudadSuc ON #TempEmpleados(ciudadSuc);
+	CREATE NONCLUSTERED INDEX ix_tempCuil ON #TempEmpleados(cuil);
 
     DECLARE @cadenaSql NVARCHAR(MAX)
     SET @cadenaSql = '
-        INSERT INTO #TempEmpleados (nombre, apellido, dni, domicilio, mailPersonal, mailEmpresa, cuil, cargo, ciudadSuc, turno)
+        INSERT INTO #TempEmpleados (idEmpleado, nombre, apellido, dni, domicilio, mailPersonal, mailEmpresa, cuil, cargo, ciudadSuc, turno)
         SELECT *
         FROM OPENROWSET(''Microsoft.ACE.OLEDB.12.0'',
             ''Excel 12.0 Xml;HDR=YES;Database=' + @rutaArchivo + ''',
-            ''SELECT * FROM [Empleados$B2:K17]'');
+            ''SELECT * FROM [Empleados$A2:K]'');
     ';
     EXEC sp_executesql @cadenaSql
 
@@ -307,29 +355,47 @@ BEGIN
 
 	SELECT	@FechaInicio   = '20220101',
 			@FechaFin     = '20250227',
-			@DiasIntervalo = (1+DATEDIFF(DAY, @FechaInicio, @FechaFin))
+			@DiasIntervalo = (1+DATEDIFF(DAY, @FechaInicio, @FechaFin));
 	
-	INSERT INTO Empresa.Empleado ( nombre, apellido, genero, cargo, domicilio, telefono, cuil, fechaAlta, mailPersonal,mailEmpresa, idSucursal, turno)
-	SELECT 
-        TE.nombre,
-        TE.apellido,
-        -- Género aleatorio (F/M)
-        CASE WHEN ABS(CHECKSUM(NEWID())) % 2 = 0 THEN 'F' ELSE 'M' END AS genero,
-        TE.cargo,
-        TE.domicilio,
-        -- Teléfono aleatorio que comienza con 11 + 8 dígitos (Los '000000000' aseguran que siempre sean 8 digitos, y el RIGHT se queda solo con la parte derecha)
-        '11' + RIGHT('00000000' + CAST(ABS(CHECKSUM(NEWID())) % 100000000 AS VARCHAR(8)), 8) AS telefono,
-        Utilidades.Generarcuil(TE.dni),
-		DATEADD(DAY, RAND(CHECKSUM(NEWID()))*@DiasIntervalo,@FechaInicio),
-        TE.mailPersonal,
-        TE.mailEmpresa,
-        S.idSucursal,
-		TE.turno
-    FROM #TempEmpleados TE
-    JOIN Empresa.Sucursal S 
-        ON TE.ciudadSuc = S.ciudad COLLATE Modern_Spanish_CS_AS;
+	-- Con row_number identificamos si existen dnis duplicados dentro del arcivo de importacion
+	WITH EmpsCTE AS (
+         SELECT *,
+			ROW_NUMBER() OVER (PARTITION BY dni ORDER BY idEmpleado) rn
+         FROM #TempEmpleados
+    ) 
 
+    -- Insetamos dentro de la tabla empleados
+    INSERT INTO Empresa.Empleado (idEmpleado, nombre, apellido, genero, cargo, domicilio, telefono, cuil, fechaAlta, mailPersonal, mailEmpresa, idSucursal, turno)
+	SELECT
+		TE.idEmpleado,
+		TE.nombre,
+		TE.apellido,
+		CASE WHEN ABS(CHECKSUM(NEWID())) % 2 = 0 THEN 'F' ELSE 'M' END AS genero,	-- Genero aleatorio
+		TE.cargo,
+		TE.domicilio,
+		'11' + RIGHT('00000000' + CAST(ABS(CHECKSUM(NEWID())) % 100000000 AS VARCHAR(8)), 8) AS telefono,	-- Numero aleatorio de 10 digitos
+		Utilidades.Generarcuil(TE.dni),
+		DATEADD(DAY, RAND(CHECKSUM(NEWID())) * @DiasIntervalo, @FechaInicio),
+		TE.mailPersonal,
+		TE.mailEmpresa,
+		S.idSucursal,
+		TE.turno
+	FROM EmpsCTE TE
+		JOIN Empresa.Sucursal S ON TE.ciudadSuc = S.ciudad
+	WHERE TE.rn = 1		-- Insertamos solo una aparicion por DNI
+		AND NOT EXISTS (
+			SELECT 1 
+			FROM Empresa.Empleado E 
+			WHERE SUBSTRING(E.cuil, 4, 8) = CAST(TE.dni AS VARCHAR(8)) -- Verificamos que el dni no se encuentre en la tabla
+		)	
+		AND NOT EXISTS (
+			SELECT 1 
+			FROM Empresa.Empleado E
+			WHERE E.idEmpleado = TE.idEmpleado						   -- Verificamos que no exista otro empleado con el mismo legajo
+	 );
+ 
 	DROP TABLE #TempEmpleados
+
 END;
 GO
 
@@ -395,19 +461,19 @@ BEGIN
 
     -- Crear tabla temporal para cargar los datos del CSV
     CREATE TABLE #TempVentas (
-        codigoFactura CHAR(11),
-		tipoFactura CHAR(1),
-		ciudad VARCHAR(20),
-		tipoCliente VARCHAR(10),
-		genero VARCHAR(10),
-        nombreProducto NVARCHAR(100),
+        codigoFactura CHAR(11) COLLATE Modern_Spanish_CS_AS,
+		tipoFactura CHAR(1) COLLATE Modern_Spanish_CS_AS,
+		ciudad VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
+		tipoCliente VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
+		genero VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
+        nombreProducto NVARCHAR(100) COLLATE Modern_Spanish_CS_AS,
 		precioUnitario DECIMAL(10,2),
 		cantidad INT,
-		fecha VARCHAR(10),
-		hora VARCHAR(15),
-		medioPago VARCHAR(20),
+		fecha VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
+		hora VARCHAR(15) COLLATE Modern_Spanish_CS_AS,
+		medioPago VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
 		idEmpleado INT,
-		identificadorPago VARCHAR(35)
+		identificadorPago VARCHAR(35) COLLATE Modern_Spanish_CS_AS
     );
 
     DECLARE @sql NVARCHAR(MAX);
@@ -436,49 +502,52 @@ BEGIN
                  END;
 
 	CREATE TABLE #TotalesPorFactura (
-		codigoFactura CHAR(11),
-		total DECIMAL(10, 2) 
-	);
-	
-	-- Agrupamos por codigo de factura para calcular totales e insertar en la tabla factura con el id deseado
-	INSERT INTO #TotalesPorFactura (codigoFactura, total)
-	SELECT CAST(codigoFactura AS CHAR(11)) as codigoFactura, SUM(precioUnitario * cantidad * @valorDolar) AS total
-	FROM #TempVentas
-	GROUP BY codigoFactura;
+        codigoFactura CHAR(11) COLLATE Modern_Spanish_CS_AS,
+        total DECIMAL(10, 2) 
+    );
 
-	
-	INSERT INTO Ventas.Factura (codigoFactura, medioPago, tipoFactura, fecha, hora, identificadorPago, total, idCliente, idEmpleado, idSucursal)
-	SELECT 
-		CAST(V.codigoFactura AS CHAR(11)) AS codigoFactura,  
-		V.medioPago, 
-		V.tipoFactura, 
-		CONVERT(DATE, V.fecha, 101) AS fecha, 
-		V.hora, 
-		CASE WHEN V.medioPago = 'Cash' THEN '--' ELSE V.identificadorPago END AS identificadorPago,
-		TF.total,
-		C.idCliente, 
-		V.idEmpleado, 
-		S.idSucursal
-	FROM #TempVentas V 
-		JOIN #TotalesPorFactura TF 
-			ON V.codigoFactura = TF.codigoFactura  
-		CROSS APPLY (SELECT TOP 1 idCliente FROM Ventas.Cliente			-- Utilizamos CROSS APPLY para poder elegir un cliente aleatorio
-					 WHERE genero = LEFT(V.genero,1) COLLATE Modern_Spanish_CS_AS  
-					 AND tipoCliente = V.tipoCliente COLLATE Modern_Spanish_CS_AS 
-					 ORDER BY NEWID()) C
-		LEFT JOIN Empresa.Sucursal S 
-			ON V.ciudad COLLATE Modern_Spanish_CS_AS = S.ciudad;
+    -- Calcular el total por factura agrupando por codigoFactura
+    INSERT INTO #TotalesPorFactura (codigoFactura, total)
+    SELECT codigoFactura, SUM(precioUnitario * cantidad * @valorDolar) AS total
+    FROM #TempVentas
+    GROUP BY codigoFactura;
+
+
+    INSERT INTO Ventas.Factura (codigoFactura, medioPago, tipoFactura, fecha, hora, identificadorPago, total, idCliente, idEmpleado, idSucursal)
+    SELECT 
+        V.codigoFactura,
+        MAX(V.medioPago) AS medioPago,				-- Utilizamos MAX porque se supone que para una misma factura, el medio de pago, tipo, cliente, empleado, etc. es exactamente el mismo
+        MAX(V.tipoFactura) AS tipoFactura,			
+        MAX(CONVERT(DATE, V.fecha, 101)) AS fecha,  -- 101 corresponde al formato MM/DD/AAAA
+        MAX(V.hora) AS hora,						
+        MAX(identificadorPago) AS identificadorPago,
+        TF.total,
+        MAX(C.idCliente) AS idCliente,         
+        MAX(V.idEmpleado) AS idEmpleado,       
+        MAX(S.idSucursal) AS idSucursal        
+    FROM #TempVentas V
+		JOIN #TotalesPorFactura TF ON V.codigoFactura = TF.codigoFactura
+		CROSS APPLY (								-- Utilizamos CROSS APLY para asignar un cliente aleatorio que cumpla con tipo y genero
+			SELECT TOP 1 idCliente 
+			FROM Ventas.Cliente
+			WHERE genero = LEFT(V.genero, 1) 		-- Con LEFT nos quedamos solo con el primer digito del genero (Female -> F)
+				AND tipoCliente = V.tipoCliente 
+			ORDER BY NEWID(), V.codigoFactura		-- Se detalla en documentacion el motivo de agregar un campo adicional al ordenamiento al usar NEWID
+		) C	
+		JOIN Empresa.Sucursal S ON V.ciudad = S.ciudad
+    GROUP BY V.codigoFactura, TF.total;
+		
 
 	CREATE TABLE #GruposDetalle (
-		codigoFactura CHAR(11),
+		codigoFactura CHAR(11) COLLATE Modern_Spanish_CS_AS,
 		idDetalle INT,
-		nombreProd NVARCHAR(100),
+		nombreProd NVARCHAR(100) COLLATE Modern_Spanish_CS_AS,
 		precioUnitario DECIMAL(10,2),
 		cantidad INT,
-		subtotal DECIMAL(10,2), 
+		subtotal DECIMAL(10,2) 
 	);
 
-	-- Utilizamos row_number para indicar cuantos detalles corresponden a una misma factura (Para el caso de Ventas.CSV es 1 item por factura por lo que no se ve reflejado el cambio)
+	-- Utilizamos row_number para indicar cuantos detalles corresponden a una misma factura (Para el caso del archivo "Ventas" es 1 item por factura por lo que no se ve reflejado el cambio)
 	INSERT INTO #GruposDetalle(codigoFactura, idDetalle, nombreProd, precioUnitario, cantidad, subtotal)
 	SELECT  CAST(codigoFactura AS CHAR(11)) as codigoFactura,
 			ROW_NUMBER() OVER(PARTITION BY codigoFactura ORDER BY codigoFactura) as idDetalle,
@@ -486,19 +555,15 @@ BEGIN
 	FROM #TempVentas
 
 	INSERT INTO Ventas.DetalleVenta (idFactura, idDetalle, idProducto, precioUnitario, cantidad, subtotal)
-	SELECT F.idFactura, GT.idDetalle, CA.idProducto, GT.precioUnitario, GT.cantidad, GT.subtotal
+	SELECT F.idFactura, GT.idDetalle, P.idProducto, GT.precioUnitario, GT.cantidad, GT.subtotal
 	FROM #GruposDetalle GT 
-		JOIN Ventas.Factura F
-		ON GT.codigoFactura = F.codigoFactura COLLATE Modern_Spanish_CS_AS
-		CROSS APPLY (													-- Utilizamos CROSS APPLY para seleccionar un solo producto
-			SELECT TOP 1 idProducto
-			FROM Inventario.Producto P
-			WHERE P.nombreProducto = GT.nombreProd COLLATE Modern_Spanish_CS_AS
-			ORDER BY idProducto) CA;
+		JOIN Ventas.Factura F ON GT.codigoFactura = F.codigoFactura
+		JOIN Inventario.Producto P ON GT.nombreProd = P.nombreProducto;
 
 	DROP TABLE #TempVentas;
 	DROP TABLE #TotalesPorFactura
 	DROP TABLE #GruposDetalle
+
 	PRINT 'Importación completada correctamente.';
 END
 GO

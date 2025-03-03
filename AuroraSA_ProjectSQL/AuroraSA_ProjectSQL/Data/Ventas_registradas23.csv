@@ -1,0 +1,13 @@
+﻿ID Factura,Tipo de Factura,Ciudad,Tipo de cliente,Genero,Producto,Precio Unitario,Cantidad,Fecha,hora,Medio de Pago,Empleado,Identificador de pago
+750-67-8428,A,Yangon,Normal,Female,Crema facial reaffirmant Luxe caviar Deliplus,5,7,1/5/2019,13:08,Cash,257020,--
+750-67-8428,A,Yangon,Normal,Female,Leche entera Asturiana,1.25,5,1/5/2019,13:08,Cash,257020,--
+750-67-8428,A,Yangon,Normal,Female,Combinado de aperitivos Hacendado,1.2,7,1/5/2019,13:08,Cash,257020,--
+123-19-1176,B,Naypyitaw,Member,Male,Carne de pimiento choricero El Sol,1.3,8,1/10/2019,20:33,Ewallet,257023,'0000003100063398308101
+123-19-1176,B,Naypyitaw,Member,Male,Queso de cabra Hacendado rulo,1.9,7,1/10/2019,20:33,Ewallet,257023,'0000003100063398308101
+123-19-1176,B,Naypyitaw,Member,Male,Canelones de carne con bechamel Hacendado ultracongelados,2.2,7,1/10/2019,20:33,Ewallet,257023,'0000003100063398308101
+123-19-1176,B,Naypyitaw,Member,Male,Bebida Bahamas Hacendado,0.95,6,1/10/2019,20:33,Ewallet,257023,'0000003100063398308101
+123-19-1176,B,Naypyitaw,Member,Male,PatÃ© perro adulto Delikut con cordero y verduras,1.55,10,1/10/2019,20:33,Ewallet,257023,'0000003100063398308101
+123-19-1176,B,Naypyitaw,Member,Male,PatÃ© con pimientos del piquillo Hacendado,1.35,2,1/10/2019,20:33,Ewallet,257023,'0000003100063398308101
+351-62-0822,C,Mandalay,Member,Female,Fideos orientales Yakisoba classic Gallina Blanca,1.59,3,2/6/2019,13:27,Credit card,257027,4583-4349-1623-8219
+351-62-0822,C,Mandalay,Member,Female,Zumo de tomate picante Big Tom,1.65,4,2/6/2019,18:07,Credit card,257027,4583-4349-1623-8219
+351-62-0822,C,Mandalay,Member,Female,ChampiÃ±Ã³n Portobello,1.74,4,2/6/2019,17:03,Credit card,257027,4583-4349-1623-8219

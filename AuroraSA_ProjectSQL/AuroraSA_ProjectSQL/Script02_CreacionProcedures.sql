@@ -3,13 +3,62 @@ Aurora SA
 Script de creacion de stored procedures. (Entrega 03)
 Fecha: 28-02-2025
 Asignatura: Bases de datos Aplicadas - Comisión: 1353
-Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono Gabriel (42134185)
+Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
 ---- CREACION DE SP -> INSERCION, ACTUALIZACION, BORRADO ----
 
 Use Com1353G07
 GO
+
+
+------------------------------- FUNCIONES DE UTILIDAD -------------------------------------------
+-- Validar que el teléfono sea un número de 10 dígitos y solo contenga caracteres numéricos
+CREATE OR ALTER FUNCTION Utilidades.ValidarTelefono(@telefono VARCHAR(20))
+RETURNS BIT
+AS
+BEGIN
+    IF @telefono LIKE '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
+        RETURN 1;
+    RETURN 0;
+END;
+GO
+
+-- Validar el formato del CUIL (XX-XXXXXXXX-X)
+CREATE OR ALTER FUNCTION Utilidades.ValidarCuil(@cuil VARCHAR(13))
+RETURNS BIT
+AS
+BEGIN
+	IF	@cuil LIKE '2[0347]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]' OR
+		@cuil LIKE '3[034]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]'
+        RETURN 1;
+    RETURN 0;
+END;
+GO
+
+-- Validar formato de email 
+CREATE OR ALTER FUNCTION Utilidades.ValidarEmail(@email VARCHAR(255))
+RETURNS BIT
+AS
+BEGIN
+    IF @email LIKE '_%@_%._%' 
+        RETURN 1;
+    RETURN 0;
+END;
+GO
+
+-- Validar género (Solo M o F)
+CREATE OR ALTER FUNCTION Utilidades.ValidarGenero(@genero CHAR(1))
+RETURNS BIT
+AS
+BEGIN
+    IF @genero IN ('M', 'F')
+        RETURN 1;
+    RETURN 0;
+END;
+GO
+
+
 
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Empresa.InsertarSucursal_sp
@@ -24,11 +73,11 @@ BEGIN
     SET NOCOUNT ON;
 
 	-- Verificacion de longitud de numero telefonico
-    IF (len(@telefono) <> 10)
+	IF Utilidades.ValidarTelefono(@telefono) = 0
 	BEGIN
 		RAISERROR('El formato de teléfono es inválido.', 16, 1);
 		RETURN;
-	END
+	END;
    
 	INSERT INTO Empresa.Sucursal 
     (
@@ -66,7 +115,7 @@ BEGIN
 		RETURN;
 	END
 
-    IF (len(@telefono) <> 10)
+    IF Utilidades.ValidarTelefono(@telefono) = 0
 	BEGIN
 		RAISERROR('El formato de teléfono es inválido.', 16, 1);
 		RETURN;
@@ -105,6 +154,7 @@ GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Empresa.InsertarEmpleado_sp
 (
+	@idEmpleado		INT,
     @nombre			VARCHAR(30),
     @apellido		VARCHAR(30),
 	@genero			CHAR(1),
@@ -123,34 +173,38 @@ BEGIN
     SET NOCOUNT ON;
 
 	-- Verificacion formato de cuil
-	IF NOT ( @cuil LIKE '2[0347]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]' OR
-			 @cuil LIKE '3[034]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]')
+	IF Utilidades.ValidarCuil(@cuil) = 0
 	BEGIN
 		RAISERROR('Formato de cuil inválido.',16,1)
 		RETURN;
 	END
 	
+	IF EXISTS (SELECT 1 FROM Empresa.Empleado WHERE idEmpleado = @idEmpleado)
+    BEGIN
+		RAISERROR('Ya existe un empleado con el legajo indicado.', 16, 1);
+	END
+
 	-- Verificacion genero
-	IF @genero NOT IN ('F', 'M')
+	IF Utilidades.ValidarGenero(@genero) = 0
 	BEGIN
 		RAISERROR('Género inválido.',16,1)
 		RETURN;
 	END
 	
-	IF (len(@telefono) <> 10)
+	IF Utilidades.ValidarGenero(@genero) = 0
 	BEGIN
 		RAISERROR('El formato de teléfono es inválido.', 16, 1);
 		RETURN;
 	END
 
 	-- Verificacion formato de mail
-	IF NOT @mailPersonal LIKE '_%@_%._%'
+	IF Utilidades.ValidarEmail(@mailPersonal) = 0
 	BEGIN
 		RAISERROR('El formato de mail personal es inválido.', 16, 1);
 		RETURN;
 	END
 
-	IF NOT @mailEmpresa LIKE '_%@_%._%'
+	IF Utilidades.ValidarEmail(@mailEmpresa) = 0
 	BEGIN
 		RAISERROR('El formato de mail de la empresa es inválido.', 16, 1);
 		RETURN;
@@ -163,6 +217,7 @@ BEGIN
 
     INSERT INTO Empresa.Empleado
     (
+		idEmpleado,
         nombre,
         apellido,
 		genero,
@@ -178,6 +233,7 @@ BEGIN
     )
     VALUES
     (
+		@idEmpleado,
 		@nombre,	
 		@apellido,
 		@genero,
@@ -220,32 +276,31 @@ BEGIN
 		RETURN;
 	END
 
-	IF NOT ( @cuil LIKE '2[0347]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]' OR
-			 @cuil LIKE '3[034]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9]')
+	IF Utilidades.ValidarCuil(@cuil) = 0
 	BEGIN
 		RAISERROR('Formato de cuil inválido.',16,1)
 		RETURN;
 	END
 
-	IF @genero NOT IN ('F', 'M')
+	IF Utilidades.ValidarGenero(@genero) = 0
 	BEGIN
 		RAISERROR('Genero inválido',16,1)
 		RETURN;
 	END
 
-	IF (len(@telefono) <> 10)
+	IF Utilidades.ValidarTelefono(@telefono) = 0
 	BEGIN
 		RAISERROR('El formato de teléfono es inválido.', 16, 1);
 		RETURN;
 	END
 
-	IF NOT @mailPersonal LIKE '_%@_%._%'
+	IF Utilidades.ValidarEmail(@mailPersonal) = 0
 	BEGIN
 		RAISERROR('El formato de mail personal es inválido.', 16, 1);
 		RETURN;
 	END
 
-	IF NOT @mailEmpresa LIKE '_%@_%._%'
+	IF Utilidades.ValidarEmail(@mailPersonal) = 0
 	BEGIN
 		RAISERROR('El formato de mail de la empresa es inválido.', 16, 1);
 		RETURN;
@@ -307,7 +362,7 @@ CREATE OR ALTER PROCEDURE Ventas.InsertarCliente_sp
 BEGIN
     SET NOCOUNT ON;
     
-	IF @genero NOT IN ('F', 'M')
+	IF Utilidades.ValidarGenero(@genero) = 0
 	BEGIN
 		RAISERROR('Género inválido.',16,1)
 		RETURN;
@@ -350,7 +405,7 @@ BEGIN
 		RETURN;
 	END
 
-    IF @genero NOT IN ('F', 'M')
+    IF Utilidades.ValidarGenero(@genero) = 0
 	BEGIN
 		RAISERROR('Género inválido.',16,1) 
 		RETURN;
@@ -912,7 +967,6 @@ BEGIN
     DBCC CHECKIDENT ('Ventas.Factura', RESEED, 0);
     DBCC CHECKIDENT ('Ventas.Cliente', RESEED, 0);
 	DBCC CHECKIDENT ('Ventas.NotaCredito', RESEED, 0);
-    DBCC CHECKIDENT ('Empresa.Empleado', RESEED, 257019);
     DBCC CHECKIDENT ('Empresa.Sucursal', RESEED, 0);
     DBCC CHECKIDENT ('Inventario.Producto', RESEED, 0);
     DBCC CHECKIDENT ('Inventario.LineaProducto', RESEED, 0);

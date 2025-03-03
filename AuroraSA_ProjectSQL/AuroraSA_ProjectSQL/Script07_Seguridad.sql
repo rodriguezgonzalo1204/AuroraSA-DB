@@ -3,7 +3,7 @@ Aurora SA
 Requisitos de seguridad. (Entrega 05)
 Fecha: 28-02-2025
 Asignatura: Bases de datos Aplicadas - Comisión: 1353
-Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono Gabriel (42134185)
+Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
 

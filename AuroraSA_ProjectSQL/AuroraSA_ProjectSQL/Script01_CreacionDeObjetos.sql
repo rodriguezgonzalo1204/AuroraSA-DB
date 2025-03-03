@@ -3,7 +3,7 @@ Aurora SA
 Script de creacion de objetos. (Entrega 03)
 Fecha: 28-02-2025
 Asignatura: Bases de datos Aplicadas - Comisión: 1353
-Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono Gabriel (42134185)
+Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
 ------------CREACION DE DATABASE----------
@@ -86,7 +86,7 @@ TABLE_SCHEMA ='Empresa' AND TABLE_NAME ='Empleado')
 BEGIN
 CREATE TABLE Empresa.Empleado
 (
-    idEmpleado INT IDENTITY(257020,1),
+    idEmpleado INT,
     nombre VARCHAR(30),
     apellido VARCHAR(30),
 	genero CHAR(1),
@@ -153,7 +153,7 @@ BEGIN
 CREATE TABLE Inventario.Producto
 (
     idProducto INT IDENTITY(1,1),
-    nombreProducto NVARCHAR(100),
+    nombreProducto NVARCHAR(100) UNIQUE,
     precioUnitario DECIMAL(10,2),
 	lineaProducto INT,
 	activo BIT DEFAULT 1,   
@@ -162,7 +162,7 @@ CREATE TABLE Inventario.Producto
 )
 END
 GO
-	
+
 /*
    Factura: Registra la venta general. Se asocia a un Cliente, Empleado, Sucursal, y un Medio de Pago (opcional).
    Está en el esquema Ventas.
@@ -257,12 +257,30 @@ BEGIN
 END;
 
 IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes WHERE name = 'ix_cuil' 
+    AND object_id = OBJECT_ID('Empresa.Empleado')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX ix_cuil
+    ON Empresa.Empleado(cuil)
+END;
+
+IF NOT EXISTS (
     SELECT 1 FROM sys.indexes WHERE name = 'ix_nombreProd' 
     AND object_id = OBJECT_ID('Inventario.Producto')
 )
 BEGIN
     CREATE NONCLUSTERED INDEX ix_nombreProd
     ON Inventario.Producto(nombreProducto)
+END;
+
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes WHERE name = 'ix_lineaProd' 
+    AND object_id = OBJECT_ID('Inventario.Producto')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX ix_lineaProd
+    ON Inventario.Producto(lineaProducto)
 END;
 
 IF NOT EXISTS (
@@ -274,6 +292,20 @@ BEGIN
     ON Ventas.Factura(codigoFactura)
 END;
 
+IF NOT EXISTS 
+	(SELECT 1 FROM sys.indexes WHERE name = 'ix_fechaFact'
+	AND object_id = OBJECT_ID('Ventas.Factura'))
+BEGIN
+    CREATE INDEX ix_fechaFact ON Ventas.Factura(fecha);
+END;
+
+IF NOT EXISTS
+	(SELECT 1 FROM sys.indexes WHERE name = 'ix_sucFact'
+	AND object_id = OBJECT_ID('Ventas.Factura'))
+BEGIN
+    CREATE INDEX ix_sucFact ON Ventas.Factura(idSucursal);
+END;
+
 IF NOT EXISTS (
     SELECT 1 FROM sys.indexes WHERE name = 'ix_tipoClientes' 
     AND object_id = OBJECT_ID('Ventas.Cliente')
@@ -283,5 +315,3 @@ BEGIN
     ON Ventas.Cliente(tipoCliente)
 	INCLUDE (genero)
 END;
-
-

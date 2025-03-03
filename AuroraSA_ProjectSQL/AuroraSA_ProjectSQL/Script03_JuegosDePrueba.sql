@@ -1,9 +1,9 @@
 ﻿/*
 Aurora SA
-Juego de Preubas para Store Precedures de manipulacion de objetos. (Entrega 03)
+Juego de Pruebas para Store Precedures de manipulacion de objetos. (Entrega 03)
 Fecha: 28-02-2025
 Asignatura: Bases de datos Aplicadas - Comisión: 1353
-Grupo 07: Rodriguez Gonzalo (46418949) - Vladimir Francisco (46030072) - Vuono Gabriel (42134185)
+Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
 /*
@@ -53,7 +53,7 @@ EXEC Empresa.InsertarSucursal_sp
 PRINT '=== ActualizarSucursal_sp: Actualizando Sucursal (id=1) ===';
 EXEC Empresa.ActualizarSucursal_sp
      @idSucursal     = 1,
-     @direccion      = 'ALmafuerte Editada',
+     @direccion      = 'Almafuerte Editada',
      @ciudad         = 'San Justo',
      @telefono       = '1588221234',
 	 @horario		 =  'L a V 8 a. m. – 9 p. m';
@@ -81,6 +81,7 @@ EXEC Empresa.EliminarSucursal_sp
 */
 PRINT '=== InsertarEmpleado_sp: Insertando dos empleados ===';
 EXEC Empresa.InsertarEmpleado_sp
+	 @idEmpleado	= 257020,
      @nombre		= 'Juan',
      @apellido		= 'Perez',
 	 @genero		= 'M',
@@ -94,13 +95,14 @@ EXEC Empresa.InsertarEmpleado_sp
 	 @idSucursal	= 1,
 	 @turno			= 'TM';
 
-EXEC Empresa.InsertarEmpleado_sp 'Franco', 'Colapinto', 'M', 'Cajero','Calle234','1522441542','20-38652541-5','2024-08-09','FC@gmail.com','FC@SuperA.com',2,'TM'
+EXEC Empresa.InsertarEmpleado_sp 257021, 'Franco', 'Colapinto', 'M', 'Cajero','Calle234','1522441542','20-38652541-5','2024-08-09','FC@gmail.com','FC@SuperA.com',2,'TM'
 SELECT * FROM Empresa.Empleado
 -- Ejecutar hasta aca: Resultado esperado -> Se inserta correctamente el empleado Juan Perez y Franco Colapinto
 
 
 PRINT '=== InsertarEmpleado_sp: Intentando insertar empleado con cuil Inválido ===';
 EXEC Empresa.InsertarEmpleado_sp
+	 @idEmpleado	= 257022,
      @nombre		= 'Juan',
      @apellido		= 'Perez',
 	 @genero		= 'M',
@@ -117,6 +119,7 @@ EXEC Empresa.InsertarEmpleado_sp
 
 PRINT '=== InsertarEmpleado_sp: Intentando insertar empleado con mail Inválido ===';
 EXEC Empresa.InsertarEmpleado_sp
+	 @idEmpleado	= 257022,
      @nombre		= 'Juan',
      @apellido		= 'Perez',
 	 @genero		= 'M',
@@ -136,7 +139,7 @@ EXEC Empresa.InsertarEmpleado_sp
 	ActualizarEmpleado_sp
 	--------------------  
 */
-PRINT '=== ActualizarEmpleado_sp: Actualizando Empleado (idEmpleado=1) ===';
+PRINT '=== ActualizarEmpleado_sp: Actualizando Empleado (idEmpleado=257020) ===';
 EXEC Empresa.ActualizarEmpleado_sp
 	 @idEmpleado	= 257020,
      @nombre		= 'Juan Carlos',
@@ -204,7 +207,7 @@ EXEC Ventas.ActualizarCliente_sp
      @idCliente          = 1,
      @nombre             = 'Ana Maria',
      @apellido           = 'Lopez',
-     @tipoCliente        = 'Normal',
+     @tipoCliente        = 'Member',
      @genero             = 'F',
      @datosFidelizacion  = '500';
 SELECT * FROM Ventas.Cliente
