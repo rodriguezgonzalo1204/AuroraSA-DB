@@ -31,7 +31,7 @@ EXEC Empresa.InsertarSucursal_sp
      @direccion      = 'Almafuerte 4450',
      @ciudad         = 'San Justo',
      @telefono       = '1588221136',
-	 @horario		 = 'L a V 8 a. m. – 9 p. m.' 
+     @horario	     = 'L a V 8 a. m. – 9 p. m.' 
 
 EXEC Empresa.InsertarSucursal_sp 'Alsina 23', 'Buenos Aires', '1542787454', 'L a V 8 a. m. – 9 p. m.';
 SELECT * FROM Empresa.Sucursal
@@ -42,7 +42,7 @@ EXEC Empresa.InsertarSucursal_sp
      @direccion      = 'Almafuerte 4450',
      @ciudad         = 'San Justo',
      @telefono       = '1111',
-	 @horario		 = 'L a V 8 a. m. – 9 p. m.' 
+     @horario	     = 'L a V 8 a. m. – 9 p. m.' 
 --Ejecutar hasta aca: Resultado esperado -> Error número de teléfono inválido
 
 /*
@@ -56,7 +56,7 @@ EXEC Empresa.ActualizarSucursal_sp
      @direccion      = 'Almafuerte Editada',
      @ciudad         = 'San Justo',
      @telefono       = '1588221234',
-	 @horario		 =  'L a V 8 a. m. – 9 p. m';
+     @horario	     =  'L a V 8 a. m. – 9 p. m';
 SELECT * FROM Empresa.Sucursal
 -- Ejecutar hasta aca: Resultado esperado -> Se actualizan los datos de la sucursal id=1
 
@@ -84,16 +84,16 @@ EXEC Empresa.InsertarEmpleado_sp
 	 @idEmpleado	= 257020,
      @nombre		= 'Juan',
      @apellido		= 'Perez',
-	 @genero		= 'M',
-	 @cargo			= 'Cajero',
+     @genero		= 'M',
+     @cargo		= 'Cajero',
      @domicilio		= 'Avellaneda 158',
      @telefono		= '1133558833',
-     @cuil			= '20-46415848-2',
+     @cuil		= '20-46415848-2',
      @fechaAlta		= '2025-01-01',
-	 @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
-	 @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
-	 @idSucursal	= 1,
-	 @turno			= 'TM';
+     @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
+     @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
+     @idSucursal	= 1,
+     @turno		= 'TM';
 
 EXEC Empresa.InsertarEmpleado_sp 257021, 'Franco', 'Colapinto', 'M', 'Cajero','Calle234','1522441542','20-38652541-5','2024-08-09','FC@gmail.com','FC@SuperA.com',2,'TM'
 SELECT * FROM Empresa.Empleado
@@ -105,16 +105,16 @@ EXEC Empresa.InsertarEmpleado_sp
 	 @idEmpleado	= 257022,
      @nombre		= 'Juan',
      @apellido		= 'Perez',
-	 @genero		= 'M',
-	 @cargo			= 'Cajero',
+     @genero		= 'M',
+     @cargo		= 'Cajero',
      @domicilio		= 'Avellaneda 158',
      @telefono		= '1133558833',
-     @cuil			= '20333332', --Formato incorrecto
+     @cuil		= '20333332', --Formato incorrecto
      @fechaAlta		= '2025-01-01',
-	 @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
-	 @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
-	 @idSucursal	= 1,
-	 @turno			= 'TM';
+     @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
+     @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
+     @idSucursal	= 1,
+     @turno		= 'TM';
 -- Ejecutar hasta aca: Resultado esperado -> Error de cuil
 
 PRINT '=== InsertarEmpleado_sp: Intentando insertar empleado con mail Inválido ===';
@@ -122,16 +122,16 @@ EXEC Empresa.InsertarEmpleado_sp
 	 @idEmpleado	= 257022,
      @nombre		= 'Juan',
      @apellido		= 'Perez',
-	 @genero		= 'M',
-	 @cargo			= 'Cajero',
+     @genero		= 'M',
+     @cargo		= 'Cajero',
      @domicilio		= 'Avellaneda 158',
      @telefono		= '1133558833',
-     @cuil			= '20-46415848-2',
+     @cuil		= '20-46415848-2',
      @fechaAlta		= '2025-01-01',
-	 @mailPersonal	= 'Rolando_LOPE',  --Formato incorrecto
-	 @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
-	 @idSucursal	= 1,
-	 @turno			= 'TM';
+     @mailPersonal	= 'Rolando_LOPE',  --Formato incorrecto
+     @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
+     @idSucursal	= 1,
+     @turno		= 'TM';
 -- Ejecutar hasta aca: Resultado esperado -> Error de formato de mail
 
 /*
