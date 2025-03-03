@@ -70,8 +70,8 @@ CREATE TABLE Empresa.Sucursal
     direccion NVARCHAR(100),
     ciudad VARCHAR(50),
     telefono CHAR(10),
-	horario VARCHAR(55),
-	activo BIT DEFAULT 1,
+    horario VARCHAR(55),
+    activo BIT DEFAULT 1,
     CONSTRAINT PK_Sucursal PRIMARY KEY (idSucursal)
 )
 END
@@ -89,17 +89,17 @@ CREATE TABLE Empresa.Empleado
     idEmpleado INT IDENTITY(257020,1),
     nombre VARCHAR(30),
     apellido VARCHAR(30),
-	genero CHAR(1),
-	cargo VARCHAR(25),
+    genero CHAR(1),
+    cargo VARCHAR(25),
     domicilio NVARCHAR(100),
     telefono CHAR(10),
     cuil CHAR(13) UNIQUE,
     fechaAlta DATE,
-	mailPersonal VARCHAR(55),
-	mailEmpresa VARCHAR(55),
+    mailPersonal VARCHAR(55),
+    mailEmpresa VARCHAR(55),
     idSucursal INT,
-	turno VARCHAR(20),
-	activo BIT DEFAULT 1,
+    turno VARCHAR(20),
+    activo BIT DEFAULT 1,
     CONSTRAINT PK_Empleado PRIMARY KEY (idEmpleado),
     CONSTRAINT FK_Empleado_Sucursal FOREIGN KEY (idSucursal) REFERENCES Empresa.Sucursal(idSucursal)
 )
@@ -155,8 +155,8 @@ CREATE TABLE Inventario.Producto
     idProducto INT IDENTITY(1,1),
     nombreProducto NVARCHAR(100),
     precioUnitario DECIMAL(10,2),
-	lineaProducto INT,
-	activo BIT DEFAULT 1,   
+    lineaProducto INT,
+    activo BIT DEFAULT 1,   
     CONSTRAINT PK_Producto PRIMARY KEY (idProducto),
 	CONSTRAINT FK_Producto_LineaProducto FOREIGN KEY (lineaProducto) REFERENCES Inventario.LineaProducto(idLineaProd)
 )
@@ -173,17 +173,17 @@ BEGIN
 CREATE TABLE Ventas.Factura
 (
     idFactura INT IDENTITY(1,1),
-	codigoFactura CHAR(11) UNIQUE,
-	medioPago VARCHAR(20),
+    codigoFactura CHAR(11) UNIQUE,
+    medioPago VARCHAR(20),
     tipoFactura CHAR(1),
     fecha DATE,
     hora VARCHAR(15),
     identificadorPago VARCHAR(35),
-	total DECIMAL(10,2),
+    total DECIMAL(10,2),
     idCliente INT,
     idEmpleado INT,
     idSucursal INT,
- 	activo BIT DEFAULT 1,     
+    activo BIT DEFAULT 1,     
     CONSTRAINT PK_Factura PRIMARY KEY (idFactura),
     CONSTRAINT FK_Factura_Cliente FOREIGN KEY (idCliente) REFERENCES Ventas.Cliente (idCliente),
     CONSTRAINT FK_Factura_Empleado FOREIGN KEY (idEmpleado) REFERENCES Empresa.Empleado (idEmpleado),
@@ -201,12 +201,12 @@ TABLE_SCHEMA ='Ventas' AND TABLE_NAME ='DetalleVenta')
 BEGIN
 CREATE TABLE Ventas.DetalleVenta
 (
-	idFactura INT,
+    idFactura INT,
     idDetalle INT,
     idProducto INT,
     cantidad INT,
-	subtotal DECIMAL(10,2),
-	precioUnitario DECIMAL(10,2),
+    subtotal DECIMAL(10,2),
+    precioUnitario DECIMAL(10,2),
     CONSTRAINT PK_DetalleVenta PRIMARY KEY (idDetalle,idFactura),
     CONSTRAINT FK_DetalleVenta_Factura FOREIGN KEY (idFactura) REFERENCES Ventas.Factura(idFactura),
     CONSTRAINT FK_DetalleVenta_Producto FOREIGN KEY (idProducto) REFERENCES Inventario.Producto (idProducto)
