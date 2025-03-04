@@ -22,47 +22,59 @@
     </LogicalFolder>
     <LogicalFolder Name="Queries" Type="0" Sorted="true">
       <Items>
-        <FileNode Name="Script01_CreacionDeObjetos.sql">
+        <FileNode Name="01_CreacionDeObjetos.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>Script01_CreacionDeObjetos.sql</FullPath>
+          <FullPath>01_CreacionDeObjetos.sql</FullPath>
         </FileNode>
-        <FileNode Name="Script02_CreacionProcedures.sql">
+        <FileNode Name="02_CreacionProcedures.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>Script02_CreacionProcedures.sql</FullPath>
+          <FullPath>02_CreacionProcedures.sql</FullPath>
         </FileNode>
-        <FileNode Name="Script03_JuegosDePrueba.sql">
+        <FileNode Name="03_JuegosDePrueba1.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>Script03_JuegosDePrueba.sql</FullPath>
+          <FullPath>03_JuegosDePrueba1.sql</FullPath>
         </FileNode>
-        <FileNode Name="Script04_ProceduresImportacion.sql">
+        <FileNode Name="04_ProceduresImportacion.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>Script04_ProceduresImportacion.sql</FullPath>
+          <FullPath>04_ProceduresImportacion.sql</FullPath>
         </FileNode>
-        <FileNode Name="Script05_ImportacionMasiva.sql">
+        <FileNode Name="05_ImportacionMasiva.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>Script05_ImportacionMasiva.sql</FullPath>
+          <FullPath>05_ImportacionMasiva.sql</FullPath>
         </FileNode>
-        <FileNode Name="Script06_ReportesXML.sql">
+        <FileNode Name="06_ReportesXML.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>Script06_ReportesXML.sql</FullPath>
+          <FullPath>06_ReportesXML.sql</FullPath>
         </FileNode>
-        <FileNode Name="Script07_Seguridad.sql">
+        <FileNode Name="07_Roles.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>Script07_Seguridad.sql</FullPath>
+          <FullPath>07_Roles.sql</FullPath>
+        </FileNode>
+        <FileNode Name="08_Encriptacion.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
+          <AssociatedConnUserName />
+          <FullPath>08_Encriptacion.sql</FullPath>
+        </FileNode>
+        <FileNode Name="09_JuegosDePrueba2.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GONZA-PC\SQLEXPRESS:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>GONZA-PC\SQLEXPRESS</AssociatedConnSrvName>
+          <AssociatedConnUserName />
+          <FullPath>09_JuegosDePrueba2.sql</FullPath>
         </FileNode>
       </Items>
     </LogicalFolder>

@@ -8,7 +8,7 @@ Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono G
 
 ---- CREACION DE SP -> INSERCION, ACTUALIZACION, BORRADO ----
 
-Use Com1353G07
+USE Com1353G07
 GO
 
 
@@ -42,7 +42,7 @@ RETURNS BIT
 AS
 BEGIN
     IF @email LIKE '_%@_%._%' 
-        RETURN 1;
+		RETURN 1;
     RETURN 0;
 END;
 GO
@@ -62,12 +62,10 @@ GO
 
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Empresa.InsertarSucursal_sp
-(
     @direccion       NVARCHAR(100),
     @ciudad          VARCHAR(50),
     @telefono        CHAR(10),
     @horario         VARCHAR(55)	
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -79,31 +77,27 @@ BEGIN
 		RETURN;
 	END;
    
-	INSERT INTO Empresa.Sucursal 
-    (
+	INSERT INTO Empresa.Sucursal (
         direccion,
         ciudad,
         telefono,
-	horario
-    )
-    VALUES
-    (
+		horario
+	)
+    VALUES (
         @direccion,
         @ciudad,
         @telefono,
-	@horario
+		@horario
     );
 END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Empresa.ActualizarSucursal_sp
-(
     @idSucursal      INT,
     @direccion       NVARCHAR(100),
     @ciudad          VARCHAR(50),
     @telefono        CHAR(10),
     @horario         VARCHAR(55)	
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -122,19 +116,16 @@ BEGIN
 	END
 
     UPDATE Empresa.Sucursal
-    SET
-        direccion      = @direccion,
+    SET	direccion      = @direccion,
         ciudad         = @ciudad,
         telefono       = @telefono,
-	horario	       = @horario
-WHERE idSucursal = @idSucursal;
+		horario	       = @horario
+	WHERE idSucursal = @idSucursal;
 END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Empresa.EliminarSucursal_sp
-(
     @idSucursal INT
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -153,25 +144,19 @@ END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Empresa.InsertarEmpleado_sp
-(
-<<<<<<< HEAD
 	@idEmpleado		INT,
     @nombre			VARCHAR(30),
-=======
-    @nombre		VARCHAR(30),
->>>>>>> f09b5c3f6ba508ef5c6d0d395b906f3ab0527df8
     @apellido		VARCHAR(30),
-    @genero		CHAR(1),
-    @cargo		VARCHAR(25),
+    @genero			CHAR(1),
+    @cargo			VARCHAR(25),
     @domicilio		NVARCHAR(100),
     @telefono		CHAR(10),
-    @cuil		CHAR(13),
+    @cuil			CHAR(13),
     @fechaAlta		DATE,
     @mailPersonal	VARCHAR(55),
     @mailEmpresa	VARCHAR(55),
     @idSucursal		INT,
-    @turno		VARCHAR(20)
-)
+    @turno			VARCHAR(20)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -219,24 +204,22 @@ BEGIN
 	RAISERROR('No existe la sucursal indicada.', 16, 1);
     END
 
-    INSERT INTO Empresa.Empleado
-    (
+    INSERT INTO Empresa.Empleado (
 		idEmpleado,
         nombre,
         apellido,
-	genero,
-	cargo,
+		genero,
+		cargo,
         domicilio,
         telefono,
-	cuil,
-	fechaAlta,
-	mailPersonal,
-	mailEmpresa,
-	idSucursal,
-	turno
+		cuil,
+		fechaAlta,
+		mailPersonal,
+		mailEmpresa,
+		idSucursal,
+		turno
     )
-    VALUES
-    (
+	VALUES (
 		@idEmpleado,
 		@nombre,	
 		@apellido,
@@ -255,21 +238,19 @@ END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Empresa.ActualizarEmpleado_sp
-(	
     @idEmpleado		INT,
-    @nombre		VARCHAR(30),
+    @nombre			VARCHAR(30),
     @apellido		VARCHAR(30),
-    @genero		CHAR(1),
-    @cargo		VARCHAR(25),
+    @genero			CHAR(1),
+    @cargo			VARCHAR(25),
     @domicilio		NVARCHAR(100),
     @telefono		CHAR(10),
-    @cuil		CHAR(13),
+    @cuil			CHAR(13),
     @fechaAlta		DATE,
     @mailPersonal	VARCHAR(55),
     @mailEmpresa	VARCHAR(55),
     @idSucursal		INT,
-    @turno		VARCHAR(20)
-)
+    @turno			VARCHAR(20)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -317,27 +298,24 @@ BEGIN
 	END
 
     UPDATE Empresa.Empleado
-    SET
-        nombre	     = @nombre,
+    SET nombre	     = @nombre,
         apellido     = @apellido,
-	genero	     = @genero,
-	cargo	     = @cargo,
+		genero	     = @genero,
+		cargo	     = @cargo,
         domicilio    = @domicilio,
         telefono     = @telefono,
-	cuil	     = @cuil,
-	fechaAlta    = @fechaAlta,
-	mailPersonal = @mailPersonal,
-	mailEmpresa  = @mailEmpresa, 
-	idSucursal   = @idSucursal,
-	turno	     = @turno
+		cuil	     = @cuil,
+		fechaAlta    = @fechaAlta,
+		mailPersonal = @mailPersonal,
+		mailEmpresa  = @mailEmpresa, 
+		idSucursal   = @idSucursal,
+		turno	     = @turno
     WHERE idEmpleado = @idEmpleado;
 END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Empresa.EliminarEmpleado_sp
-(
     @idEmpleado INT
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -356,13 +334,12 @@ END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Ventas.InsertarCliente_sp
-(
-    @nombre			VARCHAR(30),
+    @nombre				VARCHAR(30),
     @apellido			VARCHAR(30),
     @tipoCliente		VARCHAR(10),
-    @genero			CHAR(1),
-    @datosFidelizacion		INT
-)AS
+    @genero				CHAR(1),
+    @datosFidelizacion	INT
+AS
 BEGIN
     SET NOCOUNT ON;
     
@@ -372,34 +349,30 @@ BEGIN
 		RETURN;
 	END
 
-	INSERT INTO Ventas.Cliente
-    (
+	INSERT INTO Ventas.Cliente (
         nombre,
         apellido,
         tipoCliente,
         genero,
-	datosFidelizacion
+		datosFidelizacion
     )
-    VALUES
-    (
-	@nombre,	
-	@apellido,
-	@tipoCliente,
-	@genero,		
-	@datosFidelizacion
+    VALUES (
+		@nombre,	
+		@apellido,
+		@tipoCliente,
+		@genero,		
+		@datosFidelizacion
     );
 END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Ventas.ActualizarCliente_sp
-(
     @idCliente			INT,
     @nombre			VARCHAR(30),
     @apellido			VARCHAR(30),
     @tipoCliente		VARCHAR(10),
     @genero			CHAR(1),
     @datosFidelizacion		INT
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -416,20 +389,17 @@ BEGIN
 	END
 
     UPDATE Ventas.Cliente
-    SET
-        nombre				= @nombre,
+    SET nombre				= @nombre,
         apellido			= @apellido,
         tipoCliente			= @tipoCliente,
-	genero				= @genero,
-	datosFidelizacion		= @datosFidelizacion
+		genero				= @genero,
+		datosFidelizacion	= @datosFidelizacion
     WHERE idCliente = @idCliente;
 END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Ventas.EliminarCliente_sp
-(
     @idCliente INT
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -448,11 +418,9 @@ END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Inventario.InsertarProducto_sp
-(
     @nombreProducto   NVARCHAR(100),
     @precioUnitario   DECIMAL(10,2),
     @lineaProducto    INT
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -478,28 +446,24 @@ BEGIN
      	RETURN;
 	END
 
-    INSERT INTO Inventario.Producto
-    (
+    INSERT INTO Inventario.Producto (
         nombreProducto,
         precioUnitario,
-	lineaProducto
+		lineaProducto
     )
-    VALUES
-    (
+    VALUES (
         @nombreProducto,
         @precioUnitario,
-	@lineaProducto 
+		@lineaProducto 
     );
 END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Inventario.ActualizarProducto_sp
-(
     @idProducto       INT,
     @nombreProducto   NVARCHAR(100),
     @lineaProducto    VARCHAR(20),
     @precioUnitario   DECIMAL(10,2)
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -530,8 +494,7 @@ BEGIN
 	END
 	
     UPDATE Inventario.Producto
-    SET
-        nombreProducto  = @nombreProducto,
+    SET nombreProducto  = @nombreProducto,
         lineaProducto   = @lineaProducto,
         precioUnitario  = @precioUnitario
     WHERE idProducto = @idProducto;
@@ -539,9 +502,7 @@ END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Inventario.EliminarProducto_sp
-(
     @idProducto INT
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -559,7 +520,6 @@ END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Ventas.InsertarFactura_sp
-(
     @codigoFactura		CHAR(11),
 	@tipoFactura		CHAR(1),
     @fecha				DATE,
@@ -570,7 +530,6 @@ CREATE OR ALTER PROCEDURE Ventas.InsertarFactura_sp
 	@idCliente		    INT,
     @idEmpleado			INT,
     @idSucursal			INT
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -615,8 +574,7 @@ BEGIN
 		RETURN;
 	END
 
-    INSERT INTO Ventas.Factura
-    (
+    INSERT INTO Ventas.Factura (
         codigoFactura,
 		tipoFactura,
         fecha,
@@ -628,8 +586,7 @@ BEGIN
         idEmpleado,
         idSucursal
     )
-    VALUES
-    (
+    VALUES (
         @codigoFactura,
 		@tipoFactura,
         @fecha,
@@ -645,7 +602,6 @@ END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Ventas.ActualizarFactura_sp
-(
     @codigoFactura		CHAR(11),
 	@tipoFactura		CHAR(1),
     @fecha				DATE,
@@ -657,7 +613,6 @@ CREATE OR ALTER PROCEDURE Ventas.ActualizarFactura_sp
     @idEmpleado			INT,
     @idSucursal			INT,
 	@idFactura			INT	
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -705,14 +660,13 @@ BEGIN
 	END
 
     UPDATE Ventas.Factura
-    SET
-        codigoFactura	          = @codigoFactura,
-	tipoFactura		  = @tipoFactura,
+    SET codigoFactura	  = @codigoFactura,
+		tipoFactura		  = @tipoFactura,
         fecha			  = @fecha,
         hora			  = @hora,
         medioPago		  = @medioPago,
-	identificadorPago 	  = @identificadorPago,
-	total			  = @total,
+		identificadorPago = @identificadorPago,
+		total			  = @total,
         idCliente		  = @idCliente,
         idEmpleado		  = @idEmpleado,
         idSucursal		  = @idSucursal
@@ -721,9 +675,7 @@ END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Ventas.EliminarFactura_sp
-(
     @idFactura INT
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -741,11 +693,9 @@ END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Ventas.InsertarDetalleVenta_sp
-(
     @idFactura       INT,
     @idProducto      INT,
     @cantidad        INT
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -778,19 +728,17 @@ BEGIN
 	DECLARE @idDetalle INT;
     SET @idDetalle = ISNULL((SELECT MAX(idDetalle) FROM Ventas.DetalleVenta WHERE idFactura = @idFactura), 0) + 1;
 
-    INSERT INTO Ventas.DetalleVenta
-    (
+    INSERT INTO Ventas.DetalleVenta (
         idFactura,
-	idDetalle,
+		idDetalle,
         idProducto,
         cantidad,
         precioUnitario,
         subtotal
     )
-    VALUES
-    (
+    VALUES (
         @idFactura,
-	@idDetalle,
+		@idDetalle,
         @idProducto,
         @cantidad,
         @precioUnitario,
@@ -800,12 +748,10 @@ END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Ventas.ActualizarDetalleVenta_sp
-(
     @idFactura	     INT,
     @idDetalle       INT,
     @idProducto      INT,
     @cantidad        INT
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -842,21 +788,17 @@ BEGIN
 	DECLARE @precioUnitario DECIMAL(10,2) = (SELECT precioUnitario from Inventario.Producto WHERE idProducto = @idProducto);
 
     UPDATE Ventas.DetalleVenta
-    SET
-        idProducto     = @idProducto,
+    SET idProducto     = @idProducto,
         cantidad       = @cantidad,
         precioUnitario = @precioUnitario,
         subtotal       = (@cantidad * @precioUnitario)
-    WHERE
-        idDetalle = @idDetalle AND idFactura = @idFactura
+    WHERE idDetalle = @idDetalle AND idFactura = @idFactura
 END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Ventas.EliminarDetalleVenta_sp
-(
     @idDetalle INT,
     @idFactura INT
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -878,9 +820,7 @@ END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Inventario.InsertarLineaProducto_sp
-(
     @descripcion VARCHAR(30)
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -891,22 +831,14 @@ BEGIN
 		RETURN;
 	END
 
-	INSERT INTO Inventario.LineaProducto
-	(
-		descripcion
-	)
-	VALUES
-	(
-		@descripcion
-	)
+	INSERT INTO Inventario.LineaProducto (descripcion)
+	VALUES (@descripcion);
 END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Inventario.ActualizarLineaProducto_sp
-(
 	@idLineaProd INT,
     @descripcion VARCHAR(30)
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -914,7 +846,7 @@ BEGIN
 	IF NOT EXISTS (SELECT 1 FROM Inventario.LineaProducto WHERE idLineaProd = @idLineaProd)
 	BEGIN
 		RAISERROR('Linea de producto inexistente.',16,1);
-			RETURN;
+		RETURN;
 	END
 
 	IF @descripcion IS NULL OR LEN(@descripcion) = 0
@@ -924,16 +856,13 @@ BEGIN
 	END
 
 	UPDATE Inventario.LineaProducto
-	SET
-	      descripcion = @descripcion
+	SET descripcion = @descripcion
 	WHERE idLineaProd = @idLineaProd;
 END;
 GO
 ----------------------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE Inventario.EliminarLineaProducto_sp
-(
 	@idLineaProd INT
-)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -970,12 +899,8 @@ BEGIN
     -- Resetear los contadores de IDENTITY
     DBCC CHECKIDENT ('Ventas.Factura', RESEED, 0);
     DBCC CHECKIDENT ('Ventas.Cliente', RESEED, 0);
-<<<<<<< HEAD
 	DBCC CHECKIDENT ('Ventas.NotaCredito', RESEED, 0);
-=======
     DBCC CHECKIDENT ('Ventas.NotaCredito', RESEED, 0);
-    DBCC CHECKIDENT ('Empresa.Empleado', RESEED, 257019);
->>>>>>> f09b5c3f6ba508ef5c6d0d395b906f3ab0527df8
     DBCC CHECKIDENT ('Empresa.Sucursal', RESEED, 0);
     DBCC CHECKIDENT ('Inventario.Producto', RESEED, 0);
     DBCC CHECKIDENT ('Inventario.LineaProducto', RESEED, 0);

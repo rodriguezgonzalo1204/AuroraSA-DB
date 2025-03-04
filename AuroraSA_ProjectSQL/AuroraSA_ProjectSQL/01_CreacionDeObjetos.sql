@@ -7,7 +7,7 @@ Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono G
 */
 
 ------------CREACION DE DATABASE----------
-Use master
+USE master
 GO
 IF NOT EXISTS (SELECT NAME FROM master.dbo.sysdatabases WHERE NAME = 'Com1353G07')
 BEGIN
@@ -101,10 +101,12 @@ CREATE TABLE Empresa.Empleado
     turno VARCHAR(20),
     activo BIT DEFAULT 1,
     CONSTRAINT PK_Empleado PRIMARY KEY (idEmpleado),
-    CONSTRAINT FK_Empleado_Sucursal FOREIGN KEY (idSucursal) REFERENCES Empresa.Sucursal(idSucursal)
+    CONSTRAINT FK_Empleado_Sucursal FOREIGN KEY (idSucursal) REFERENCES Empresa.Sucursal(idSucursal),
+	CONSTRAINT UQ_Empleado_Cuil UNIQUE (cuil)
 )
 END
 GO
+
 /*
    Cliente: Contiene datos del cliente, tipoCliente, género, etc. Se incluye el campo datosFidelizacion para posible implementacion
    de sistema de puntos en un futuro. Está en el esquema Ventas.
@@ -153,7 +155,7 @@ BEGIN
 CREATE TABLE Inventario.Producto
 (
     idProducto INT IDENTITY(1,1),
-    nombreProducto NVARCHAR(100) UNIQUE,
+    nombreProducto NVARCHAR(100) COLLATE Modern_Spanish_CI_AI UNIQUE,
     precioUnitario DECIMAL(10,2),
     lineaProducto INT,
     activo BIT DEFAULT 1,   

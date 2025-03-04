@@ -6,7 +6,7 @@ Asignatura: Bases de datos Aplicadas - Comisión: 1353
 Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
-Use Com1353G07
+USE Com1353G07
 GO
 
 /*	

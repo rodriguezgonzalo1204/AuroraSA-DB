@@ -52,20 +52,12 @@ BEGIN
         date DATETIME 
     );
 
-	CREATE NONCLUSTERED INDEX ix_tempNombre ON #TempProductos1(name, date)
-	--CREATE NONCLUSTERED INDEX ix_tempCategory ON #TempProductos1(category);
-	CREATE NONCLUSTERED INDEX ix_tempNombreCategory ON #TempProductos1(name, category);
-
-	CREATE NONCLUSTERED INDEX ix_tempNombreInclude ON #TempProductos1(name) 
-INCLUDE (price, date, category);
-
-
-
+	CREATE NONCLUSTERED INDEX ix_tempNombreInclude ON #TempProductos1(name) INCLUDE (price, date, category);
 
     -- Crear tabla temporal para buscar coincidencias de línea de producto
     CREATE TABLE #TempEquivalenciaLineas (
-        lineaNueva NVARCHAR(25) COLLATE Modern_Spanish_CS_AS,
-        lineaVieja NVARCHAR(50) COLLATE Modern_Spanish_CS_AS UNIQUE,
+		lineaVieja NVARCHAR(50) COLLATE Modern_Spanish_CS_AS PRIMARY KEY,		-- Se encuentra ordenado en el archivo origen por lo que la insercion es eficiente
+        lineaNueva NVARCHAR(25) COLLATE Modern_Spanish_CS_AS
     );
 
     -- SQL dinámico para importar el archivo CSV
@@ -121,13 +113,12 @@ INCLUDE (price, date, category);
 		JOIN #TempEquivalenciaLineas E ON PF.category = E.lineaVieja 
 		JOIN Inventario.LineaProducto LP ON E.lineaNueva = LP.descripcion
     WHERE PF.rn = 1  -- Solo insertar la versión más reciente de cada producto
-		AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto = PF.name COLLATE Modern_Spanish_CS_AS);	-- Verifica que el producto no exista
+		AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto = PF.name);	-- Verifica que el producto no exista
 
     -- Limpiar tablas temporales
     DROP TABLE #TempEquivalenciaLineas;
     DROP TABLE #TempProductos1;
 
-    PRINT 'Importación completada correctamente.';
 END;
 GO
 
@@ -149,11 +140,11 @@ BEGIN
 	END
 
     CREATE TABLE #TempProductos (
-        nombre NVARCHAR(110) COLLATE Modern_Spanish_CS_AS,
+        nombre NVARCHAR(110) COLLATE Modern_Spanish_CI_AI,
         precio DECIMAL(10,2)
     );
 
-	CREATE NONCLUSTERED INDEX ix_tempNombre ON #TempProductos(nombre)
+	CREATE NONCLUSTERED INDEX ix_tempNombre ON #TempProductos(nombre) INCLUDE (precio)
 
     -- Insertar datos desde el archivo XLSX
     DECLARE @sql NVARCHAR(MAX);
@@ -180,7 +171,7 @@ BEGIN
         precio*@valorDolar AS precioUnitario               
     FROM ElecFiltrados 
 	WHERE rn = 1
-		AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto COLLATE Modern_Spanish_CI_AI = nombre COLLATE Modern_Spanish_CI_AI);
+		AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto = nombre);
 
 
     DROP TABLE #TempProductos;
@@ -205,7 +196,8 @@ BEGIN
 		CantidadPorUnidad VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
         precioUnidad DECIMAL(10,2)
     );
-	CREATE NONCLUSTERED INDEX ix_tempNombre ON #TempProductos(NombreProducto)
+
+	CREATE NONCLUSTERED INDEX ix_tempNombre ON #TempProductos(NombreProducto, precioUnidad) INCLUDE (Categoria)
 
     -- Insertar datos desde el archivo XLSX
     DECLARE @sql NVARCHAR(MAX);
@@ -244,10 +236,9 @@ BEGIN
     FROM ImpFiltrados TP
 		JOIN Inventario.LineaProducto LP ON TP.Categoria = LP.descripcion
 	WHERE TP.rn = 1
-		AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto COLLATE Modern_Spanish_CI_AI = TP.NombreProducto COLLATE Modern_Spanish_CI_AI);
+		AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto = TP.NombreProducto);
 
     DROP TABLE #TempProductos;
-	PRINT 'Importación completada correctamente.';
 END
 GO
 
@@ -259,57 +250,42 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    CREATE TABLE #TempSucursales ( 
-		ciudad VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
-		direccion NVARCHAR(100) COLLATE Modern_Spanish_CS_AS,
-		horario VARCHAR(55) COLLATE Modern_Spanish_CS_AS,
-		telefono char(10) COLLATE Modern_Spanish_CS_AS
-    );
-	
-    DECLARE @sql NVARCHAR(MAX)
-    SET @sql = '
-        INSERT INTO #TempSucursales (ciudad, direccion, horario, telefono)
-        SELECT *
-        FROM OPENROWSET(''Microsoft.ACE.OLEDB.12.0'',
-            ''Excel 12.0 Xml;HDR=YES;Database=' + @rutaArchivo + ''',
-            ''SELECT * FROM [sucursal$C2:F5]'');
-    ';
-    EXEC sp_executesql @sql
-
-	--No es necesario modificar ningun dato
-	INSERT INTO Empresa.Sucursal (direccion, ciudad, telefono, horario)
-	SELECT direccion, ciudad, telefono, horario
-	FROM #TempSucursales	
-
-	DROP TABLE #TempSucursales
-	PRINT 'Importación completada correctamente.';
+	DECLARE @sql NVARCHAR(MAX);
+	SET @sql = '
+		INSERT INTO Empresa.Sucursal (ciudad, direccion, horario, telefono)
+		SELECT *
+		FROM OPENROWSET(''Microsoft.ACE.OLEDB.12.0'',
+			''Excel 12.0 Xml;HDR=YES;IMEX=1;Database=' + @rutaArchivo + ''',
+			''SELECT * FROM [sucursal$C2:F]'');
+	';
+	EXEC sp_executesql @sql;
 END;
 GO
 
 -----------------------------------------------------------------------------------------------
 -- Funcion para cuil random
-CREATE OR ALTER FUNCTION Utilidades.Generarcuil(@dni INT)
+CREATE OR ALTER FUNCTION Utilidades.Generarcuil(@dni VARCHAR(20)) 
 RETURNS CHAR(13)
 AS
 BEGIN
-    DECLARE @cuil CHAR(13) 
-    DECLARE @codigoVerificacion INT
-    DECLARE @prefijo INT
+    DECLARE @cuil CHAR(13),
+			@codigoVerificacion INT,
+			@prefijo INT;
     
     -- Generamos un valor aleatorio que solo puede ser 20 o 27
     IF (ABS(CHECKSUM(CURRENT_TIMESTAMP)) % 2) = 0
-        SET @prefijo = 20
+        SET @prefijo = 20;
     ELSE
-        SET @prefijo = 27
+        SET @prefijo = 27;
     
-    -- Ultimo digito
-    SET @codigoVerificacion = ABS(CHECKSUM(CURRENT_TIMESTAMP)) % 10
+    -- Último dígito
+    SET @codigoVerificacion = ABS(CHECKSUM(CURRENT_TIMESTAMP)) % 10;
 
     -- Formatear
-    SET @cuil = CAST(@prefijo AS VARCHAR(2)) + '-' + RIGHT('00000000' + CAST(@dni AS VARCHAR(10)), 8) + '-' + CAST(@codigoVerificacion AS VARCHAR(1))
+    SET @cuil = CAST(@prefijo AS VARCHAR(2)) + '-' + @dni + '-' + CAST(@codigoVerificacion AS VARCHAR(1));
 
-    RETURN @cuil
-END
+    RETURN @cuil;
+END;
 GO
 
 -----------------------------------------------------------------------------------------------
@@ -320,23 +296,21 @@ AS
 BEGIN
     SET NOCOUNT ON -- apagar
 
-    CREATE TABLE #TempEmpleados
-    (
-	idEmpleado INT,
-    nombre VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
-    apellido VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
-	dni	int,
-	domicilio NVARCHAR(100) COLLATE Modern_Spanish_CS_AS,
-	mailPersonal VARCHAR(55) COLLATE Modern_Spanish_CS_AS,
-    mailEmpresa VARCHAR(55) COLLATE Modern_Spanish_CS_AS,
-	cuil CHAR(13) COLLATE Modern_Spanish_CS_AS,
-    cargo VARCHAR(25) COLLATE Modern_Spanish_CS_AS,
-    ciudadSuc VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
-	turno	VARCHAR(20) COLLATE Modern_Spanish_CS_AS
+    CREATE TABLE #TempEmpleados (
+		idEmpleado INT,
+		nombre VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
+		apellido VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
+		dni	VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
+		domicilio NVARCHAR(100) COLLATE Modern_Spanish_CS_AS,
+		mailPersonal VARCHAR(55) COLLATE Modern_Spanish_CS_AS,
+		mailEmpresa VARCHAR(55) COLLATE Modern_Spanish_CS_AS,
+		cuil CHAR(13) COLLATE Modern_Spanish_CS_AS,
+		cargo VARCHAR(25) COLLATE Modern_Spanish_CS_AS,
+		ciudadSuc VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
+		turno	VARCHAR(20) COLLATE Modern_Spanish_CS_AS
     );
 
-	CREATE NONCLUSTERED INDEX ix_tempCiudadSuc ON #TempEmpleados(ciudadSuc);
-	CREATE NONCLUSTERED INDEX ix_tempCuil ON #TempEmpleados(cuil);
+	CREATE CLUSTERED INDEX ix_tempIdEmpleado ON #TempEmpleados(idEmpleado);
 
     DECLARE @cadenaSql NVARCHAR(MAX)
     SET @cadenaSql = '
@@ -363,7 +337,7 @@ BEGIN
 			ROW_NUMBER() OVER (PARTITION BY dni ORDER BY idEmpleado) rn
          FROM #TempEmpleados
     ) 
-
+	
     -- Insetamos dentro de la tabla empleados
     INSERT INTO Empresa.Empleado (idEmpleado, nombre, apellido, genero, cargo, domicilio, telefono, cuil, fechaAlta, mailPersonal, mailEmpresa, idSucursal, turno)
 	SELECT
@@ -386,7 +360,7 @@ BEGIN
 		AND NOT EXISTS (
 			SELECT 1 
 			FROM Empresa.Empleado E 
-			WHERE SUBSTRING(E.cuil, 4, 8) = CAST(TE.dni AS VARCHAR(8)) -- Verificamos que el dni no se encuentre en la tabla
+			WHERE SUBSTRING(E.cuil, 4, 8) = TE.dni -- Verificamos que el dni no se encuentre en la tabla
 		)	
 		AND NOT EXISTS (
 			SELECT 1 
@@ -446,7 +420,7 @@ BEGIN
         SET @i = @i + 1;
     END;
 
-    PRINT '100 clientes aleatorios cargados correctamente.';
+    PRINT CAST(@cantidad AS VARCHAR) + ' clientes aleatorios cargados correctamente.';
 END;
 GO
 
@@ -466,7 +440,7 @@ BEGIN
 		ciudad VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
 		tipoCliente VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
 		genero VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
-        nombreProducto NVARCHAR(100) COLLATE Modern_Spanish_CS_AS,
+        nombreProducto NVARCHAR(100) COLLATE Modern_Spanish_CI_AI,
 		precioUnitario DECIMAL(10,2),
 		cantidad INT,
 		fecha VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
@@ -475,6 +449,8 @@ BEGIN
 		idEmpleado INT,
 		identificadorPago VARCHAR(35) COLLATE Modern_Spanish_CS_AS
     );
+
+	CREATE CLUSTERED INDEX ix_tempCodFact ON #TempVentas(codigoFactura)
 
     DECLARE @sql NVARCHAR(MAX);
 	SET @sql = '
@@ -502,7 +478,7 @@ BEGIN
                  END;
 
 	CREATE TABLE #TotalesPorFactura (
-        codigoFactura CHAR(11) COLLATE Modern_Spanish_CS_AS,
+        codigoFactura CHAR(11) COLLATE Modern_Spanish_CS_AS PRIMARY KEY,
         total DECIMAL(10, 2) 
     );
 
@@ -511,7 +487,6 @@ BEGIN
     SELECT codigoFactura, SUM(precioUnitario * cantidad * @valorDolar) AS total
     FROM #TempVentas
     GROUP BY codigoFactura;
-
 
     INSERT INTO Ventas.Factura (codigoFactura, medioPago, tipoFactura, fecha, hora, identificadorPago, total, idCliente, idEmpleado, idSucursal)
     SELECT 
@@ -541,15 +516,16 @@ BEGIN
 	CREATE TABLE #GruposDetalle (
 		codigoFactura CHAR(11) COLLATE Modern_Spanish_CS_AS,
 		idDetalle INT,
-		nombreProd NVARCHAR(100) COLLATE Modern_Spanish_CS_AS,
+		nombreProd NVARCHAR(100) COLLATE Modern_Spanish_CI_AI,
 		precioUnitario DECIMAL(10,2),
 		cantidad INT,
-		subtotal DECIMAL(10,2) 
+		subtotal DECIMAL(10,2)
+		CONSTRAINT tempPK_GruposVenta PRIMARY KEY (codigoFactura,idDetalle) 
 	);
 
 	-- Utilizamos row_number para indicar cuantos detalles corresponden a una misma factura (Para el caso del archivo "Ventas" es 1 item por factura por lo que no se ve reflejado el cambio)
 	INSERT INTO #GruposDetalle(codigoFactura, idDetalle, nombreProd, precioUnitario, cantidad, subtotal)
-	SELECT  CAST(codigoFactura AS CHAR(11)) as codigoFactura,
+	SELECT  codigoFactura,
 			ROW_NUMBER() OVER(PARTITION BY codigoFactura ORDER BY codigoFactura) as idDetalle,
 			nombreProducto, precioUnitario, cantidad, cantidad*precioUnitario*@valorDolar as subtotal
 	FROM #TempVentas
@@ -564,6 +540,5 @@ BEGIN
 	DROP TABLE #TotalesPorFactura
 	DROP TABLE #GruposDetalle
 
-	PRINT 'Importación completada correctamente.';
 END
 GO
