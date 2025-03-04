@@ -144,16 +144,16 @@ EXEC Empresa.ActualizarEmpleado_sp
 	 @idEmpleado	= 257020,
      @nombre		= 'Juan Carlos',
      @apellido		= 'Perez Editado',
-	 @genero		= 'M',
-	 @cargo			= 'Cajero',
+     @genero		= 'M',
+     @cargo		= 'Cajero',
      @domicilio		= 'Calle A 456',
      @telefono		= '0987654321',
-     @cuil			= '20-46415848-2',
+     @cuil		= '20-46415848-2',
      @fechaAlta		= '2025-01-01',
-	 @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
-	 @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
-	 @idSucursal	= 1,
-	 @turno			= 'TM'
+     @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
+     @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
+     @idSucursal	= 1,
+     @turno		= 'TM'
 SELECT * FROM Empresa.Empleado
 -- Ejecutar hasta aca: Resultado esperado -> Actualiza el registro del empleado que tiene idEmpleado = 257020
 
@@ -311,11 +311,11 @@ PRINT '=== InsertarFactura_sp: Insertando Facturas ===';
 EXEC Ventas.InsertarFactura_sp
 	 @codigoFactura		= '829-34-3910',
      @tipoFactura		= 'A',
-     @fecha				= '2025-01-10',
-     @hora				= '10:30:00',
+     @fecha			= '2025-01-10',
+     @hora			= '10:30:00',
      @medioPago			= 'Cash',
-	 @identificadorPago = '',
-	 @total				= 200,
+     @identificadorPago         = '',
+     @total			= 200,
      @idCliente			= 1,
      @idEmpleado		= 257021,   
      @idSucursal		= 1;
@@ -328,11 +328,11 @@ PRINT '=== InsertarFactura_sp: Intentando insertar factura para empleado inexist
 EXEC Ventas.InsertarFactura_sp
 	 @codigoFactura		= '949-34-3910',
      @tipoFactura		= 'A',
-     @fecha				= '2025-01-10',
-     @hora				= '10:30:00',
+     @fecha			= '2025-01-10',
+     @hora			= '10:30:00',
      @medioPago			= 'Cash',
-	 @identificadorPago = '',
-	 @total				= 200,
+     @identificadorPago         =  '',
+     @total			= 200,
      @idCliente			= 1,
      @idEmpleado		= 257020,   
      @idSucursal		= 1;
@@ -342,11 +342,11 @@ PRINT '=== InsertarFactura_sp: Insertando Factura ===';
 EXEC Ventas.InsertarFactura_sp
 	 @codigoFactura		= '22222', 
      @tipoFactura		= 'A',
-     @fecha				= '2025-01-10',
-     @hora				= '10:30:00',
+     @fecha			= '2025-01-10',
+     @hora			= '10:30:00',
      @medioPago			= 'Cash',
-	 @identificadorPago = '',
-	 @total				= 1,
+     @identificadorPago         = '',
+     @total			= 1,
      @idCliente			= 1,
      @idEmpleado		= 257021,   
      @idSucursal		= 1;
@@ -356,11 +356,11 @@ PRINT '=== InsertarFactura_sp: Insertando Factura ===';
 EXEC Ventas.InsertarFactura_sp
 	 @codigoFactura		= '829-34-3910',
      @tipoFactura		= 'A',
-     @fecha				= '2025-01-10',
-     @hora				= '10:30:00',
+     @fecha			= '2025-01-10',
+     @hora			= '10:30:00',
      @medioPago			= 'Dolares cara chica',
-	 @identificadorPago = '',
-	 @total				= 200,
+     @identificadorPago         = '',
+     @total			= 200,
      @idCliente			= 1,
      @idEmpleado		= 257021,   
      @idSucursal		= 1;
@@ -370,11 +370,11 @@ PRINT '=== InsertarFactura_sp: Insertando Factura ===';
 EXEC Ventas.InsertarFactura_sp
 	 @codigoFactura		= '829-34-3910',
      @tipoFactura		= 'Z',
-     @fecha				= '2025-01-10',
-     @hora				= '10:30:00',
+     @fecha			= '2025-01-10',
+     @hora			= '10:30:00',
      @medioPago			= 'Cash',
-	 @identificadorPago = '',
-	 @total				= 200,
+     @identificadorPago         = '',
+     @total			= 200,
      @idCliente			= 1,
      @idEmpleado		= 2,   
      @idSucursal		= 1;
@@ -388,13 +388,13 @@ EXEC Ventas.InsertarFactura_sp
 PRINT '=== ActualizarFactura_sp: Actualizando Factura (idFactura=1) ===';
 EXEC Ventas.ActualizarFactura_sp
      @idFactura			= 1,
-	 @codigoFactura		= '829-34-3910',
+     @codigoFactura		= '829-34-3910',
      @tipoFactura		= 'C',
-     @fecha				= '2025-01-11',
-     @hora				= '11:45:00',
+     @fecha			= '2025-01-11',
+     @hora			= '11:45:00',
      @medioPago			= 'Cash',
-	 @identificadorPago = '',
-	 @total				= 400,
+     @identificadorPago         = '',
+     @total			= 400,
      @idCliente			= 1,
      @idEmpleado		= 257021,
      @idSucursal		= 1;
@@ -444,7 +444,7 @@ EXEC Ventas.InsertarDetalleVenta_sp
 */
 PRINT '=== ActualizarDetalleVenta_sp: Actualizando detalle (idDetalle=1) ===';
 EXEC Ventas.ActualizarDetalleVenta_sp
-	 @idFactura		 = 2,
+     @idFactura	     = 2,
      @idDetalle      = 1,
      @idProducto     = 1,
      @cantidad       = 7;
@@ -458,7 +458,7 @@ SELECT * FROM Ventas.DetalleVenta
 */
 PRINT '=== EliminarDetalleVenta_sp: Eliminando detalle (idDetalle=2) ===';
 EXEC Ventas.EliminarDetalleVenta_sp
-	 @idFactura = 2,
+     @idFactura = 2,
      @idDetalle = 2;
 SELECT * FROM Ventas.DetalleVenta
 -- Ejecutar hasta aca: Resultado esperado -> Elimina el detalle 2 de la factura 2
