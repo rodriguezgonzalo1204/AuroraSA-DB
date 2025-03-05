@@ -76,7 +76,7 @@ CREATE OR ALTER PROCEDURE Seguridad.GenerarNotaCredito_sp
     @monto		DECIMAL(18, 2),
     @detalles		VARCHAR(60) 
 AS
-	BEGIN
+BEGIN
     -- Verificar que la factura esté pagada
     IF NOT EXISTS (SELECT 1 FROM Ventas.Factura WHERE idFactura = @FacturaID AND activo = 1)
     BEGIN
