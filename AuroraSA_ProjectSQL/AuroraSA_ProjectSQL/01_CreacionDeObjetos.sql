@@ -99,7 +99,7 @@ CREATE TABLE Empresa.Empleado
     activo BIT DEFAULT 1,
     CONSTRAINT PK_Empleado PRIMARY KEY (idEmpleado),
     CONSTRAINT FK_Empleado_Sucursal FOREIGN KEY (idSucursal) REFERENCES Empresa.Sucursal(idSucursal),
-	CONSTRAINT UQ_Empleado_Cuil UNIQUE (cuil)
+    CONSTRAINT UQ_Empleado_Cuil UNIQUE (cuil)
 )
 END
 GO
@@ -157,7 +157,7 @@ CREATE TABLE Inventario.Producto
     lineaProducto INT,
     activo BIT DEFAULT 1,   
     CONSTRAINT PK_Producto PRIMARY KEY (idProducto),
-	CONSTRAINT FK_Producto_LineaProducto FOREIGN KEY (lineaProducto) REFERENCES Inventario.LineaProducto(idLineaProd)
+    CONSTRAINT FK_Producto_LineaProducto FOREIGN KEY (lineaProducto) REFERENCES Inventario.LineaProducto(idLineaProd)
 )
 END
 GO
@@ -276,14 +276,14 @@ IF NOT EXISTS (
 
 
 IF NOT EXISTS 
-	(SELECT 1 FROM sys.indexes WHERE name = 'ix_fechaFact'
-	AND object_id = OBJECT_ID('Ventas.Factura')
+    (SELECT 1 FROM sys.indexes WHERE name = 'ix_fechaFact'
+    AND object_id = OBJECT_ID('Ventas.Factura')
 )
     CREATE INDEX ix_fechaFact ON Ventas.Factura(fecha);
 
 IF NOT EXISTS
-	(SELECT 1 FROM sys.indexes WHERE name = 'ix_sucFact'
-	AND object_id = OBJECT_ID('Ventas.Factura')
+    (SELECT 1 FROM sys.indexes WHERE name = 'ix_sucFact'
+    AND object_id = OBJECT_ID('Ventas.Factura')
 )
     CREATE INDEX ix_sucFact ON Ventas.Factura(idSucursal);
 
