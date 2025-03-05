@@ -2,12 +2,17 @@
 Aurora SA
 Encriptacion de datos de empleado. (Entrega 05)
 Fecha: 28-02-2025
-Asignatura: Bases de datos Aplicadas - ComisiÛn: 1353
+Asignatura: Bases de datos Aplicadas - Comisi√≥n: 1353
 Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
 /*
+<<<<<<< HEAD
 	El Script est· pensado para ejecutarse en un solo bloque con F5
+=======
+	El Script est√° pensado para ejecutarse en un solo bloque con F5
+	Sin embargo, tiene la posibilidad de visualizar el antes y despues de la encriptaci√≥n ejecutando las lineas comentadas
+>>>>>>> 5bfc5656fc9d33777b39dc000d08f888af1918b2
 */
 
 USE Com1353G07
@@ -18,8 +23,19 @@ CREATE OR ALTER PROCEDURE Seguridad.EncriptarEmpleado_sp
 	@fraseClave NVARCHAR(128)
 AS 
 BEGIN
+<<<<<<< HEAD
 	-- EncriptaciÛn masiva para toda la tabla. Se utiliza SQL Din·mico ya que se nombran columnas inexistentes al momento de crear el procedure
 	DECLARE @SQL NVARCHAR(MAX) = '				
+=======
+	-- Agregamos los campos para encriptar
+	ALTER TABLE Empresa.Empleado
+	ADD cuil_encriptado VARBINARY(256),
+		domicilio_encriptado VARBINARY(256),
+		telefono_encriptado VARBINARY(256),
+		mailPersonal_encriptado VARBINARY(256);
+
+	-- Encriptaci√≥n masiva para toda la tabla
+>>>>>>> 5bfc5656fc9d33777b39dc000d08f888af1918b2
 	UPDATE Empresa.Empleado
 		SET cuil_encriptado = EncryptByPassPhrase(''' + @fraseClave + ''', cuil, 1, CONVERT(VARBINARY, idEmpleado)),
 			telefono_encriptado = EncryptByPassPhrase(''' + @fraseClave + ''', telefono, 1, CONVERT(VARBINARY, idEmpleado)),
@@ -58,35 +74,43 @@ END;
 GO
 
 
+<<<<<<< HEAD
+=======
+-- VER TABLA LUEGO DE ENCRIPTACI√ìN MEDIANTE CLAVE
+--EXEC Seguridad.MostrarEmpleadoEncriptado_sp 'NoTeOlvidesElWhereEnElDeleteFrom'
 
--- A continuaciÛn se modifican los procedures de InserciÛn y ActualizaciÛn para admitir cifrado (EliminaciÛn se mantiene)
 
--- EdiciÛn del procedure Insertar con la lÛgica de cifrado aplicada
+
+>>>>>>> 5bfc5656fc9d33777b39dc000d08f888af1918b2
+
+-- A continuaci√≥n se modifican los procedures de Inserci√≥n y Actualizaci√≥n para admitir cifrado (Eliminaci√≥n se mantiene)
+
+-- Edici√≥n del procedure Insertar con la l√≥gica de cifrado aplicada
 CREATE OR ALTER PROCEDURE Empresa.InsertarEmpleado_sp
 (
     @clave         NVARCHAR(128),  
-	@idEmpleado		INT,
-    @nombre			VARCHAR(30),
-    @apellido		VARCHAR(30),
-    @genero			CHAR(1),
-    @cargo			VARCHAR(25),
-    @domicilio		NVARCHAR(100),
-    @telefono		CHAR(10),
-    @cuil			CHAR(13),
-    @fechaAlta		DATE,
-    @mailPersonal	VARCHAR(55),
-    @mailEmpresa	VARCHAR(55),
-    @idSucursal		INT,
-    @turno			VARCHAR(20)
+    @idEmpleado	   INT,
+    @nombre	   VARCHAR(30),
+    @apellido	   VARCHAR(30),
+    @genero	   CHAR(1),
+    @cargo	   VARCHAR(25),
+    @domicilio	   NVARCHAR(100),
+    @telefono	   CHAR(10),
+    @cuil	   CHAR(13),
+    @fechaAlta	   DATE,
+    @mailPersonal  VARCHAR(55),
+    @mailEmpresa   VARCHAR(55),
+    @idSucursal	   INT,
+    @turno	   VARCHAR(20)
 )
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- VerificaciÛn de validaciones (se asume que las funciones de validaciÛn siguen funcionando sobre el valor en texto)
+    -- Verificaci√≥n de validaciones (se asume que las funciones de validaci√≥n siguen funcionando sobre el valor en texto)
     IF Utilidades.ValidarCuil(@cuil) = 0
     BEGIN
-        RAISERROR('Formato de cuil inv·lido.',16,1);
+        RAISERROR('Formato de cuil inv√°lido.',16,1);
         RETURN;
     END
 
@@ -98,25 +122,25 @@ BEGIN
 
     IF Utilidades.ValidarGenero(@genero) = 0
     BEGIN
-        RAISERROR('GÈnero inv·lido.',16,1);
+        RAISERROR('G√©nero inv√°lido.',16,1);
         RETURN;
     END
 
     IF Utilidades.ValidarTelefono(@telefono) = 0
     BEGIN
-        RAISERROR('El formato de telÈfono es inv·lido.', 16, 1);
+        RAISERROR('El formato de tel√©fono es inv√°lido.', 16, 1);
         RETURN;
     END
 
     IF Utilidades.ValidarEmail(@mailPersonal) = 0
     BEGIN
-        RAISERROR('El formato de mail personal es inv·lido.', 16, 1);
+        RAISERROR('El formato de mail personal es inv√°lido.', 16, 1);
         RETURN;
     END
 
     IF Utilidades.ValidarEmail(@mailEmpresa) = 0
     BEGIN
-        RAISERROR('El formato de mail de la empresa es inv·lido.', 16, 1);
+        RAISERROR('El formato de mail de la empresa es inv√°lido.', 16, 1);
         RETURN;
     END
 
@@ -129,7 +153,7 @@ BEGIN
     -- Insertar encriptando los campos sensibles
     INSERT INTO Empresa.Empleado
     (
-		idEmpleado,
+	idEmpleado,
         nombre,
         apellido,
         genero,
@@ -162,23 +186,23 @@ BEGIN
 END;
 GO
 
--- EdiciÛn del procedure Actualizar con la lÛgica de cifrado aplicada
+-- Edici√≥n del procedure Actualizar con la l√≥gica de cifrado aplicada
 CREATE OR ALTER PROCEDURE Empresa.ActualizarEmpleado_sp
 (	
-    @clave         NVARCHAR(128),  -- Nueva clave para encriptar
+    @clave         	NVARCHAR(128),  -- Nueva clave para encriptar
     @idEmpleado		INT,
-    @nombre			VARCHAR(30),
+    @nombre		VARCHAR(30),
     @apellido		VARCHAR(30),
-    @genero			CHAR(1),
-    @cargo			VARCHAR(25),
+    @genero		CHAR(1),
+    @cargo		VARCHAR(25),
     @domicilio		NVARCHAR(100),
     @telefono		CHAR(10),
-    @cuil			CHAR(13),
+    @cuil		CHAR(13),
     @fechaAlta		DATE,
     @mailPersonal	VARCHAR(55),
     @mailEmpresa	VARCHAR(55),
     @idSucursal		INT,
-    @turno			VARCHAR(20)
+    @turno		VARCHAR(20)
 )
 AS
 BEGIN
@@ -192,31 +216,31 @@ BEGIN
 
     IF Utilidades.ValidarCuil(@cuil) = 0
     BEGIN
-        RAISERROR('Formato de cuil inv·lido.',16,1);
+        RAISERROR('Formato de cuil inv√°lido.',16,1);
         RETURN;
     END
 
     IF Utilidades.ValidarGenero(@genero) = 0
     BEGIN
-        RAISERROR('GÈnero inv·lido.',16,1);
+        RAISERROR('G√©nero inv√°lido.',16,1);
         RETURN;
     END
 
     IF Utilidades.ValidarTelefono(@telefono) = 0
     BEGIN
-        RAISERROR('El formato de telÈfono es inv·lido.', 16, 1);
+        RAISERROR('El formato de tel√©fono es inv√°lido.', 16, 1);
         RETURN;
     END
 
     IF Utilidades.ValidarEmail(@mailPersonal) = 0
     BEGIN
-        RAISERROR('El formato de mail personal es inv·lido.', 16, 1);
+        RAISERROR('El formato de mail personal es inv√°lido.', 16, 1);
         RETURN;
     END
 
     IF Utilidades.ValidarEmail(@mailEmpresa) = 0
     BEGIN
-        RAISERROR('El formato de mail de la empresa es inv·lido.', 16, 1);
+        RAISERROR('El formato de mail de la empresa es inv√°lido.', 16, 1);
         RETURN;
     END
 
@@ -232,11 +256,11 @@ BEGIN
         apellido              = @apellido,
         genero                = @genero,
         cargo                 = @cargo,
-        domicilio			  = EncryptByPassPhrase(@clave, @domicilio, 1, CONVERT(VARBINARY, @idEmpleado)),
-        telefono			  = EncryptByPassPhrase(@clave, @telefono, 1, CONVERT(VARBINARY, @idEmpleado)),
-        cuil				  = EncryptByPassPhrase(@clave, @cuil, 1, CONVERT(VARBINARY, @idEmpleado)),
+        domicilio	      = EncryptByPassPhrase(@clave, @domicilio, 1, CONVERT(VARBINARY, @idEmpleado)),
+        telefono	      = EncryptByPassPhrase(@clave, @telefono, 1, CONVERT(VARBINARY, @idEmpleado)),
+        cuil		      = EncryptByPassPhrase(@clave, @cuil, 1, CONVERT(VARBINARY, @idEmpleado)),
         fechaAlta             = @fechaAlta,
-        mailPersonal		  = EncryptByPassPhrase(@clave, @mailPersonal, 1, CONVERT(VARBINARY, @idEmpleado)),
+        mailPersonal	      = EncryptByPassPhrase(@clave, @mailPersonal, 1, CONVERT(VARBINARY, @idEmpleado)),
         mailEmpresa           = @mailEmpresa,
         idSucursal            = @idSucursal,
         turno                 = @turno

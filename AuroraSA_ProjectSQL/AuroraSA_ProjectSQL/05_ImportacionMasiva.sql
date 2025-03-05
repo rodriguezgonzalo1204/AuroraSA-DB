@@ -1,8 +1,8 @@
 /*
 Aurora SA
-Importaci髇 de archivos (Entrega 04)
+Importaci贸n de archivos (Entrega 04)
 Fecha: 28-02-2025
-Asignatura: Bases de datos Aplicadas - Comisi髇: 1353
+Asignatura: Bases de datos Aplicadas - Comisi贸n: 1353
 Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
@@ -30,14 +30,17 @@ EXEC Utilidades.ResetearTablas_sp
 GO
 */
 
+<<<<<<< HEAD
 SET NOCOUNT ON;
+=======
+>>>>>>> 5bfc5656fc9d33777b39dc000d08f888af1918b2
 SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 
 BEGIN TRY
     BEGIN TRANSACTION;
     EXEC Inventario.CargarProductosCatalogoCSV_sp @rutaCatalogoCSV, @rutaComplementario, @valorDolar;
     COMMIT TRANSACTION;
-    PRINT 'Importaci髇 de cat醠ogo CSV completada.';
+    PRINT 'Importaci贸n de cat谩logo CSV completada.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -50,7 +53,7 @@ BEGIN TRY
     BEGIN TRANSACTION;
 	EXEC Inventario.CargarProductosElectronicos_sp @rutaElectronicos, @valorDolar
     COMMIT TRANSACTION;
-    PRINT 'Importaci髇 de productos electr髇icos completada.';
+    PRINT 'Importaci贸n de productos electr贸nicos completada.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -63,7 +66,7 @@ BEGIN TRY
     BEGIN TRANSACTION;
 	EXEC Inventario.CargarProductosImportados_sp @rutaImportados, @valorDolar
     COMMIT TRANSACTION;
-    PRINT 'Importaci髇 de productos importados completada.';
+    PRINT 'Importaci贸n de productos importados completada.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -76,7 +79,7 @@ BEGIN TRY
     BEGIN TRANSACTION;
 	EXEC Empresa.ImportarSucursales_sp @rutaComplementario
     COMMIT TRANSACTION;
-    PRINT 'Importaci髇 de sucursales completada.';
+    PRINT 'Importaci贸n de sucursales completada.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -89,7 +92,7 @@ BEGIN TRY
     BEGIN TRANSACTION;
 	EXEC Empresa.ImportarEmpleados_sp @rutaComplementario
     COMMIT TRANSACTION;
-    PRINT 'Importaci髇 de empleados completada.';
+    PRINT 'Importaci贸n de empleados completada.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -102,7 +105,11 @@ BEGIN TRY
     BEGIN TRANSACTION;
 	EXEC Ventas.CargarClientesAleatorios_sp @cantClientes
     COMMIT TRANSACTION;
+<<<<<<< HEAD
     PRINT CAST(@cantClientes AS VARCHAR) + ' clientes aleatorios cargados correctamente.';
+=======
+    PRINT 'Generaci贸n aleatoria de clientes completada.';
+>>>>>>> 5bfc5656fc9d33777b39dc000d08f888af1918b2
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -115,7 +122,7 @@ BEGIN TRY
     BEGIN TRANSACTION;
 	EXEC Ventas.ImportarVentas_sp @rutaVentas, @valorDolar
     COMMIT TRANSACTION;
-    PRINT 'Importaci髇 de ventas completada.';
+    PRINT 'Importaci贸n de ventas completada.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
