@@ -1,0 +1,32 @@
+Política de Respaldo para Ventas y Reportes
+
+Se ha definido una estrategia de respaldo que garantiza la disponibilidad y protección de los datos en caso de fallos, ataques cibernéticos o corrupción de la base de datos.
+
+1. Tipos de Respaldo 
+Respaldo Diario
+Se realiza todas las noches al finalizar el día operativo.
+Se almacena en un servidor seguro dentro de la red corporativa.
+Permite recuperar las ventas del día en caso de pérdida de datos.
+Respaldo Semanal
+Se ejecuta cada domingo para almacenar toda la información de la semana.
+Se guarda en un almacenamiento seguro de mayor capacidad.
+Sirve como un punto de recuperación más estable, evitando la restauración de múltiples respaldos diarios.
+
+2. Ubicación y Seguridad de los Respaldos
+
+Los respaldos diarios se almacenan en servidores internos de la empresa.
+
+Los respaldos semanales se almacenan en la nube o en un centro de datos externo, protegiendo la información ante desastres físicos en la oficina (incendios, robos, fallos de hardware).
+
+Medidas de seguridad:
+
+*Todos los respaldos están cifrados para evitar accesos no autorizados.
+*Solo administradores de bases de datos pueden restaurar los respaldos.
+*Periódicamente se verifica que los respaldos sean funcionales y puedan ser restaurados en caso de emergencia.
+
+3. Política de Retención
+
+Los respaldos diarios se conservan por 7 días mientras que los semanales por 90 días. 
+Una vez que se supera el tiempo de retención, los respaldos más antiguos se eliminan para optimizar el almacenamiento, manteniendo únicamente los más recientes.
+
+De esta forma, se asegura que nunca se pierda más de un día de ventas, reduciendo el impacto de un fallo, se tiene la capacidad de restaurar información exacta en caso de errores humanos, ataques o corrupción de datos y se cumplen estándares de seguridad y auditoría requeridos para la gestión de información financiera.
