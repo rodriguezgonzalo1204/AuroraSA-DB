@@ -2,12 +2,12 @@
 Aurora SA
 Pruebas de roles y nuevos procedures (Entrega 05)
 Fecha: 28-02-2025
-Asignatura: Bases de datos Aplicadas - ComisiÛn: 1353
+Asignatura: Bases de datos Aplicadas - Comisi√≥n: 1353
 Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
 /*
-	Ejecutar el cÛdigo paso a paso siguiendo las indicaciones
+	Ejecutar el c√≥digo paso a paso siguiendo las indicaciones
 	No ejecute en bloque, puede dar lugar a errores
 */
 
@@ -19,25 +19,25 @@ GO
 ---------------------------- ROLES ----------------------------
 
 -- Ejecutamos como el usuario 'GonzaloRodriguez', que posee rol "Cajero",
--- por lo que no debe tener permisos para realizar notas de crÈdito
+-- por lo que no debe tener permisos para realizar notas de cr√©dito
 EXECUTE AS USER = 'GonzaloRodriguez';
 EXEC Seguridad.GenerarNotaCredito_sp 2,60,6.25,'Palangana' ;
 REVERT;
 
--- Ejecutar hasta ac· <--- ; Resultado esperado -> El usuario no tiene permisos
+-- Ejecutar hasta ac√° <--- ; Resultado esperado -> El usuario no tiene permisos
 
 -- Ejecutamos como el usuario 'VladimirFrancisco', que posee rol "Supervisor",
--- y por lo tanto debe poder realizar notas de crÈdito
+-- y por lo tanto debe poder realizar notas de cr√©dito
 EXECUTE AS USER = 'VladimirFrancisco';
 EXEC Seguridad.GenerarNotaCredito_sp 2,60,6.25,'Palangana' ;
 REVERT;
 
 SELECT * FROM Ventas.NotaCredito
--- Ejecutar hasta ac· <--- ; Resultado esperado -> Nota de CrÈdito insertada
+-- Ejecutar hasta ac√° <--- ; Resultado esperado -> Nota de Cr√©dito insertada
 
 -----------------------------------------------------------------------------------------------------
 
----------------------------- ENCRIPTACI”N ----------------------------
+---------------------------- ENCRIPTACI√ìN ----------------------------
 
 -- Encriptamos los campos sensibles de la tabla empleado
 EXEC Seguridad.EncriptarEmpleado_sp 'NoTeOlvidesElWhereEnElDeleteFrom'
@@ -59,20 +59,20 @@ EXEC Seguridad.MostrarEmpleadoEncriptado_sp 'NoTeOlvidesElWhereEnElDeleteFrom'
 */
 PRINT '=== InsertarEmpleado_sp: Insertando empleado con datos cifrados ===';
 EXEC Empresa.InsertarEmpleado_sp
-	 @clave			= 'NoTeOlvidesElWhereEnElDeleteFrom',		-- Nuevo par·metro, la clave de cifrado
-	 @idEmpleado	= 98,
+     @clave		= 'NoTeOlvidesElWhereEnElDeleteFrom',		-- Nuevo par√°metro, la clave de cifrado
+     @idEmpleado	= 98,
      @nombre		= 'Juan',
      @apellido		= 'Perez',
      @genero		= 'M',
-     @cargo			= 'Cajero',
+     @cargo		= 'Cajero',
      @domicilio		= 'Avellaneda 158',
      @telefono		= '1133558833',
-     @cuil			= '20-46415848-2',
+     @cuil		= '20-46415848-2',
      @fechaAlta		= '2025-01-01',
      @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
      @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
      @idSucursal	= 1,
-     @turno			= 'TM';
+     @turno		= 'TM';
 
 -- Ejecute hasta aca y luego observe las dos consultas.
 
@@ -89,8 +89,8 @@ EXEC Seguridad.MostrarEmpleadoEncriptado_sp 'EdgardoGhoBot' --		<-- No visualiza
 -- En caso de insertar una clave erronea:
 PRINT '=== InsertarEmpleado_sp: Insertando dos empleados ===';
 EXEC Empresa.InsertarEmpleado_sp
-	 @clave			= 'EdgardoGhoBot',	--	<-- Clave distinta
-	 @idEmpleado	= 100,
+     @clave		= 'EdgardoGhoBot',	--	<-- Clave distinta
+     @idEmpleado	= 100,
      @nombre		= 'Juan',
      @apellido		= 'Perez',
      @genero		= 'M',
