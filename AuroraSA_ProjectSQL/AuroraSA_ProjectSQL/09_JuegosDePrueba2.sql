@@ -15,39 +15,40 @@ USE Com1353G07
 GO
 -- Ejecutar
 
+---------------------------- ENCRIPTACIÓN ------------------------------
 
----------------------------- ROLES ----------------------------
+-- Agregamos los campos para encriptar
+IF NOT EXISTS	  (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS 
+				   WHERE TABLE_NAME = 'Empresa.Empleado' AND COLUMN_NAME = 'cuil_encriptado')
+	AND NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS 
+				   WHERE TABLE_NAME = 'Empresa.Empleado' AND COLUMN_NAME = 'domicilio_encriptado')
+	AND NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS 
+				   WHERE TABLE_NAME = 'Empresa.Empleado' AND COLUMN_NAME = 'telefono_encriptado')
+	AND NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS 
+				   WHERE TABLE_NAME = 'Empresa.Empleado' AND COLUMN_NAME = 'mailPersonal_encriptado')
+BEGIN
+    ALTER TABLE Empresa.Empleado 
+	ADD	cuil_encriptado VARBINARY(256),
+		domicilio_encriptado VARBINARY(256),
+		telefono_encriptado VARBINARY(256),
+		mailPersonal_encriptado VARBINARY(256);
+END
+ELSE
+    PRINT 'Los campos ya existen.';
+-- 1) Ejecutar hasta aca
 
--- Ejecutamos como el usuario 'GonzaloRodriguez', que posee rol "Cajero",
--- por lo que no debe tener permisos para realizar notas de crédito
-EXECUTE AS USER = 'GonzaloRodriguez';
-EXEC Seguridad.GenerarNotaCredito_sp 2,60,6.25,'Palangana' ;
-REVERT;
-
--- Ejecutar hasta acá <--- ; Resultado esperado -> El usuario no tiene permisos
-
--- Ejecutamos como el usuario 'VladimirFrancisco', que posee rol "Supervisor",
--- y por lo tanto debe poder realizar notas de crédito
-EXECUTE AS USER = 'VladimirFrancisco';
-EXEC Seguridad.GenerarNotaCredito_sp 2,60,6.25,'Palangana' ;
-REVERT;
-
-SELECT * FROM Ventas.NotaCredito
--- Ejecutar hasta acá <--- ; Resultado esperado -> Nota de Crédito insertada
-
------------------------------------------------------------------------------------------------------
-
----------------------------- ENCRIPTACIÓN ----------------------------
 
 -- Encriptamos los campos sensibles de la tabla empleado
 EXEC Seguridad.EncriptarEmpleado_sp 'NoTeOlvidesElWhereEnElDeleteFrom'
+-- 2) Ejecutar hasta aca
 
 -- Vemos la nueva tabla con los datos encriptados
 SELECT * FROM Empresa.Empleado
+-- 3) Ejecutar hasta aca
 
 -- Vemos la tabla, pero con los datos desencriptados
-EXEC Seguridad.MostrarEmpleadoEncriptado_sp 'NoTeOlvidesElWhereEnElDeleteFrom'
-
+EXEC Seguridad.MostrarEmpleadoDesencriptado_sp 'NoTeOlvidesElWhereEnElDeleteFrom'
+-- 4) Ejecutar hasta aca
 
 
 
@@ -74,17 +75,17 @@ EXEC Empresa.InsertarEmpleado_sp
      @idSucursal	= 1,
      @turno			= 'TM';
 
--- Ejecute hasta aca y luego observe las dos consultas.
+-- 5) Ejecutar hasta aca y luego observar las dos consultas.
 
 SELECT * FROM Empresa.Empleado		--	<-- Como vemos los campos quedan encriptados
-EXEC Seguridad.MostrarEmpleadoEncriptado_sp 'NoTeOlvidesElWhereEnElDeleteFrom' --	<-- Mediante la clave podemos ver los datos encriptados
+EXEC Seguridad.MostrarEmpleadoDesencriptado_sp 'NoTeOlvidesElWhereEnElDeleteFrom' --	<-- Mediante la clave podemos ver los datos encriptados
 
--- Ocurre exactamente lo mismo para el procedure de actualizar.
+-- 6) Ejecutar hasta aca. Ocurre exactamente lo mismo para el procedure de actualizar.
 
 
 -- Que suecede si intentamos ver con otra clave?
-EXEC Seguridad.MostrarEmpleadoEncriptado_sp 'EdgardoGhoBot' --		<-- No visualizamos ninguno de los campos
-
+EXEC Seguridad.MostrarEmpleadoDesencriptado_sp 'EdgardoGhoBot' --		<-- No visualizamos ninguno de los campos
+-- 7) Ejecutar hasta aca.
 
 -- En caso de insertar una clave erronea:
 PRINT '=== InsertarEmpleado_sp: Insertando dos empleados ===';
@@ -104,9 +105,10 @@ EXEC Empresa.InsertarEmpleado_sp
      @idSucursal	= 1,
      @turno		= 'TM';
 
--- Ejecute hasta aca y luego observe las dos consultas.
+-- 8) Ejecutar hasta aca y luego observe las dos consultas.
+
+
 EXEC Seguridad.MostrarEmpleadoEncriptado_sp 'NoTeOlvidesElWhereEnElDeleteFrom'
 EXEC Seguridad.MostrarEmpleadoEncriptado_sp 'EdgardoGhoBot'		
-
 -- Observaremos determinados campos segun con la clave que fueron encriptados
 

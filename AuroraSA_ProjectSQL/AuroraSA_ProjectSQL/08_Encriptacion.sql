@@ -8,41 +8,29 @@ Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono G
 
 /*
 	El Script está pensado para ejecutarse en un solo bloque con F5
-	Sin embargo, tiene la posibilidad de visualizar el antes y despues de la encriptación ejecutando las lineas comentadas
 */
 
 USE Com1353G07
 GO
-
-
--- VER ANTES DE ENCRIPTAR
--- SELECT * FROM Empresa.Empleado
-
 
 -- Creamos procedure para encriptar los campos de los empleados
 CREATE OR ALTER PROCEDURE Seguridad.EncriptarEmpleado_sp
 	@fraseClave NVARCHAR(128)
 AS 
 BEGIN
-	-- Agregamos los campos para encriptar
-	ALTER TABLE Empresa.Empleado
-	ADD cuil_encriptado VARBINARY(256),
-		domicilio_encriptado VARBINARY(256),
-		telefono_encriptado VARBINARY(256),
-		mailPersonal_encriptado VARBINARY(256);
-
-	-- Encriptación masiva para toda la tabla
+	-- Encriptación masiva para toda la tabla. Se utiliza SQL Dinámico ya que se nombran columnas inexistentes al momento de crear el procedure
+	DECLARE @SQL NVARCHAR(MAX) = '				
 	UPDATE Empresa.Empleado
-		SET cuil_encriptado = EncryptByPassPhrase(@fraseClave, cuil, 1, CONVERT(VARBINARY, idEmpleado)),
-			telefono_encriptado = EncryptByPassPhrase(@fraseClave, telefono, 1, CONVERT(VARBINARY, idEmpleado)),
-			mailPersonal_encriptado = EncryptByPassPhrase(@fraseClave, mailPersonal, 1, CONVERT(VARBINARY, idEmpleado)),
-			domicilio_encriptado = EncryptByPassPhrase(@fraseClave, domicilio, 1, CONVERT(VARBINARY, idEmpleado))
+		SET cuil_encriptado = EncryptByPassPhrase(''' + @fraseClave + ''', cuil, 1, CONVERT(VARBINARY, idEmpleado)),
+			telefono_encriptado = EncryptByPassPhrase(''' + @fraseClave + ''', telefono, 1, CONVERT(VARBINARY, idEmpleado)),
+			mailPersonal_encriptado = EncryptByPassPhrase(''' + @fraseClave + ''', mailPersonal, 1, CONVERT(VARBINARY, idEmpleado)),
+			domicilio_encriptado = EncryptByPassPhrase(''' + @fraseClave + ''', domicilio, 1, CONVERT(VARBINARY, idEmpleado));'
+
+	EXEC sp_sqlexec @SQL
 
 	-- Eliminamos los campos originales, quedandonos solo con los encriptados
 	DROP INDEX ix_cuil ON Empresa.Empleado;
-
 	ALTER TABLE Empresa.Empleado DROP CONSTRAINT UQ_Empleado_Cuil;
-
 	ALTER TABLE Empresa.Empleado DROP COLUMN cuil, domicilio, telefono, mailPersonal;
 
 	-- Renombramos las columnas (los procedures/scripts anteriores dejaran de funcionar)
@@ -54,7 +42,7 @@ END;
 GO
 
 
-CREATE OR ALTER PROCEDURE Seguridad.MostrarEmpleadoEncriptado_sp
+CREATE OR ALTER PROCEDURE Seguridad.MostrarEmpleadoDesencriptado_sp
 	@fraseClave NVARCHAR(128)
 AS
 BEGIN
@@ -68,11 +56,6 @@ BEGIN
 	FROM Empresa.Empleado;
 END;
 GO
-
-
--- VER TABLA LUEGO DE ENCRIPTACIÓN MEDIANTE CLAVE
---EXEC Seguridad.MostrarEmpleadoEncriptado_sp 'NoTeOlvidesElWhereEnElDeleteFrom'
-
 
 
 

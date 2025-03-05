@@ -13,6 +13,9 @@ Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono G
 
 USE Com1353G07
 GO
+SET NOCOUNT ON;
+
+
 -- RESETEAR AUTOINCREMENTALES Y VACIAR TABLAS 
 EXEC Utilidades.ResetearTablas_sp
 GO
@@ -109,7 +112,7 @@ EXEC Empresa.InsertarEmpleado_sp
      @cargo		= 'Cajero',
      @domicilio		= 'Avellaneda 158',
      @telefono		= '1133558833',
-     @cuil		= '20333332', --Formato incorrecto
+     @cuil		= '20333332',			--Formato incorrecto
      @fechaAlta		= '2025-01-01',
      @mailPersonal	= 'Rolando_LOPEZ@gmail.com',
      @mailEmpresa	= 'Rolando.LOPEZ@superA.com',
@@ -314,13 +317,13 @@ EXEC Ventas.InsertarFactura_sp
      @fecha				= '2025-01-10',
      @hora				= '10:30:00',
      @medioPago			= 'Cash',
-     @identificadorPago = '',
+     @identificadorPago = '--',
      @total				= 200,
      @idCliente			= 1,
      @idEmpleado		= 257021,   
      @idSucursal		= 1;
 	 
-EXEC Ventas.InsertarFactura_sp '754-22-4105','B','2025-02-05', '09:36:00', 'Cash', '', 900, 2, 257021, 2;
+EXEC Ventas.InsertarFactura_sp '754-22-4105','B','2025-02-05', '09:36:00', 'Cash', '--', 900, 2, 257021, 2;
 SELECT * FROM Ventas.Factura
 -- Ejecutar hasta aca: Resultado esperado -> Se insertan facturas 1 y 2 correspondientes a cliente 1 y 2, sucursal 1 y 2
 
@@ -331,7 +334,7 @@ EXEC Ventas.InsertarFactura_sp
      @fecha				= '2025-01-10',
      @hora				= '10:30:00',
      @medioPago			= 'Cash',
-     @identificadorPago =  '',
+     @identificadorPago =  '--',
      @total				= 200,
      @idCliente			= 1,
      @idEmpleado		= 257020,   
@@ -345,7 +348,7 @@ EXEC Ventas.InsertarFactura_sp
      @fecha				= '2025-01-10',
      @hora				= '10:30:00',
      @medioPago			= 'Cash',
-     @identificadorPago = '',
+     @identificadorPago = '--',
      @total				= 1,
      @idCliente			= 1,
      @idEmpleado		= 257021,   
@@ -359,7 +362,7 @@ EXEC Ventas.InsertarFactura_sp
      @fecha				= '2025-01-10',
      @hora				= '10:30:00',
      @medioPago			= 'Dolares cara chica',
-     @identificadorPago = '',
+     @identificadorPago = '--',
      @total				= 200,
      @idCliente			= 1,
      @idEmpleado		= 257021,   
@@ -373,7 +376,7 @@ EXEC Ventas.InsertarFactura_sp
      @fecha				= '2025-01-10',
      @hora				= '10:30:00',
      @medioPago			= 'Cash',
-     @identificadorPago = '',
+     @identificadorPago = '--',
      @total				= 200,
      @idCliente			= 1,
      @idEmpleado		= 2,   
@@ -393,7 +396,7 @@ EXEC Ventas.ActualizarFactura_sp
      @fecha				= '2025-01-11',
      @hora				= '11:45:00',
      @medioPago			= 'Cash',
-     @identificadorPago = '',
+     @identificadorPago = '--',
      @total				= 400,
      @idCliente			= 1,
      @idEmpleado		= 257021,

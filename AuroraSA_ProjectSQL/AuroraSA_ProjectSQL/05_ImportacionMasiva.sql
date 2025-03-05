@@ -11,9 +11,10 @@ Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono G
 	INDICAR LAS RUTAS CORRESPONDIENTES DE LOS ARCHIVOS, VALOR ACTUAL DEL DOLAR Y CANTIDAD DE CLIENTES RANDOM A GENERAR
 */
 
-Use Com1353G07
-GO
 
+IF EXISTS (SELECT 1 FROM sys.databases WHERE name = 'Com1353G07')
+BEGIN
+USE Com1353G07														-- Las siguientes rutas son ilustrativas y deben ajustarse --
 DECLARE @rutaCatalogoCSV NVARCHAR(250)		= 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\catalogo.csv',
 		@rutaElectronicos NVARCHAR(250)		= 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Electronic accessories.xlsx',
 		@rutaImportados NVARCHAR(250)		= 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Productos_importados.xlsx',
@@ -25,10 +26,12 @@ DECLARE @rutaCatalogoCSV NVARCHAR(250)		= 'E:\Extra\Facultad\Bases de datos apli
 
 -- VACIAR TABLAS Y REESTABLECER IDENTITY
 /*
-SET NOCOUNT ON;
 EXEC Utilidades.ResetearTablas_sp
 GO
 */
+
+SET NOCOUNT ON;
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 
 BEGIN TRY
     BEGIN TRANSACTION;
@@ -99,7 +102,7 @@ BEGIN TRY
     BEGIN TRANSACTION;
 	EXEC Ventas.CargarClientesAleatorios_sp @cantClientes
     COMMIT TRANSACTION;
-    PRINT 'Generación aleatoria de clientes completada.';
+    PRINT CAST(@cantClientes AS VARCHAR) + ' clientes aleatorios cargados correctamente.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -119,4 +122,8 @@ BEGIN CATCH
     SET @MensajeError = 'Error en ImportarVentas_sp: ' + ERROR_MESSAGE();
     RAISERROR(@MensajeError, 16, 1);
 END CATCH;
+
+END
+ELSE
+	PRINT 'Debe crear la base de datos previamente'
 

@@ -10,15 +10,12 @@ Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono G
 USE master
 GO
 IF NOT EXISTS (SELECT NAME FROM master.dbo.sysdatabases WHERE NAME = 'Com1353G07')
-BEGIN
-    CREATE DATABASE Com1353G07
-    COLLATE Modern_Spanish_CS_AS
-END
+    CREATE DATABASE Com1353G07 COLLATE Modern_Spanish_CS_AS
 ELSE
 	print 'La base de datos ya existe.'
 GO
 
-Use Com1353G07
+USE Com1353G07
 GO
 
 ------------CREACION DE ESQUEMAS----------
@@ -78,7 +75,7 @@ END
 GO
 
 /*
-   Empleado: Contiene información del empleado y la sucursal a la que pertenece. Los legajos de empleado inican en 257020 y son autoincrementales.
+   Empleado: Contiene información del empleado y la sucursal a la que pertenece.
    Está en el esquema Empresa.
 */
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
@@ -93,7 +90,7 @@ CREATE TABLE Empresa.Empleado
     cargo VARCHAR(25),
     domicilio NVARCHAR(100),
     telefono CHAR(10),
-    cuil CHAR(13) UNIQUE,
+    cuil CHAR(13),
     fechaAlta DATE,
     mailPersonal VARCHAR(55),
     mailEmpresa VARCHAR(55),
@@ -195,7 +192,7 @@ END
 GO
 
 /*
-   DetalleVenta: Registra el detalle de productos vendidos en cada Factura. Se identifica
+   DetalleVenta: Registra el detalle de productos vendidos en cada Factura. Se identifica con idFactura y con idDetalle
    Está en el esquema Ventas.
 */
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
@@ -244,76 +241,56 @@ IF NOT EXISTS (
     SELECT 1 FROM sys.indexes WHERE name = 'ix_descripcion' 
     AND object_id = OBJECT_ID('Inventario.LineaProducto')
 )
-BEGIN
-    CREATE NONCLUSTERED INDEX ix_descripcion
-    ON Inventario.LineaProducto(descripcion)
-END;
+    CREATE NONCLUSTERED INDEX ix_descripcion ON Inventario.LineaProducto(descripcion)
+
 
 IF NOT EXISTS (
     SELECT 1 FROM sys.indexes WHERE name = 'ix_ciudad' 
     AND object_id = OBJECT_ID('Empresa.Sucursal')
 )
-BEGIN
-    CREATE NONCLUSTERED INDEX ix_ciudad
-    ON Empresa.Sucursal(ciudad)
-END;
+    CREATE NONCLUSTERED INDEX ix_ciudad ON Empresa.Sucursal(ciudad)
 
 IF NOT EXISTS (
     SELECT 1 FROM sys.indexes WHERE name = 'ix_cuil' 
     AND object_id = OBJECT_ID('Empresa.Empleado')
 )
-BEGIN
-    CREATE NONCLUSTERED INDEX ix_cuil
-    ON Empresa.Empleado(cuil)
-END;
+    CREATE NONCLUSTERED INDEX ix_cuil ON Empresa.Empleado(cuil)
 
 IF NOT EXISTS (
     SELECT 1 FROM sys.indexes WHERE name = 'ix_nombreProd' 
     AND object_id = OBJECT_ID('Inventario.Producto')
 )
-BEGIN
-    CREATE NONCLUSTERED INDEX ix_nombreProd
-    ON Inventario.Producto(nombreProducto)
-END;
+    CREATE NONCLUSTERED INDEX ix_nombreProd ON Inventario.Producto(nombreProducto)
 
 IF NOT EXISTS (
     SELECT 1 FROM sys.indexes WHERE name = 'ix_lineaProd' 
     AND object_id = OBJECT_ID('Inventario.Producto')
 )
-BEGIN
-    CREATE NONCLUSTERED INDEX ix_lineaProd
-    ON Inventario.Producto(lineaProducto)
-END;
+    CREATE NONCLUSTERED INDEX ix_lineaProd ON Inventario.Producto(lineaProducto)
 
 IF NOT EXISTS (
     SELECT 1 FROM sys.indexes WHERE name = 'ix_codFact' 
     AND object_id = OBJECT_ID('Ventas.Factura')
 )
-BEGIN
-    CREATE NONCLUSTERED INDEX ix_codFact
-    ON Ventas.Factura(codigoFactura)
-END;
+    CREATE NONCLUSTERED INDEX ix_codFact ON Ventas.Factura(codigoFactura)
+
 
 IF NOT EXISTS 
 	(SELECT 1 FROM sys.indexes WHERE name = 'ix_fechaFact'
-	AND object_id = OBJECT_ID('Ventas.Factura'))
-BEGIN
+	AND object_id = OBJECT_ID('Ventas.Factura')
+)
     CREATE INDEX ix_fechaFact ON Ventas.Factura(fecha);
-END;
 
 IF NOT EXISTS
 	(SELECT 1 FROM sys.indexes WHERE name = 'ix_sucFact'
-	AND object_id = OBJECT_ID('Ventas.Factura'))
-BEGIN
+	AND object_id = OBJECT_ID('Ventas.Factura')
+)
     CREATE INDEX ix_sucFact ON Ventas.Factura(idSucursal);
-END;
+
 
 IF NOT EXISTS (
     SELECT 1 FROM sys.indexes WHERE name = 'ix_tipoClientes' 
     AND object_id = OBJECT_ID('Ventas.Cliente')
 )
-BEGIN
-    CREATE NONCLUSTERED INDEX ix_tipoClientes
-    ON Ventas.Cliente(tipoCliente)
-	INCLUDE (genero)
-END;
+    CREATE NONCLUSTERED INDEX ix_tipoClientes ON Ventas.Cliente(tipoCliente) INCLUDE (genero)
+

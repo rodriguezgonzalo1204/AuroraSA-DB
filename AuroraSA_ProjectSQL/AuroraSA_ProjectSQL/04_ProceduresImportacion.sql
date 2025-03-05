@@ -18,7 +18,7 @@ Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono G
 USE Com1353G07
 GO
 
--- CAMBIAR PARAMETROS PARA PERMITIR IMPORTACION
+-- CAMBIAR PARÁMETROS PARA PERMITIR IMPORTACIÓN
 EXEC sp_configure 'show advanced options', 1;
 GO
 RECONFIGURE;
@@ -56,7 +56,7 @@ BEGIN
 
     -- Crear tabla temporal para buscar coincidencias de línea de producto
     CREATE TABLE #TempEquivalenciaLineas (
-		lineaVieja NVARCHAR(50) COLLATE Modern_Spanish_CS_AS PRIMARY KEY,		-- Se encuentra ordenado en el archivo origen por lo que la insercion es eficiente
+		lineaVieja NVARCHAR(50) COLLATE Modern_Spanish_CS_AS PRIMARY KEY CLUSTERED,	-- Se encuentra ordenado en el archivo origen por lo que la insercion es eficiente
         lineaNueva NVARCHAR(25) COLLATE Modern_Spanish_CS_AS
     );
 
@@ -118,7 +118,6 @@ BEGIN
     -- Limpiar tablas temporales
     DROP TABLE #TempEquivalenciaLineas;
     DROP TABLE #TempProductos1;
-
 END;
 GO
 
@@ -262,33 +261,7 @@ BEGIN
 END;
 GO
 
------------------------------------------------------------------------------------------------
--- Funcion para cuil random
-CREATE OR ALTER FUNCTION Utilidades.Generarcuil(@dni VARCHAR(20)) 
-RETURNS CHAR(13)
-AS
-BEGIN
-    DECLARE @cuil CHAR(13),
-			@codigoVerificacion INT,
-			@prefijo INT;
-    
-    -- Generamos un valor aleatorio que solo puede ser 20 o 27
-    IF (ABS(CHECKSUM(CURRENT_TIMESTAMP)) % 2) = 0
-        SET @prefijo = 20;
-    ELSE
-        SET @prefijo = 27;
-    
-    -- Último dígito
-    SET @codigoVerificacion = ABS(CHECKSUM(CURRENT_TIMESTAMP)) % 10;
-
-    -- Formatear
-    SET @cuil = CAST(@prefijo AS VARCHAR(2)) + '-' + @dni + '-' + CAST(@codigoVerificacion AS VARCHAR(1));
-
-    RETURN @cuil;
-END;
-GO
-
------------------------------------------------------------------------------------------------
+ -----------------------------------------------------------------------------------------------
 -- Importacion de empleados
 CREATE OR ALTER PROCEDURE Empresa.ImportarEmpleados_sp
     @rutaArchivo NVARCHAR(250) 
@@ -300,7 +273,7 @@ BEGIN
 		idEmpleado INT,
 		nombre VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
 		apellido VARCHAR(30) COLLATE Modern_Spanish_CS_AS,
-		dni	VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
+		dni	BIGINT,
 		domicilio NVARCHAR(100) COLLATE Modern_Spanish_CS_AS,
 		mailPersonal VARCHAR(55) COLLATE Modern_Spanish_CS_AS,
 		mailEmpresa VARCHAR(55) COLLATE Modern_Spanish_CS_AS,
@@ -310,6 +283,7 @@ BEGIN
 		turno	VARCHAR(20) COLLATE Modern_Spanish_CS_AS
     );
 
+	-- Indice clúster sobre idEmpleados para mantener la tabla con dicho orden y soportar duplicados
 	CREATE CLUSTERED INDEX ix_tempIdEmpleado ON #TempEmpleados(idEmpleado);
 
     DECLARE @cadenaSql NVARCHAR(MAX)
@@ -348,7 +322,8 @@ BEGIN
 		TE.cargo,
 		TE.domicilio,
 		'11' + RIGHT('00000000' + CAST(ABS(CHECKSUM(NEWID())) % 100000000 AS VARCHAR(8)), 8) AS telefono,	-- Numero aleatorio de 10 digitos
-		Utilidades.Generarcuil(TE.dni),
+		CAST( CASE WHEN CHECKSUM(NEWID()) > 0 THEN 20 ELSE 27 END AS VARCHAR(2))
+		+ '-' + LEFT(CAST(TE.dni AS VARCHAR(MAX)), 8) + '-' + CAST(ABS(CHECKSUM(NEWID())) % 10 AS VARCHAR(1)) AS cuil,
 		DATEADD(DAY, RAND(CHECKSUM(NEWID())) * @DiasIntervalo, @FechaInicio),
 		TE.mailPersonal,
 		TE.mailEmpresa,
@@ -420,7 +395,6 @@ BEGIN
         SET @i = @i + 1;
     END;
 
-    PRINT CAST(@cantidad AS VARCHAR) + ' clientes aleatorios cargados correctamente.';
 END;
 GO
 
@@ -539,6 +513,5 @@ BEGIN
 	DROP TABLE #TempVentas;
 	DROP TABLE #TotalesPorFactura
 	DROP TABLE #GruposDetalle
-
 END
 GO
