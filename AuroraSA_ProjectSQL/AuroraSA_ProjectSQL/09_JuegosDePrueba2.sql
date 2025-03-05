@@ -2,12 +2,12 @@
 Aurora SA
 Pruebas de roles y nuevos procedures (Entrega 05)
 Fecha: 28-02-2025
-Asignatura: Bases de datos Aplicadas - Comisión: 1353
+Asignatura: Bases de datos Aplicadas - Comision: 1353
 Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
 /*
-	Ejecutar el código paso a paso siguiendo las indicaciones
+	Ejecutar el codigo paso a paso siguiendo las indicaciones
 	No ejecute en bloque, puede dar lugar a errores
 */
 
@@ -15,7 +15,7 @@ USE Com1353G07
 GO
 -- Ejecutar
 
----------------------------- ENCRIPTACI�N ------------------------------
+---------------------------- ENCRIPTACIÓN ------------------------------
 
 -- Agregamos los campos para encriptar
 IF NOT EXISTS	  (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS 
@@ -37,29 +37,27 @@ ELSE
     PRINT 'Los campos ya existen.';
 -- 1) Ejecutar hasta aca
 
-<<<<<<< HEAD
-=======
+
 -- Ejecutamos como el usuario 'GonzaloRodriguez', que posee rol "Cajero",
--- por lo que no debe tener permisos para realizar notas de crédito
+-- por lo que no debe tener permisos para realizar notas de credito
 EXECUTE AS USER = 'GonzaloRodriguez';
 EXEC Seguridad.GenerarNotaCredito_sp 2,60,6.25,'Palangana' ;
 REVERT;
 
--- Ejecutar hasta acá <--- ; Resultado esperado -> El usuario no tiene permisos
+-- Ejecutar hasta aca¡ <--- ; Resultado esperado -> El usuario no tiene permisos
 
 -- Ejecutamos como el usuario 'VladimirFrancisco', que posee rol "Supervisor",
--- y por lo tanto debe poder realizar notas de crédito
+-- y por lo tanto debe poder realizar notas de credito
 EXECUTE AS USER = 'VladimirFrancisco';
 EXEC Seguridad.GenerarNotaCredito_sp 2,60,6.25,'Palangana' ;
 REVERT;
 
 SELECT * FROM Ventas.NotaCredito
--- Ejecutar hasta acá <--- ; Resultado esperado -> Nota de Crédito insertada
+-- Ejecutar hasta aca¡ <--- ; Resultado esperado -> Nota de Credito insertada
 
 -----------------------------------------------------------------------------------------------------
 
----------------------------- ENCRIPTACIÓN ----------------------------
->>>>>>> 5bfc5656fc9d33777b39dc000d08f888af1918b2
+---------------------------- ENCRIPTACION ----------------------------
 
 -- Encriptamos los campos sensibles de la tabla empleado
 EXEC Seguridad.EncriptarEmpleado_sp 'NoTeOlvidesElWhereEnElDeleteFrom'
@@ -83,7 +81,7 @@ EXEC Seguridad.MostrarEmpleadoDesencriptado_sp 'NoTeOlvidesElWhereEnElDeleteFrom
 */
 PRINT '=== InsertarEmpleado_sp: Insertando empleado con datos cifrados ===';
 EXEC Empresa.InsertarEmpleado_sp
-     @clave		= 'NoTeOlvidesElWhereEnElDeleteFrom',		-- Nuevo parámetro, la clave de cifrado
+     @clave		= 'NoTeOlvidesElWhereEnElDeleteFrom',		-- Nuevo parametro, la clave de cifrado
      @idEmpleado	= 98,
      @nombre		= 'Juan',
      @apellido		= 'Perez',
