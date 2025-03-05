@@ -84,7 +84,7 @@ EXEC Empresa.EliminarSucursal_sp
 */
 PRINT '=== InsertarEmpleado_sp: Insertando dos empleados ===';
 EXEC Empresa.InsertarEmpleado_sp
-	 @idEmpleado	= 257020,
+     @idEmpleado	= 257020,
      @nombre		= 'Juan',
      @apellido		= 'Perez',
      @genero		= 'M',
@@ -105,7 +105,7 @@ SELECT * FROM Empresa.Empleado
 
 PRINT '=== InsertarEmpleado_sp: Intentando insertar empleado con cuil Inválido ===';
 EXEC Empresa.InsertarEmpleado_sp
-	 @idEmpleado	= 257022,
+     @idEmpleado	= 257022,
      @nombre		= 'Juan',
      @apellido		= 'Perez',
      @genero		= 'M',
@@ -122,7 +122,7 @@ EXEC Empresa.InsertarEmpleado_sp
 
 PRINT '=== InsertarEmpleado_sp: Intentando insertar empleado con mail Inválido ===';
 EXEC Empresa.InsertarEmpleado_sp
-	 @idEmpleado	= 257022,
+     @idEmpleado	= 257022,
      @nombre		= 'Juan',
      @apellido		= 'Perez',
      @genero		= 'M',
@@ -144,7 +144,7 @@ EXEC Empresa.InsertarEmpleado_sp
 */
 PRINT '=== ActualizarEmpleado_sp: Actualizando Empleado (idEmpleado=257020) ===';
 EXEC Empresa.ActualizarEmpleado_sp
-	 @idEmpleado	= 257020,
+     @idEmpleado	= 257020,
      @nombre		= 'Juan Carlos',
      @apellido		= 'Perez Editado',
      @genero		= 'M',
@@ -312,13 +312,13 @@ SELECT * FROM Inventario.Producto
 */
 PRINT '=== InsertarFactura_sp: Insertando Facturas ===';
 EXEC Ventas.InsertarFactura_sp
-	 @codigoFactura		= '829-34-3910',
+     @codigoFactura		= '829-34-3910',
      @tipoFactura		= 'A',
-     @fecha				= '2025-01-10',
-     @hora				= '10:30:00',
+     @fecha			= '2025-01-10',
+     @hora			= '10:30:00',
      @medioPago			= 'Cash',
-     @identificadorPago = '--',
-     @total				= 200,
+     @identificadorPago         = '--',
+     @total			= 200,
      @idCliente			= 1,
      @idEmpleado		= 257021,   
      @idSucursal		= 1;
@@ -331,11 +331,11 @@ PRINT '=== InsertarFactura_sp: Intentando insertar factura para empleado inexist
 EXEC Ventas.InsertarFactura_sp
 	 @codigoFactura		= '949-34-3910',
      @tipoFactura		= 'A',
-     @fecha				= '2025-01-10',
-     @hora				= '10:30:00',
+     @fecha			= '2025-01-10',
+     @hora			= '10:30:00',
      @medioPago			= 'Cash',
-     @identificadorPago =  '--',
-     @total				= 200,
+     @identificadorPago 	=  '--',
+     @total			= 200,
      @idCliente			= 1,
      @idEmpleado		= 257020,   
      @idSucursal		= 1;
@@ -343,13 +343,13 @@ EXEC Ventas.InsertarFactura_sp
 
 PRINT '=== InsertarFactura_sp: Insertando Factura ===';
 EXEC Ventas.InsertarFactura_sp
-	 @codigoFactura		= '22222', 
+     @codigoFactura		= '22222', 
      @tipoFactura		= 'A',
-     @fecha				= '2025-01-10',
-     @hora				= '10:30:00',
+     @fecha			= '2025-01-10',
+     @hora			= '10:30:00',
      @medioPago			= 'Cash',
-     @identificadorPago = '--',
-     @total				= 1,
+     @identificadorPago 	= '--',
+     @total			= 1,
      @idCliente			= 1,
      @idEmpleado		= 257021,   
      @idSucursal		= 1;
@@ -357,13 +357,13 @@ EXEC Ventas.InsertarFactura_sp
 
 PRINT '=== InsertarFactura_sp: Insertando Factura ===';
 EXEC Ventas.InsertarFactura_sp
-	 @codigoFactura		= '829-34-3910',
+     @codigoFactura		= '829-34-3910',
      @tipoFactura		= 'A',
-     @fecha				= '2025-01-10',
-     @hora				= '10:30:00',
+     @fecha			= '2025-01-10',
+     @hora			= '10:30:00',
      @medioPago			= 'Dolares cara chica',
-     @identificadorPago = '--',
-     @total				= 200,
+     @identificadorPago 	= '--',
+     @total			= 200,
      @idCliente			= 1,
      @idEmpleado		= 257021,   
      @idSucursal		= 1;
@@ -371,13 +371,13 @@ EXEC Ventas.InsertarFactura_sp
 
 PRINT '=== InsertarFactura_sp: Insertando Factura ===';
 EXEC Ventas.InsertarFactura_sp
-	 @codigoFactura		= '829-34-3910',
+     @codigoFactura		= '829-34-3910',
      @tipoFactura		= 'Z',
-     @fecha				= '2025-01-10',
-     @hora				= '10:30:00',
+     @fecha			= '2025-01-10',
+     @hora			= '10:30:00',
      @medioPago			= 'Cash',
-     @identificadorPago = '--',
-     @total				= 200,
+     @identificadorPago 	= '--',
+     @total			= 200,
      @idCliente			= 1,
      @idEmpleado		= 2,   
      @idSucursal		= 1;
@@ -393,11 +393,11 @@ EXEC Ventas.ActualizarFactura_sp
      @idFactura			= 1,
      @codigoFactura		= '829-34-3910',
      @tipoFactura		= 'C',
-     @fecha				= '2025-01-11',
-     @hora				= '11:45:00',
+     @fecha			= '2025-01-11',
+     @hora			= '11:45:00',
      @medioPago			= 'Cash',
-     @identificadorPago = '--',
-     @total				= 400,
+     @identificadorPago 	= '--',
+     @total			= 400,
      @idCliente			= 1,
      @idEmpleado		= 257021,
      @idSucursal		= 1;
