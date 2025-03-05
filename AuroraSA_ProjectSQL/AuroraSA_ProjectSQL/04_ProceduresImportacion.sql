@@ -1,24 +1,24 @@
 /*
 Aurora SA
-Creacion de Procedures para importaciÛn (Entrega 04)
+Creacion de Procedures para importaci√≥n (Entrega 04)
 Fecha: 28-02-2025
-Asignatura: Bases de datos Aplicadas - ComisiÛn: 1353
+Asignatura: Bases de datos Aplicadas - Comisi√≥n: 1353
 Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
 ---------------------------------------------------------------------------------------------------------------------------
 
 /*	
-	Modo de ejecuciÛn
+	Modo de ejecuci√≥n
 	El script esta pensado para poder ejecutarse de un solo bloque con F5. Se crearan los 
-	procedures de imporatciÛn y se cambiar·n las configuraciones para permitirlo
+	procedures de imporatci√≥n y se cambiar√°n las configuraciones para permitirlo
 */
 
 
 USE Com1353G07
 GO
 
--- CAMBIAR PAR¡METROS PARA PERMITIR IMPORTACI”N
+-- CAMBIAR PAR√ÅMETROS PARA PERMITIR IMPORTACI√ìN
 EXEC sp_configure 'show advanced options', 1;
 GO
 RECONFIGURE;
@@ -43,24 +43,24 @@ BEGIN
 
     -- Crear tabla temporal para cargar los datos del CSV
     CREATE TABLE #TempProductos1 (
-        id INT,
-        category NVARCHAR(50) COLLATE Modern_Spanish_CS_AS,
-        name NVARCHAR(110) COLLATE Modern_Spanish_CI_AI,  
-        price DECIMAL(10,2),
-        reference_price DECIMAL(10,2),
-        reference_unit VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
-        date DATETIME 
-    );
+	        id 		INT,
+	        category 	NVARCHAR(50) COLLATE Modern_Spanish_CS_AS,
+	        name 		NVARCHAR(110) COLLATE Modern_Spanish_CI_AI,  
+	        price 		DECIMAL(10,2),
+	        reference_price DECIMAL(10,2),
+	        reference_unit 	VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
+	        date 		DATETIME 
+    	);
 
 	CREATE NONCLUSTERED INDEX ix_tempNombreInclude ON #TempProductos1(name) INCLUDE (price, date, category);
 
-    -- Crear tabla temporal para buscar coincidencias de lÌnea de producto
+    -- Crear tabla temporal para buscar coincidencias de l√≠nea de producto
     CREATE TABLE #TempEquivalenciaLineas (
-		lineaVieja NVARCHAR(50) COLLATE Modern_Spanish_CS_AS PRIMARY KEY CLUSTERED,	-- Se encuentra ordenado en el archivo origen por lo que la insercion es eficiente
+	lineaVieja NVARCHAR(50) COLLATE Modern_Spanish_CS_AS PRIMARY KEY CLUSTERED,	-- Se encuentra ordenado en el archivo origen por lo que la insercion es eficiente
         lineaNueva NVARCHAR(25) COLLATE Modern_Spanish_CS_AS
     );
 
-    -- SQL din·mico para importar el archivo CSV
+    -- SQL din√°mico para importar el archivo CSV
     DECLARE @sql NVARCHAR(MAX);
     SET @sql = '
     BULK INSERT #TempProductos1
@@ -76,7 +76,7 @@ BEGIN
     ';
     EXEC sp_executesql @sql;
 
-    -- SQL din·mico para importar el archivo de equivalencias de lÌnea producto
+    -- SQL din√°mico para importar el archivo de equivalencias de l√≠nea producto
     SET @sql = '
         INSERT INTO #TempEquivalenciaLineas (lineaNueva, lineaVieja)
         SELECT *
@@ -86,34 +86,34 @@ BEGIN
     ';
     EXEC sp_executesql @sql;
 
-    -- Insertar las nuevas lÌneas de producto que no existen
+    -- Insertar las nuevas l√≠neas de producto que no existen
     INSERT INTO Inventario.LineaProducto (descripcion)
     SELECT DISTINCT E.lineaNueva
     FROM #TempEquivalenciaLineas E
-		LEFT JOIN Inventario.LineaProducto LP ON E.lineaNueva = LP.descripcion
+	LEFT JOIN Inventario.LineaProducto LP ON E.lineaNueva = LP.descripcion
     WHERE LP.idLineaProd IS NULL;
 
 	-- Se utiliza row_number para filtrar productos con nombre duplicado, se va a dejar solo el mas reciente
 	WITH ProductosFiltrados AS (
         SELECT 
-			name, 
+	    name, 
             category,
             price,
             date,
             ROW_NUMBER() OVER (PARTITION BY name ORDER BY date DESC) AS rn
         FROM #TempProductos1 
     )
-    -- Insertar productos con el precio m·s reciente
+    -- Insertar productos con el precio m√°s reciente
     INSERT INTO Inventario.Producto (nombreProducto, lineaProducto, precioUnitario)
     SELECT 
         PF.name, 
         LP.idLineaProd, 
         PF.price * @valorDolar
     FROM ProductosFiltrados PF
-		JOIN #TempEquivalenciaLineas E ON PF.category = E.lineaVieja 
-		JOIN Inventario.LineaProducto LP ON E.lineaNueva = LP.descripcion
-    WHERE PF.rn = 1  -- Solo insertar la versiÛn m·s reciente de cada producto
-		AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto = PF.name);	-- Verifica que el producto no exista
+	JOIN #TempEquivalenciaLineas E ON PF.category = E.lineaVieja 
+	JOIN Inventario.LineaProducto LP ON E.lineaNueva = LP.descripcion
+    WHERE PF.rn = 1  -- Solo insertar la versi√≥n m√°s reciente de cada producto
+	AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto = PF.name);	-- Verifica que el producto no exista
 
     -- Limpiar tablas temporales
     DROP TABLE #TempEquivalenciaLineas;
@@ -124,14 +124,14 @@ GO
 -----------------------------------------------------------------------------------------------
 -- Importacion de productos electronicos
 CREATE OR ALTER PROCEDURE Inventario.CargarProductosElectronicos_sp
-    @rutaArchivo NVARCHAR(250),
+    	@rutaArchivo NVARCHAR(250),
 	@valorDolar DECIMAL(10,2)
 AS
 BEGIN
 	SET NOCOUNT ON;
 	DECLARE @idLineaProd int = (SELECT idLineaProd FROM Inventario.LineaProducto WHERE descripcion = 'Electronico');
 
-	-- Verifica si ya existe la linea de producto electrÛnico, sino existe la crea.
+	-- Verifica si ya existe la linea de producto electr√≥nico, sino existe la crea.
 	IF @idLineaProd IS NULL
 	BEGIN 
 		EXEC Inventario.InsertarLineaProducto_sp 'Electronico'
@@ -162,13 +162,13 @@ BEGIN
 		FROM #TempProductos
 	)
 
-	-- Se insertan datos segun el precio del dolar y el id correspondiente de la linea electrÛnico
+	-- Se insertan datos segun el precio del dolar y el id correspondiente de la linea electr√≥nico
 	INSERT INTO Inventario.Producto (nombreProducto, lineaProducto, precioUnitario)
-    SELECT 
-        nombre AS nombre,
-        @idLineaProd AS lineaProducto,          
-        precio*@valorDolar AS precioUnitario               
-    FROM ElecFiltrados 
+    	SELECT 
+	        nombre AS nombre,
+	        @idLineaProd AS lineaProducto,          
+	        precio*@valorDolar AS precioUnitario               
+    	FROM ElecFiltrados 
 	WHERE rn = 1
 		AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto = nombre);
 
@@ -191,12 +191,12 @@ BEGIN
         idProducto INT,
         NombreProducto NVARCHAR(100) COLLATE Modern_Spanish_CI_AI,
         Proveedor NVARCHAR(100) COLLATE Modern_Spanish_CS_AS,
-		Categoria NVARCHAR(30) COLLATE Modern_Spanish_CS_AS,
-		CantidadPorUnidad VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
+	Categoria NVARCHAR(30) COLLATE Modern_Spanish_CS_AS,
+	CantidadPorUnidad VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
         precioUnidad DECIMAL(10,2)
     );
 
-	CREATE NONCLUSTERED INDEX ix_tempNombre ON #TempProductos(NombreProducto, precioUnidad) INCLUDE (Categoria)
+    CREATE NONCLUSTERED INDEX ix_tempNombre ON #TempProductos(NombreProducto, precioUnidad) INCLUDE (Categoria)
 
     -- Insertar datos desde el archivo XLSX
     DECLARE @sql NVARCHAR(MAX);
@@ -211,31 +211,31 @@ BEGIN
 	
 	UPDATE #TempProductos
 	SET Categoria = CASE WHEN Categoria in ('Carnes','Frutas/Verduras','Pescado/Marisco') THEN  'Frescos'
-						 WHEN Categoria in ('Condimentos','Granos/Cereales','L·cteos','ReposterÌa') THEN 'Almacen'
-						 ELSE Categoria
-					END
+			     WHEN Categoria in ('Condimentos','Granos/Cereales','L√°cteos','Reposter√≠a') THEN 'Almacen'
+			     ELSE Categoria
+			END
 
-    -- Insertar nuevas lÌneas de producto si no existen
+    -- Insertar nuevas l√≠neas de producto si no existen
     INSERT INTO Inventario.LineaProducto (descripcion)
     SELECT DISTINCT TP.Categoria
     FROM #TempProductos TP
-		JOIN Inventario.LineaProducto LP ON TP.Categoria = LP.descripcion
+	JOIN Inventario.LineaProducto LP ON TP.Categoria = LP.descripcion
     WHERE LP.idLineaProd IS NULL;
 
-	WITH ImpFiltrados AS
-	(
-		SELECT *,
-			ROW_NUMBER() OVER(PARTITION BY NombreProducto ORDER BY precioUnidad desc) rn
-		FROM #TempProductos
-	)
+    WITH ImpFiltrados AS
+    (
+    	SELECT *,
+	     ROW_NUMBER() OVER(PARTITION BY NombreProducto ORDER BY precioUnidad desc) rn
+	FROM #TempProductos
+    )
 
     -- Insertar productos con join para optimizar
     INSERT INTO Inventario.Producto (nombreProducto, lineaProducto, precioUnitario)
     SELECT TP.NombreProducto, LP.idLineaProd, TP.precioUnidad * @valorDolar
     FROM ImpFiltrados TP
-		JOIN Inventario.LineaProducto LP ON TP.Categoria = LP.descripcion
-	WHERE TP.rn = 1
-		AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto = TP.NombreProducto);
+	JOIN Inventario.LineaProducto LP ON TP.Categoria = LP.descripcion
+    WHERE TP.rn = 1
+	AND NOT EXISTS (SELECT 1 FROM Inventario.Producto P WHERE P.nombreProducto = TP.NombreProducto);
 
     DROP TABLE #TempProductos;
 END
@@ -283,8 +283,8 @@ BEGIN
 		turno	VARCHAR(20) COLLATE Modern_Spanish_CS_AS
     );
 
-	-- Indice cl˙ster sobre idEmpleados para mantener la tabla con dicho orden y soportar duplicados
-	CREATE CLUSTERED INDEX ix_tempIdEmpleado ON #TempEmpleados(idEmpleado);
+	-- Indice cl√∫ster sobre idEmpleados para mantener la tabla con dicho orden y soportar duplicados
+    CREATE CLUSTERED INDEX ix_tempIdEmpleado ON #TempEmpleados(idEmpleado);
 
     DECLARE @cadenaSql NVARCHAR(MAX)
     SET @cadenaSql = '
@@ -297,20 +297,20 @@ BEGIN
     EXEC sp_executesql @cadenaSql
 
 	-- Variables para generar fecha random entre los limites establecidos
-	DECLARE @FechaInicio AS date,
-			@FechaFin AS date,
-			@DiasIntervalo AS int;
+	DECLARE @FechaInicio 	AS date,
+		@FechaFin 	AS date,
+		@DiasIntervalo 	AS int;
 
-	SELECT	@FechaInicio   = '20220101',
-			@FechaFin     = '20250227',
-			@DiasIntervalo = (1+DATEDIFF(DAY, @FechaInicio, @FechaFin));
+	SELECT	@FechaInicio   	= '20220101',
+		@FechaFin     	= '20250227',
+		@DiasIntervalo 	= (1+DATEDIFF(DAY, @FechaInicio, @FechaFin));
 	
 	-- Con row_number identificamos si existen dnis duplicados dentro del arcivo de importacion
 	WITH EmpsCTE AS (
-         SELECT *,
-			ROW_NUMBER() OVER (PARTITION BY dni ORDER BY idEmpleado) rn
-         FROM #TempEmpleados
-    ) 
+           SELECT *,
+		ROW_NUMBER() OVER (PARTITION BY dni ORDER BY idEmpleado) rn
+           FROM #TempEmpleados
+    	) 
 	
     -- Insetamos dentro de la tabla empleados
     INSERT INTO Empresa.Empleado (idEmpleado, nombre, apellido, genero, cargo, domicilio, telefono, cuil, fechaAlta, mailPersonal, mailEmpresa, idSucursal, turno)
@@ -361,19 +361,19 @@ BEGIN
 
     INSERT INTO @Nombres (nombre)
     VALUES 
-        ('Juan'), ('MarÌa'), ('Carlos'), ('Ana'), ('Luis'),
-        ('Laura'), ('Pedro'), ('SofÌa'), ('Miguel'), ('LucÌa'),
-        ('Jorge'), ('Elena'), ('Diego'), ('Carmen'), ('AndrÈs'),
+        ('Juan'), ('Mar√≠a'), ('Carlos'), ('Ana'), ('Luis'),
+        ('Laura'), ('Pedro'), ('Sof√≠a'), ('Miguel'), ('Luc√≠a'),
+        ('Jorge'), ('Elena'), ('Diego'), ('Carmen'), ('Andr√©s'),
         ('Isabel'), ('Fernando'), ('Patricia'), ('Ricardo'), ('Rosa'),
-        ('Gabriel'), ('Silvia'), ('JosÈ'), ('Adriana'), ('MartÌn'),
-        ('Claudia'), ('Ra˙l'), ('Valeria'), ('Oscar'), ('Daniela');
+        ('Gabriel'), ('Silvia'), ('Jos√©'), ('Adriana'), ('Mart√≠n'),
+        ('Claudia'), ('Ra√∫l'), ('Valeria'), ('Oscar'), ('Daniela');
 
     INSERT INTO @Apellidos (apellido)
     VALUES 
-        ('GÛmez'), ('PÈrez'), ('GarcÌa'), ('RodrÌguez'), ('LÛpez'),
-        ('MartÌnez'), ('Fern·ndez'), ('Gonz·lez'), ('S·nchez'), ('Romero'),
-        ('DÌaz'), ('Torres'), ('¡lvarez'), ('Ruiz'), ('Hern·ndez'),
-        ('JimÈnez'), ('Moreno'), ('MuÒoz'), ('Alonso'), ('Ortega');
+        ('G√≥mez'), ('P√©rez'), ('Garc√≠a'), ('Rodr√≠guez'), ('L√≥pez'),
+        ('Mart√≠nez'), ('Fern√°ndez'), ('Gonz√°lez'), ('S√°nchez'), ('Romero'),
+        ('D√≠az'), ('Torres'), ('√Ålvarez'), ('Ruiz'), ('Hern√°ndez'),
+        ('Jim√©nez'), ('Moreno'), ('Mu√±oz'), ('Alonso'), ('Ortega');
 
     -- Insertar X cantidad de clientes aleatorios
     DECLARE @i INT = 0;
@@ -384,7 +384,7 @@ BEGIN
         SELECT TOP 1 @nombre = nombre FROM @Nombres ORDER BY NEWID();
         SELECT TOP 1 @apellido = apellido FROM @Apellidos ORDER BY NEWID();
 
-        -- Generar tipoCliente y gÈnero aleatorio
+        -- Generar tipoCliente y g√©nero aleatorio
         DECLARE @tipoCliente VARCHAR(10), @genero CHAR(1);
         SET @tipoCliente = CASE WHEN ABS(CHECKSUM(NEWID())) % 2 = 0 THEN 'Member' ELSE 'Normal' END;
         SET @genero = CASE WHEN ABS(CHECKSUM(NEWID())) % 2 = 0 THEN 'F' ELSE 'M' END;
@@ -401,7 +401,7 @@ GO
 --------------------------------------------------------------------------------
 -- Importacion de ventas
 CREATE OR ALTER PROCEDURE Ventas.ImportarVentas_sp
-    @rutaArchivo NVARCHAR(250),
+    	@rutaArchivo NVARCHAR(250),
 	@valorDolar DECIMAL(10,2)
 AS
 BEGIN
@@ -410,21 +410,21 @@ BEGIN
     -- Crear tabla temporal para cargar los datos del CSV
     CREATE TABLE #TempVentas (
         codigoFactura CHAR(11) COLLATE Modern_Spanish_CS_AS,
-		tipoFactura CHAR(1) COLLATE Modern_Spanish_CS_AS,
-		ciudad VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
-		tipoCliente VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
-		genero VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
+	tipoFactura CHAR(1) COLLATE Modern_Spanish_CS_AS,
+	ciudad VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
+	tipoCliente VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
+	genero VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
         nombreProducto NVARCHAR(100) COLLATE Modern_Spanish_CI_AI,
-		precioUnitario DECIMAL(10,2),
-		cantidad INT,
-		fecha VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
-		hora VARCHAR(15) COLLATE Modern_Spanish_CS_AS,
-		medioPago VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
-		idEmpleado INT,
-		identificadorPago VARCHAR(35) COLLATE Modern_Spanish_CS_AS
+	precioUnitario DECIMAL(10,2),
+	cantidad INT,
+	fecha VARCHAR(10) COLLATE Modern_Spanish_CS_AS,
+	hora VARCHAR(15) COLLATE Modern_Spanish_CS_AS,
+	medioPago VARCHAR(20) COLLATE Modern_Spanish_CS_AS,
+	idEmpleado INT,
+	identificadorPago VARCHAR(35) COLLATE Modern_Spanish_CS_AS
     );
 
-	CREATE CLUSTERED INDEX ix_tempCodFact ON #TempVentas(codigoFactura)
+    CREATE CLUSTERED INDEX ix_tempCodFact ON #TempVentas(codigoFactura)
 
     DECLARE @sql NVARCHAR(MAX);
 	SET @sql = '
@@ -443,7 +443,7 @@ BEGIN
 
 
 	-- Actualizamos la ciudad con su respectivo remplazo
-	UPDATE #TempVentas
+    UPDATE #TempVentas
     SET ciudad = CASE 
                     WHEN ciudad = 'Yangon' THEN 'San Justo'
                     WHEN ciudad = 'Naypyitaw' THEN 'Ramos Mejia'
@@ -500,8 +500,8 @@ BEGIN
 	-- Utilizamos row_number para indicar cuantos detalles corresponden a una misma factura (Para el caso del archivo "Ventas" es 1 item por factura por lo que no se ve reflejado el cambio)
 	INSERT INTO #GruposDetalle(codigoFactura, idDetalle, nombreProd, precioUnitario, cantidad, subtotal)
 	SELECT  codigoFactura,
-			ROW_NUMBER() OVER(PARTITION BY codigoFactura ORDER BY codigoFactura) as idDetalle,
-			nombreProducto, precioUnitario, cantidad, cantidad*precioUnitario*@valorDolar as subtotal
+		ROW_NUMBER() OVER(PARTITION BY codigoFactura ORDER BY codigoFactura) as idDetalle,
+		nombreProducto, precioUnitario, cantidad, cantidad*precioUnitario*@valorDolar as subtotal
 	FROM #TempVentas
 
 	INSERT INTO Ventas.DetalleVenta (idFactura, idDetalle, idProducto, precioUnitario, cantidad, subtotal)
