@@ -1,8 +1,8 @@
 /*
 Aurora SA
-Importaci髇 de archivos (Entrega 04)
+Importaci贸n de archivos (Entrega 04)
 Fecha: 28-02-2025
-Asignatura: Bases de datos Aplicadas - Comisi髇: 1353
+Asignatura: Bases de datos Aplicadas - Comisi贸n: 1353
 Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono Gabriel (42134185)
 */
 
@@ -14,14 +14,14 @@ Grupo 07: Rodriguez Gonzalo (46418949) - Francisco Vladimir (46030072) - Vuono G
 
 IF EXISTS (SELECT 1 FROM sys.databases WHERE name = 'Com1353G07')
 BEGIN
-USE Com1353G07														-- Las siguientes rutas son ilustrativas y deben ajustarse --
-DECLARE @rutaCatalogoCSV NVARCHAR(250)		= 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\catalogo.csv',
+USE Com1353G07											-- Las siguientes rutas son ilustrativas y deben ajustarse --
+DECLARE @rutaCatalogoCSV NVARCHAR(250)			= 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\catalogo.csv',
 		@rutaElectronicos NVARCHAR(250)		= 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Electronic accessories.xlsx',
 		@rutaImportados NVARCHAR(250)		= 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Productos\Productos_importados.xlsx',
-		@rutaVentas NVARCHAR(250)			= 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Ventas_registradas.csv',
+		@rutaVentas NVARCHAR(250)		= 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Ventas_registradas.csv',
 		@rutaComplementario NVARCHAR(250)	= 'E:\Extra\Facultad\Bases de datos aplicadas\TpIntegrador\AuroraSA-DB\AuroraSA_ProjectSQL\AuroraSA_ProjectSQL\Data\Informacion_complementaria.xlsx',
-		@valorDolar DECIMAL(10,2)			= 1,
-		@cantClientes INT					= 100,
+		@valorDolar DECIMAL(10,2)		= 1,
+		@cantClientes INT			= 100,
 		@MensajeError NVARCHAR(MAX);
 
 -- VACIAR TABLAS Y REESTABLECER IDENTITY
@@ -35,9 +35,9 @@ SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 
 BEGIN TRY
     BEGIN TRANSACTION;
-    EXEC Inventario.CargarProductosCatalogoCSV_sp @rutaCatalogoCSV, @rutaComplementario, @valorDolar;
+    	EXEC Inventario.CargarProductosCatalogoCSV_sp @rutaCatalogoCSV, @rutaComplementario, @valorDolar;
     COMMIT TRANSACTION;
-    PRINT 'Importaci髇 de cat醠ogo CSV completada.';
+    PRINT 'Importaci贸n de cat谩logo CSV completada.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -50,7 +50,7 @@ BEGIN TRY
     BEGIN TRANSACTION;
 	EXEC Inventario.CargarProductosElectronicos_sp @rutaElectronicos, @valorDolar
     COMMIT TRANSACTION;
-    PRINT 'Importaci髇 de productos electr髇icos completada.';
+    PRINT 'Importaci贸n de productos electr贸nicos completada.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -63,7 +63,7 @@ BEGIN TRY
     BEGIN TRANSACTION;
 	EXEC Inventario.CargarProductosImportados_sp @rutaImportados, @valorDolar
     COMMIT TRANSACTION;
-    PRINT 'Importaci髇 de productos importados completada.';
+    PRINT 'Importaci贸n de productos importados completada.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -76,7 +76,7 @@ BEGIN TRY
     BEGIN TRANSACTION;
 	EXEC Empresa.ImportarSucursales_sp @rutaComplementario
     COMMIT TRANSACTION;
-    PRINT 'Importaci髇 de sucursales completada.';
+    PRINT 'Importaci贸n de sucursales completada.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -89,7 +89,7 @@ BEGIN TRY
     BEGIN TRANSACTION;
 	EXEC Empresa.ImportarEmpleados_sp @rutaComplementario
     COMMIT TRANSACTION;
-    PRINT 'Importaci髇 de empleados completada.';
+    PRINT 'Importaci贸n de empleados completada.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -115,7 +115,7 @@ BEGIN TRY
     BEGIN TRANSACTION;
 	EXEC Ventas.ImportarVentas_sp @rutaVentas, @valorDolar
     COMMIT TRANSACTION;
-    PRINT 'Importaci髇 de ventas completada.';
+    PRINT 'Importaci贸n de ventas completada.';
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -125,5 +125,5 @@ END CATCH;
 
 END
 ELSE
-	PRINT 'Debe crear la base de datos previamente'
+    PRINT 'Debe crear la base de datos previamente'
 
